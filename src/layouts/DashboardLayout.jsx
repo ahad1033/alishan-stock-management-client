@@ -1,10 +1,11 @@
-import { Sidebar } from "@/components/shared/Sidebar";
-import { Topbar } from "@/components/shared/Topbar";
 import { Outlet } from "react-router";
-import { useSidebar } from "@/contexts/SidebarContext"; // Import the hook to access the sidebar state
+
+import { Topbar } from "@/components/shared/Topbar";
+import { Sidebar } from "@/components/shared/Sidebar";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 export default function DashboardLayout() {
-  const { isCollapsed } = useSidebar(); // Access sidebar collapse state
+  const { isCollapsed } = useSidebar();
 
   return (
     <div className="min-h-screen flex">
@@ -16,7 +17,9 @@ export default function DashboardLayout() {
         <Topbar />
 
         <main
-          className={`lg:pl-${isCollapsed ? "20" : "64"} pt-16 transition-all duration-300`}
+          className={`lg:pl-${
+            isCollapsed ? "20" : "64"
+          } pt-16 transition-all duration-300`}
         >
           <div className="p-4 sm:p-6 max-w-7xl mx-auto">
             {/* Routed content */}

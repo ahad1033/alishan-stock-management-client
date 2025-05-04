@@ -1,5 +1,3 @@
-// import { ChartCard } from '@/components/dashboard/ChartCard';
-// import { RecentActivityCard } from '@/components/dashboard/RecentActivityCard';
 import {
   BarChart3,
   Users,
@@ -7,9 +5,11 @@ import {
   DollarSign,
   TrendingUp,
 } from "lucide-react";
-import { Topbar } from "../components/shared/Topbar";
-import { Sidebar } from "../components/shared/Sidebar";
+import { useThemeContext } from "@/components/theme/ThemeProvider";
+
 import { StatCard } from "../components/analytics/StatCard";
+import { ChartCard } from "@/components/analytics/ChartCard";
+import { RecentActivityCard } from "@/components/analytics/RecentActivityCard";
 
 // Mock data for the dashboard
 const mockSalesData = [
@@ -83,6 +83,10 @@ const mockActivities = [
 ];
 
 export default function Analytics() {
+  const { primaryColor } = useThemeContext();
+
+  console.log("primaryColor: ", primaryColor);
+
   return (
     <>
       {/* Dashboard Header */}
@@ -98,59 +102,65 @@ export default function Analytics() {
         <StatCard
           title="Total Revenue"
           value="$148,280"
-          icon={<DollarSign className="h-5 w-5 text-[#B38A2D]" />}
+          icon={
+            <DollarSign className="h-5 w-5" style={{ color: primaryColor }} />
+          }
           trend={{ value: 12, positive: true }}
         />
         <StatCard
           title="Total Products"
           value="2,580"
-          icon={<ShoppingBag className="h-5 w-5 text-[#B38A2D]" />}
+          icon={
+            <ShoppingBag className="h-5 w-5" style={{ color: primaryColor }} />
+          }
           trend={{ value: 8, positive: true }}
         />
         <StatCard
           title="Total Customers"
           value="12,786"
-          icon={<Users className="h-5 w-5 text-[#B38A2D]" />}
+          icon={<Users className="h-5 w-5" style={{ color: primaryColor }} />}
           trend={{ value: 15, positive: true }}
         />
         <StatCard
           title="Growth Rate"
           value="8.5%"
-          icon={<TrendingUp className="h-5 w-5 text-[#B38A2D]" />}
+          icon={
+            <TrendingUp className="h-5 w-5" style={{ color: primaryColor }} />
+          }
           trend={{ value: 3, positive: true }}
         />
       </div>
 
       {/* Charts Row */}
-      {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-            <ChartCard
-              title="Monthly Sales"
-              description="Revenue breakdown by month"
-              data={mockSalesData}
-              type="line"
-              className="lg:col-span-2"
-            />
-            <ChartCard
-              title="Product Categories"
-              description="Distribution by product type"
-              data={mockProductData}
-              type="pie"
-            />
-          </div> */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <ChartCard
+          title="Monthly Sales"
+          description="Revenue breakdown by month"
+          data={mockSalesData}
+          type="line"
+          className="lg:col-span-2"
+        />
+        <ChartCard
+          title="Product Categories"
+          description="Distribution by product type"
+          data={mockProductData}
+          type="pie"
+        />
+      </div>
 
       {/* Activity + Stats Row */}
-      {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <RecentActivityCard
-              activities={mockActivities}
-              className="lg:col-span-2"
-            />
-            <ChartCard
-              title="New Customers"
-              description="Customer acquisition by week"
-              data={mockCustomerData}
-              type="bar"
-            />
-          </div> */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <RecentActivityCard
+          activities={mockActivities}
+          className="lg:col-span-2"
+        />
+        <ChartCard
+          title="New Customers"
+          description="Customer acquisition by week"
+          data={mockCustomerData}
+          type="bar"
+        />
+      </div>
     </>
   );
 }

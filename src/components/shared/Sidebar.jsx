@@ -44,7 +44,7 @@ export function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  
+
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -55,6 +55,13 @@ export function Sidebar() {
 
   return (
     <>
+      {/* {isMobileOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/30 backdrop-blur-sm lg:hidden"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )} */}
+
       {/* Mobile Menu Button */}
       <div className="fixed top-4 left-4 z-50 lg:hidden">
         <Button
@@ -117,7 +124,9 @@ export function Sidebar() {
                     className={cn(
                       "flex items-center w-full py-3 group",
                       "transition-all duration-200 ease-in-out",
-                      isCollapsed ? "justify-center px-4" : "justify-start px-6",
+                      isCollapsed
+                        ? "justify-center px-4"
+                        : "justify-start px-6",
                       location?.pathname === item.path
                         ? "bg-[#B38A2D]/20 text-[#E1BE5D]"
                         : "hover:bg-[#B38A2D]/10 text-foreground/80 hover:text-foreground"

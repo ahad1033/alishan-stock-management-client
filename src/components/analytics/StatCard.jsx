@@ -42,7 +42,7 @@ export function StatCard({
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
         {icon && (
-          <div className="w-8 h-8 flex items-center justify-center rounded-full bg-[#B38A2D]/10">
+          <div className="w-8 h-8 flex items-center justify-center rounded-full">
             {icon}
           </div>
         )}
