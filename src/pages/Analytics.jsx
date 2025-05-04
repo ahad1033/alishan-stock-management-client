@@ -84,50 +84,45 @@ const mockActivities = [
 
 export default function Analytics() {
   return (
-    <div className="min-h-screen">
-      <Sidebar />
-      <Topbar />
+    <>
+      {/* Dashboard Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold">Dashboard Overview</h1>
+        <p className="text-muted-foreground mt-1">
+          Welcome back! Here's what's happening with your store today.
+        </p>
+      </div>
 
-      <main className="lg:pl-64 pt-16 transition-all duration-300">
-        <div className="p-4 sm:p-6 max-w-7xl mx-auto">
-          {/* Dashboard Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold">Dashboard Overview</h1>
-            <p className="text-muted-foreground mt-1">
-              Welcome back! Here's what's happening with your store today.
-            </p>
-          </div>
-          
-          {/* Stats Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <StatCard
-              title="Total Revenue"
-              value="$148,280"
-              icon={<DollarSign className="h-5 w-5 text-[#B38A2D]" />}
-              trend={{ value: 12, positive: true }}
-            />
-            <StatCard
-              title="Total Products"
-              value="2,580"
-              icon={<ShoppingBag className="h-5 w-5 text-[#B38A2D]" />}
-              trend={{ value: 8, positive: true }}
-            />
-            <StatCard
-              title="Total Customers"
-              value="12,786"
-              icon={<Users className="h-5 w-5 text-[#B38A2D]" />}
-              trend={{ value: 15, positive: true }}
-            />
-            <StatCard
-              title="Growth Rate"
-              value="8.5%"
-              icon={<TrendingUp className="h-5 w-5 text-[#B38A2D]" />}
-              trend={{ value: 3, positive: true }}
-            />
-          </div>
-          
-          {/* Charts Row */}
-          {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      {/* Stats Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <StatCard
+          title="Total Revenue"
+          value="$148,280"
+          icon={<DollarSign className="h-5 w-5 text-[#B38A2D]" />}
+          trend={{ value: 12, positive: true }}
+        />
+        <StatCard
+          title="Total Products"
+          value="2,580"
+          icon={<ShoppingBag className="h-5 w-5 text-[#B38A2D]" />}
+          trend={{ value: 8, positive: true }}
+        />
+        <StatCard
+          title="Total Customers"
+          value="12,786"
+          icon={<Users className="h-5 w-5 text-[#B38A2D]" />}
+          trend={{ value: 15, positive: true }}
+        />
+        <StatCard
+          title="Growth Rate"
+          value="8.5%"
+          icon={<TrendingUp className="h-5 w-5 text-[#B38A2D]" />}
+          trend={{ value: 3, positive: true }}
+        />
+      </div>
+
+      {/* Charts Row */}
+      {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
             <ChartCard
               title="Monthly Sales"
               description="Revenue breakdown by month"
@@ -142,9 +137,9 @@ export default function Analytics() {
               type="pie"
             />
           </div> */}
-          
-          {/* Activity + Stats Row */}
-          {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      {/* Activity + Stats Row */}
+      {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <RecentActivityCard
               activities={mockActivities}
               className="lg:col-span-2"
@@ -156,8 +151,6 @@ export default function Analytics() {
               type="bar"
             />
           </div> */}
-        </div>
-      </main>
-    </div>
+    </>
   );
 }

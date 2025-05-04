@@ -111,9 +111,10 @@ export function Sidebar() {
                       setIsMobileOpen(false);
                     }}
                     className={cn(
-                      "flex items-center w-full px-6 py-3 group",
+                      "flex items-center w-full py-3 group",
                       "transition-all duration-200 ease-in-out",
-                      location?.pathname && location?.pathname === item.path
+                      isCollapsed ? "justify-center px-4" : "justify-start px-6",
+                      location?.pathname === item.path
                         ? "bg-[#B38A2D]/20 text-[#E1BE5D]"
                         : "hover:bg-[#B38A2D]/10 text-foreground/80 hover:text-foreground"
                     )}
