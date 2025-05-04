@@ -1,6 +1,5 @@
 import DashboardLayout from "@/layouts/DashboardLayout";
 import Analytics from "@/pages/Analytics";
-import DemoPage from "@/pages/DemoPage";
 import { createBrowserRouter } from "react-router";
 
 

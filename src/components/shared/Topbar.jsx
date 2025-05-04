@@ -1,6 +1,6 @@
-import { User, Settings, Bell, LogOut, Home, UserCircle } from 'lucide-react';
-import { ModeToggle } from '../theme/ModeToggle';
-import { Button } from '@/components/ui/button';
+import { User, Settings, Bell, LogOut, Home, UserCircle } from "lucide-react";
+import { ModeToggle } from "../theme/ModeToggle";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,27 +8,31 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { ThemeSettings } from '../settings/ThemeSettings';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { cn } from '@/lib/utils';
-import { toast } from 'react-hot-toast';
-import { useState } from 'react';
+} from "@/components/ui/dropdown-menu";
+import { ThemeSettings } from "../settings/ThemeSettings";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
+import { toast } from "react-hot-toast";
+import { useState } from "react";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 export function Topbar() {
+  const { isCollapsed } = useSidebar(); // Access collapsed state
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const handleLogout = () => {
-    toast.success('Logged out successfully');
+    toast.success("Logged out successfully");
   };
 
   return (
     <div
       className={cn(
-        'fixed top-0 right-0 left-0 z-20 lg:left-64 h-16',
-        'bg-white/5 dark:bg-black/10 backdrop-blur-xl',
-        'border-b border-neutral-200/10 dark:border-neutral-800/20',
-        'px-4 sm:px-6'
+        "fixed top-0 right-0 left-0 z-20 h-16",
+        "bg-white/5 dark:bg-black/10 backdrop-blur-xl",
+        "border-b border-neutral-200/10 dark:border-neutral-800/20",
+        "px-4 sm:px-6",
+        // Dynamically adjust left padding based on sidebar collapse state
+        isCollapsed ? "lg:left-20" : "lg:left-64"
       )}
     >
       <div className="flex items-center justify-between h-full">
@@ -41,7 +45,7 @@ export function Topbar() {
             variant="ghost"
             size="icon"
             className="rounded-full"
-            onClick={() => toast.success('Notifications viewed')}
+            onClick={() => toast.success("Notifications viewed")}
           >
             <Bell className="h-5 w-5" />
           </Button>

@@ -14,6 +14,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 const navItems = [
   { label: "Analytics", icon: <BarChart3 className="h-5 w-5" />, path: "/" },
@@ -37,10 +38,13 @@ const navItems = [
 
 export function Sidebar() {
   const { primaryColor } = useThemeContext();
+
+  const { isCollapsed, setIsCollapsed } = useSidebar();
+
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
