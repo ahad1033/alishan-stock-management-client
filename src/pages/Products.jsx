@@ -10,8 +10,9 @@ import {
   CustomTableSearch,
   CustomTablePagination,
 } from "@/components/table";
-import { Table } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+
+import CustomHeader from "@/components/page-heading/CustomHeader";
 
 // Mock data for products
 const mockProducts = [
@@ -78,33 +79,29 @@ export default function Products() {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">Products</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage your product inventory
-          </p>
-        </div>
-        <Button className="bg-[#B38A2D] hover:bg-[#E1BE5D]">
-          <Plus className="mr-2 h-4 w-4" />
-          Add Product
-        </Button>
-      </div>
+      <CustomHeader
+        title="Products"
+        subtitle="Manage your product inventory"
+        actions={
+          <Button className="custom-button">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Product
+          </Button>
+        }
+      />
 
       {/* TABLE */}
       <CustomTableSearch value={search} onChange={setSearch} />
 
       <CustomTableRoot>
-        <Table className='border-separate border-spacing-y-2'>
-          <CustomTableHeader columns={columns} />
+        <CustomTableHeader columns={columns} />
 
-          <CustomTableBody
-            data={paginated}
-            columns={columns}
-            onEdit={(row) => handleEdit(row)}
-            onDelete={(row) => handleDelete(row)}
-          />
-        </Table>
+        <CustomTableBody
+          data={paginated}
+          columns={columns}
+          onEdit={(row) => handleEdit(row)}
+          onDelete={(row) => handleDelete(row)}
+        />
       </CustomTableRoot>
 
       <CustomTablePagination

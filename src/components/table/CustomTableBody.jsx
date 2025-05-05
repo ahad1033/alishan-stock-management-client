@@ -1,6 +1,7 @@
-import { TableBody, TableRow, TableCell } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { TableBody, TableRow, TableCell } from "@/components/ui/table";
 
 export function CustomTableBody({ data, columns, onEdit, onDelete }) {
   return (
@@ -12,13 +13,13 @@ export function CustomTableBody({ data, columns, onEdit, onDelete }) {
               {row[column.key]}
             </TableCell>
           ))}
-          <TableCell className="flex gap-2">
+          <TableCell className="flex gap-3">
             <Button variant="outline" size="sm" onClick={() => onEdit(row)}>
               <Pencil className="w-4 h-4" />
             </Button>
             <Button
-              variant="destructive"
               size="sm"
+              variant="destructive"
               onClick={() => onDelete(row)}
             >
               <Trash2 className="w-4 h-4" />

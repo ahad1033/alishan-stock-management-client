@@ -4,10 +4,9 @@ export function CustomTableHeader({ columns }) {
   return (
     <TableHeader>
       <TableRow>
-        {columns.map((col) => (
+        {[...columns, { key: "actions", label: "" }].map((col) => (
           <TableHead key={col.key}>{col.label}</TableHead>
         ))}
-        <TableHead>Actions</TableHead>
       </TableRow>
     </TableHeader>
   );

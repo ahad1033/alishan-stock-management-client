@@ -10,6 +10,7 @@ import { useThemeContext } from "@/components/theme/ThemeProvider";
 import { StatCard } from "../components/analytics/StatCard";
 import { ChartCard } from "@/components/analytics/ChartCard";
 import { RecentActivityCard } from "@/components/analytics/RecentActivityCard";
+import CustomHeader from "@/components/page-heading/CustomHeader";
 
 // Mock data for the dashboard
 const mockSalesData = [
@@ -90,12 +91,10 @@ export default function Analytics() {
   return (
     <>
       {/* Dashboard Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Dashboard Overview</h1>
-        <p className="text-muted-foreground mt-1">
-          Welcome back! Here's what's happening with your store today.
-        </p>
-      </div>
+      <CustomHeader
+        title="Dashboard Overview"
+        subtitle="Welcome back! Here's what's happening with your store today."
+      />
 
       {/* Stats Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
