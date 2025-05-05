@@ -17,7 +17,8 @@ import { useState } from "react";
 import { useSidebar } from "@/contexts/SidebarContext";
 
 export function Topbar() {
-  const { isCollapsed } = useSidebar(); // Access collapsed state
+  const { isCollapsed } = useSidebar();
+
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const handleLogout = () => {
@@ -31,7 +32,6 @@ export function Topbar() {
         "bg-white/5 dark:bg-black/10 backdrop-blur-xl",
         "border-b border-neutral-200/10 dark:border-neutral-800/20",
         "px-4 sm:px-6",
-        // Dynamically adjust left padding based on sidebar collapse state
         isCollapsed ? "lg:left-20" : "lg:left-64"
       )}
     >

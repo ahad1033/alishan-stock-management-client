@@ -20,7 +20,7 @@ export function RecentActivityCard({
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-[300px] pr-4">
-          <div className="space-y-6">
+          <div className="space-y-6 px-2">
             {activities.map((activity) => (
               <div key={activity.id} className="relative pl-6">
                 {/* Timeline connector */}
