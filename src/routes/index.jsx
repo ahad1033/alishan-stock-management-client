@@ -3,6 +3,7 @@ import { createBrowserRouter } from "react-router";
 import Products from "@/pages/Products";
 import Analytics from "@/pages/Analytics";
 import DashboardLayout from "@/layouts/DashboardLayout";
+import Login from "@/pages/Login";
 
 export const router = createBrowserRouter([
   {
@@ -16,5 +17,9 @@ export const router = createBrowserRouter([
       { path: "products", element: <Products /> },
       // { path: "customers", element: <Customers /> },
     ],
+  },
+  {
+    path: "/login",
+    element: <Login />,
   },
 ]);
