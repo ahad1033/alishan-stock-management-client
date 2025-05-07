@@ -1,9 +1,10 @@
 import { createBrowserRouter } from "react-router";
 
+import Login from "@/pages/Login";
 import Products from "@/pages/Products";
 import Analytics from "@/pages/Analytics";
 import DashboardLayout from "@/layouts/DashboardLayout";
-import Login from "@/pages/Login";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 export const router = createBrowserRouter([
   {
@@ -12,9 +13,20 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Analytics />,
+        element: (
+          <ProtectedRoute>
+            <Analytics />
+          </ProtectedRoute>
+        ),
       },
-      { path: "products", element: <Products /> },
+      {
+        path: "products",
+        element: (
+          <ProtectedRoute>
+            <Products />
+          </ProtectedRoute>
+        ),
+      },
       // { path: "customers", element: <Customers /> },
     ],
   },
