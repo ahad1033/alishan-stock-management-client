@@ -1,3 +1,6 @@
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useForm } from "react-hook-form";
@@ -11,21 +14,34 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import { ModeToggle } from "@/components/theme/ModeToggle";
+import { RHFInput } from "@/components/form";
+
+const loginSchema = yup.object().shape({
+  email: yup.string().email("Invalid email").required("Email is required"),
+  password: yup
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+});
 
 export default function Login() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm({
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+  const defaultValues = {
+    email: "",
+    password: "",
+  };
+
+  const methods = useForm({
+    resolver: yupResolver(loginSchema),
+    defaultValues,
   });
+
+  const { handleSubmit, reset } = methods;
 
   const onSubmit = async (data) => {
     try {
@@ -35,6 +51,8 @@ export default function Login() {
       //   localStorage.setItem("isAuthenticated", "true");
       console.log("Login data:", data);
       toast.success("Login successful");
+
+      reset();
 
       navigate("/");
     } catch (error) {
@@ -91,7 +109,35 @@ export default function Login() {
               </p>
             </div>
 
-            <Form {...form}>
+            <Form {...methods}>
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <RHFInput
+                  name="email"
+                  label="Email"
+                  type="email"
+                  placeholder="Enter your email"
+                  icon={Mail}
+                />
+
+                <RHFInput
+                  name="password"
+                  label="Password"
+                  type="password"
+                  placeholder="Enter your password"
+                  icon={Lock}
+                />
+
+                <Button
+                  type="submit"
+                  className="w-full bg-[#B38A2D] hover:bg-[#E1BE5D]"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Signing in..." : "Sign in"}
+                </Button>
+              </form>
+            </Form>
+
+            {/* <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-6"
@@ -148,7 +194,7 @@ export default function Login() {
                   {isLoading ? "Signing in..." : "Sign in"}
                 </Button>
               </form>
-            </Form>
+            </Form> */}
 
             <p className="text-sm text-center text-muted-foreground mt-6">
               By signing in, you agree to our Terms of Service and Privacy
