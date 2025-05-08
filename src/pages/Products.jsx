@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 import CustomHeader from "@/components/page-heading/CustomHeader";
+import { Link } from "react-router";
 
 // Mock data for products
 const mockProducts = [
@@ -83,10 +84,12 @@ export default function Products() {
         title="Products"
         subtitle="Manage your product inventory"
         actions={
-          <Button className="custom-button">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Product
-          </Button>
+          <Link to="/add-product">
+            <Button className="custom-button">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Product
+            </Button>
+          </Link>
         }
       />
 

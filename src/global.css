@@ -174,89 +174,98 @@ h1 {
 }
 
 #root {
-    width: 100%;
-    text-align: left;
-  }
-  
-  /* Custom scrollbar */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-  
-  ::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 10px;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background: rgba(179, 138, 45, 0.5);
-    border-radius: 10px;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgba(179, 138, 45, 0.7);
-  }
+  width: 100%;
+  text-align: left;
+}
 
-  .custom-button {
-    color: white;
-    font-weight: bold;
-    background-color: var(--primary-color);
-  }
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
 
-  .custom-button:hover {
-    background-color: var(--secondary-color);
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary-color);
+}
+
+.custom-button {
+  color: white;
+  font-weight: bold;
+  background-color: var(--primary-color);
+}
+
+.custom-button:hover {
+  background-color: var(--secondary-color);
+}
+
+/* Glass effect base styling */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .glass-effect {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-  
-  
-  /* Glass effect base styling */
-  .glass-effect {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+  to {
+    opacity: 1;
   }
-  
-  .dark .glass-effect {
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
   }
-  
-  /* Animations */
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
-  
-  @keyframes slideIn {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-  
-  .animate-fade-in {
-    animation: fadeIn 0.5s ease-in-out;
-  }
-  
-  .animate-slide-in {
-    animation: slideIn 0.5s ease-out;
-  }
-  
-  /* Add a subtle gradient to card borders on hover */
-  .card-hover:hover {
-    border-image: linear-gradient(45deg, #B38A2D, #E1BE5D) 1;
-    transition: border-image 0.3s ease;
-  }
-  
-  /* Custom styling for toast notifications to match theme */
-  .toast-custom {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
-  }
-  
-  .dark .toast-custom {
-    background: rgba(0, 0, 0, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.5s ease-out;
+}
+
+/* Add a subtle gradient to card borders on hover */
+.card-hover:hover {
+  border-image: linear-gradient(45deg, #b38a2d, #e1be5d) 1;
+  transition: border-image 0.3s ease;
+}
+
+/* Custom styling for toast notifications to match theme */
+.toast-custom {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.dark .toast-custom {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
