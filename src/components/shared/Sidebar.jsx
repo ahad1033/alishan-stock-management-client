@@ -29,6 +29,11 @@ const navItems = [
     path: "/customers",
   },
   {
+    label: "Users",
+    icon: <Users className="h-5 w-5" />,
+    path: "/users",
+  },
+  {
     label: "Invoice",
     icon: <FileText className="h-5 w-5" />,
     path: "/invoice",
@@ -105,9 +110,15 @@ export function Sidebar() {
             className="absolute -right-5 top-12 rounded-full hidden lg:block"
           >
             {isCollapsed ? (
-              <ChevronRight className="h-8 w-8"  style={{ color: primaryColor}}  />
+              <ChevronRight
+                className="h-8 w-8"
+                style={{ color: primaryColor }}
+              />
             ) : (
-              <ChevronLeft className="h-8 w-8"  style={{ color: primaryColor}}  />
+              <ChevronLeft
+                className="h-8 w-8"
+                style={{ color: primaryColor }}
+              />
             )}
           </Button>
 

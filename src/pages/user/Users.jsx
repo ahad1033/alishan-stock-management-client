@@ -1,58 +1,53 @@
 import { useState } from "react";
+import { Link } from "react-router";
+import { toast } from "react-hot-toast";
 
 import { Plus } from "lucide-react";
-import { toast } from "react-hot-toast";
 
 import {
   CustomTableBody,
-  CustomTableRoot,
   CustomTableHeader,
-  CustomTableSearch,
   CustomTablePagination,
+  CustomTableRoot,
+  CustomTableSearch,
 } from "@/components/table";
 import { Button } from "@/components/ui/button";
-
 import CustomHeader from "@/components/page-heading/CustomHeader";
-import { Link } from "react-router";
 
-// Mock data for products
-const mockProducts = [
+// Mock data for users
+const mockUsers = [
   {
     id: "1",
-    name: "iPhone 14 Pro",
-    category: "Electronics",
-    price: "$999",
-    stock: 45,
-    status: "In Stock",
+    name: "John Doe",
+    email: "john@stockglass.com",
+    phone: "+1 234 567 890",
+    role: "Admin",
   },
   {
     id: "2",
-    name: "MacBook Pro M2",
-    category: "Electronics",
-    price: "$1999",
-    stock: 23,
-    status: "Low Stock",
+    name: "Jane Smith",
+    email: "jane@stockglass.com",
+    phone: "+1 234 567 891",
+    role: "Manager",
   },
   {
     id: "3",
-    name: "AirPods Pro",
-    category: "Electronics",
-    price: "$249",
-    stock: 156,
-    status: "In Stock",
+    name: "Bob Johnson",
+    email: "bob@stockglass.com",
+    phone: "+1 234 567 892",
+    role: "Staff",
   },
 ];
 
 const columns = [
-  { key: "name", label: "Product Name" },
-  { key: "category", label: "Category" },
-  { key: "price", label: "Price" },
-  { key: "stock", label: "Stock" },
-  { key: "status", label: "Status" },
+  { key: "name", label: "Name" },
+  { key: "email", label: "Email" },
+  { key: "phone", label: "Phone" },
+  { key: "role", label: "Role" },
 ];
 
-export default function Products() {
-  const [products, setProducts] = useState(mockProducts);
+export default function Users() {
+  const [users, setUsers] = useState(mockUsers);
 
   const [search, setSearch] = useState("");
 
@@ -60,7 +55,7 @@ export default function Products() {
 
   const rowsPerPage = 4;
 
-  const filtered = mockProducts.filter((d) =>
+  const filtered = mockUsers.filter((d) =>
     d.name.toLowerCase().includes(search.toLowerCase())
   );
   const totalPages = Math.ceil(filtered.length / rowsPerPage);
@@ -74,26 +69,26 @@ export default function Products() {
   };
 
   const handleDelete = (product) => {
-    setProducts(products.filter((p) => p.id !== product.id));
+    setUsers(users.filter((p) => p.id !== product.id));
     toast.success(`Product deleted: ${product.name}`);
   };
 
   return (
     <>
       <CustomHeader
-        title="Products"
-        subtitle="Manage your product inventory"
+        title="Users"
+        subtitle="Manage system users and their roles"
         actions={
-          <Link to="/add-product">
+          <Link to="/add-user">
             <Button className="custom-button">
               <Plus className="mr-2 h-4 w-4" />
-              Add Product
+              Add User
             </Button>
           </Link>
         }
       />
 
-      {/* PRODUCT TABLE */}
+      {/* USER TABLE */}
       <CustomTableSearch value={search} onChange={setSearch} />
 
       <CustomTableRoot>

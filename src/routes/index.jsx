@@ -7,6 +7,7 @@ import ProductForm from "@/pages/ProductForm";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 import DashboardLayout from "@/layouts/DashboardLayout";
+import Users from "@/pages/user/Users";
 
 export const router = createBrowserRouter([
   {
@@ -42,6 +43,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <ProductForm />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "users",
+        element: (
+          <ProtectedRoute>
+            <Users />
           </ProtectedRoute>
         ),
       },
