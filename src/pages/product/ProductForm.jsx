@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 
 import { RHFInput, RHFTextArea } from "@/components/form";
 
+import CustomHeader from "@/components/page-heading/CustomHeader";
+
 const ProductSchema = Yup.object().shape({
   name: Yup.string()
     .trim()
@@ -89,51 +91,63 @@ export default function ProductForm() {
   };
 
   return (
-    <Form {...methods}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <RHFInput
-          name="name"
-          label="Product name"
-          type="text"
-          placeholder="Enter product name"
-        />
+    <>
+      <CustomHeader
+        title="Product"
+        subtitle={
+          isEdit ? "Edit your existing product" : "Create a new product"
+        }
+      />
 
-        <RHFTextArea
-          name="description"
-          label="Description"
-          placeholder="Enter product description"
-        />
+      <Form {...methods}>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <RHFInput
+            name="name"
+            label="Product name"
+            type="text"
+            placeholder="Enter product name"
+          />
 
-        <RHFInput
-          name="sku"
-          label="SKU"
-          type="text"
-          placeholder="Enter product code"
-        />
+          <RHFTextArea
+            name="description"
+            label="Description"
+            placeholder="Enter product description"
+          />
 
-        <RHFInput
-          name="price"
-          label="Price"
-          type="number"
-          placeholder="Enter product price"
-        />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <RHFInput
+              name="sku"
+              label="SKU"
+              type="text"
+              placeholder="Enter product code"
+            />
 
-        <RHFInput
-          name="currentStock"
-          label="Current stock"
-          type="number"
-          placeholder="Enter current stock"
-        />
+            <RHFInput
+              name="price"
+              label="Price"
+              type="number"
+              placeholder="Enter product price"
+            />
+          </div>
 
-        <div className="flex justify-end gap-4">
-          <Button type="button" variant="outline">
-            Cancel
-          </Button>
-          <Button type="submit" className="custom-button">
-            {isLoading ? "Submitting..." : isEdit ? "Update" : "Create Product"}
-          </Button>
-        </div>
-      </form>
-    </Form>
+          <RHFInput
+            name="currentStock"
+            label="Current stock"
+            type="number"
+            placeholder="Enter current stock"
+          />
+
+          <div className="flex justify-end gap-4">
+            <Button type="submit" className="custom-button">
+              {isLoading
+                ? "Submitting..."
+                : isEdit
+                ? "Update"
+                : "Create Product"}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </>
   );
 }

@@ -51,7 +51,7 @@ const columns = [
   { key: "status", label: "Status" },
 ];
 
-export default function Products() {
+export default function ProductsPage() {
   const [products, setProducts] = useState(mockProducts);
 
   const [search, setSearch] = useState("");

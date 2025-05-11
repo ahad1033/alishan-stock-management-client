@@ -46,7 +46,7 @@ const columns = [
   { key: "role", label: "Role" },
 ];
 
-export default function Users() {
+export default function UsersPage() {
   const [users, setUsers] = useState(mockUsers);
 
   const [search, setSearch] = useState("");

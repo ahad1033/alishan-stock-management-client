@@ -1,13 +1,13 @@
 import { createBrowserRouter } from "react-router";
 
 import Login from "@/pages/Login";
-import Products from "@/pages/Products";
 import Analytics from "@/pages/Analytics";
-import ProductForm from "@/pages/ProductForm";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
+import { UserForm, UsersPage } from "@/pages/user";
+import { ProductForm, ProductsPage } from "@/pages/product";
+
 import DashboardLayout from "@/layouts/DashboardLayout";
-import Users from "@/pages/user/Users";
 
 export const router = createBrowserRouter([
   {
@@ -26,7 +26,7 @@ export const router = createBrowserRouter([
         path: "products",
         element: (
           <ProtectedRoute>
-            <Products />
+            <ProductsPage />
           </ProtectedRoute>
         ),
       },
@@ -50,7 +50,15 @@ export const router = createBrowserRouter([
         path: "users",
         element: (
           <ProtectedRoute>
-            <Users />
+            <UsersPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "add-user",
+        element: (
+          <ProtectedRoute>
+            <UserForm />
           </ProtectedRoute>
         ),
       },

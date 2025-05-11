@@ -19,21 +19,24 @@ export default function RHFSelect({
   placeholder = "Select an option",
   options = [],
 }) {
-  const { control } = useFormContext();
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext();
 
   return (
     <Controller
       name={name}
       control={control}
       render={({ field }) => (
-        <FormItem>
+        <FormItem className="w-full">
           {label && <FormLabel>{label}</FormLabel>}
           <FormControl>
             <Select onValueChange={field.onChange} value={field.value}>
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="w-full">
                 {options.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
@@ -42,7 +45,7 @@ export default function RHFSelect({
               </SelectContent>
             </Select>
           </FormControl>
-          <FormMessage />
+          {errors[name] && <FormMessage>{errors[name]?.message}</FormMessage>}
         </FormItem>
       )}
     />
