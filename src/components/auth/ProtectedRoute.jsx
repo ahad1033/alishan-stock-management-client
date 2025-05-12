@@ -1,9 +1,10 @@
 import { useSelector } from "react-redux";
 import { Navigate, useLocation } from "react-router";
+import { useCurrentUser } from "@/redux/features/auth/authSlice";
 
 export default function ProtectedRoute({ children }) {
   // USER DATA
-  const currentUser = useSelector((s) => s.auth.user);
+  const currentUser = useSelector(useCurrentUser);
 
   const isAuthenticated = Boolean(currentUser?.user);
 

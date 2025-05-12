@@ -1,9 +1,7 @@
 import * as Yup from "yup";
 import toast from "react-hot-toast";
-import { yupResolver } from "@hookform/resolvers/yup";
-
-import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
@@ -12,9 +10,12 @@ import { Button } from "@/components/ui/button";
 import { RHFInput, RHFSelect } from "@/components/form";
 
 import CustomHeader from "@/components/page-heading/CustomHeader";
+import { useCreateUserMutation } from "@/redux/features/user/userApi";
 
 const UserSchema = Yup.object().shape({
   name: Yup.string().trim().required("Name is required"),
+
+  address: Yup.string().trim(),
 
   email: Yup.string()
     .trim()
@@ -33,6 +34,10 @@ const UserSchema = Yup.object().shape({
     .trim()
     .required("Please select the user's role")
     .notOneOf([""], "Please select the user's role"),
+  gender: Yup.string()
+    .trim()
+    .required("Please select gender")
+    .notOneOf([""], "Please select gender"),
 
   password: Yup.string().trim().required("Initial password is required"),
 });
@@ -43,6 +48,11 @@ const USER_ROLE_OPTIONS = [
   { value: "stock_manager", label: "Stock Manager" },
 ];
 
+const GENDER_OPTIONS = [
+  { value: "male", label: "Male" },
+  { value: "female", label: "Female" },
+];
+
 export default function UserForm() {
   const navigate = useNavigate();
 
@@ -50,15 +60,19 @@ export default function UserForm() {
 
   const isEdit = Boolean(id);
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [createUser, { isLoading, isError, error }] = useCreateUserMutation();
 
   console.log(isLoading);
+  console.log(isError);
+  console.log(error);
 
   const defaultValues = {
     name: "",
+    address: "",
     email: "",
     phone: "",
     role: "",
+    gender: "",
     password: "",
   };
 
@@ -67,26 +81,34 @@ export default function UserForm() {
     defaultValues,
   });
 
-  const { handleSubmit, reset } = methods;
+  const {
+    handleSubmit,
+    reset,
+    formState: { isSubmitting },
+  } = methods;
 
   const onSubmit = async (data) => {
-    console.log("USER FORM DATA: ", data);
     try {
-      setIsLoading(true);
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
-      toast.success("User added successfully");
+      if (!isEdit) {
+        const result = await createUser(data).unwrap();
 
-      reset();
+        console.log("CREATING USER RESULT: ", result);
 
-      navigate("/users");
+        if (result.success) {
+          toast.success(result?.message || "User added successfully");
+
+          reset();
+
+          navigate("/users");
+        }
+      }
     } catch (error) {
       console.log(error);
 
       toast.error("Something went wrong!");
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -101,42 +123,61 @@ export default function UserForm() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <RHFInput
             name="name"
-            label="Users full name"
+            label="Users full name *"
             type="text"
             placeholder="Enter users full name"
+          />
+
+          <RHFInput
+            name="address"
+            label="Address (optional)"
+            type="text"
+            placeholder="Enter full address"
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <RHFInput
               name="email"
-              label="Email"
+              label="Email *"
               placeholder="Enter users email address"
             />
 
             <RHFInput
               name="phone"
-              label="Phone"
+              label="Phone *"
               type="tel"
               placeholder="Enter users phone"
             />
 
             <RHFSelect
               name="role"
-              label="Role"
+              label="Role *"
               placeholder="Select role"
               options={USER_ROLE_OPTIONS}
             />
 
-            <RHFInput
-              name="password"
-              label="Password"
-              placeholder="Enter initial password"
+            <RHFSelect
+              name="gender"
+              label="Gender *"
+              placeholder="Select gender"
+              options={GENDER_OPTIONS}
             />
           </div>
 
+          <RHFInput
+            name="password"
+            label="Password *"
+            type="password"
+            placeholder="Enter initial password"
+          />
+
           <div className="flex justify-end gap-4">
             <Button type="submit" className="custom-button">
-              {isLoading ? "Submitting..." : isEdit ? "Update" : "Create User"}
+              {isSubmitting
+                ? "Submitting..."
+                : isEdit
+                ? "Update"
+                : "Create User"}
             </Button>
           </div>
         </form>

@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/contexts/SidebarContext";
+import { useSelector } from "react-redux";
+import { useCurrentUser } from "@/redux/features/auth/authSlice";
 
 const navItems = [
   { label: "Analytics", icon: <BarChart3 className="h-5 w-5" />, path: "/" },
@@ -51,6 +53,8 @@ export function Sidebar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const [mounted, setMounted] = useState(false);
+
+  const currentUser = useSelector(useCurrentUser);
 
   useEffect(() => {
     setMounted(true);
@@ -170,10 +174,12 @@ export function Sidebar() {
               )}
             >
               <div className="w-8 h-8 rounded-full bg-neutral-200 dark:bg-neutral-800 flex-shrink-0" />
-              {!isCollapsed && (
+              {!isCollapsed && currentUser !== null && (
                 <div>
-                  <p className="font-medium text-foreground">Admin User</p>
-                  <p className="text-xs">admin@stockglass.com</p>
+                  <p className="font-medium text-foreground">
+                    {currentUser?.user?.name}
+                  </p>
+                  <p className="text-xs">{currentUser?.user?.email}</p>
                 </div>
               )}
             </div>

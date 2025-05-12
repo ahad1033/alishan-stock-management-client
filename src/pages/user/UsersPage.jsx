@@ -13,31 +13,7 @@ import {
 } from "@/components/table";
 import { Button } from "@/components/ui/button";
 import CustomHeader from "@/components/page-heading/CustomHeader";
-
-// Mock data for users
-const mockUsers = [
-  {
-    id: "1",
-    name: "John Doe",
-    email: "john@stockglass.com",
-    phone: "+1 234 567 890",
-    role: "Admin",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    email: "jane@stockglass.com",
-    phone: "+1 234 567 891",
-    role: "Manager",
-  },
-  {
-    id: "3",
-    name: "Bob Johnson",
-    email: "bob@stockglass.com",
-    phone: "+1 234 567 892",
-    role: "Staff",
-  },
-];
+import { useGetAllUserQuery } from "@/redux/features/user/userApi";
 
 const columns = [
   { key: "name", label: "Name" },
@@ -47,30 +23,32 @@ const columns = [
 ];
 
 export default function UsersPage() {
-  const [users, setUsers] = useState(mockUsers);
-
   const [search, setSearch] = useState("");
 
   const [page, setPage] = useState(1);
 
   const rowsPerPage = 4;
 
-  const filtered = mockUsers.filter((d) =>
+  // eslint-disable-next-line no-unused-vars
+  const { data: userData, isLoading, isError, error } = useGetAllUserQuery();
+
+  const filtered = userData?.data?.filter((d) =>
     d.name.toLowerCase().includes(search.toLowerCase())
   );
-  const totalPages = Math.ceil(filtered.length / rowsPerPage);
-  const paginated = filtered.slice(
+  const totalPages = Math.ceil(filtered?.length / rowsPerPage) || 1;
+
+  const paginated = filtered?.slice(
     (page - 1) * rowsPerPage,
     page * rowsPerPage
   );
 
-  const handleEdit = (product) => {
-    console.log(product);
+  const handleEdit = (user) => {
+    toast.error("Can't edit user at this moment!");
+    console.log(user);
   };
 
-  const handleDelete = (product) => {
-    setUsers(users.filter((p) => p.id !== product.id));
-    toast.success(`Product deleted: ${product.name}`);
+  const handleDelete = (user) => {
+    toast.success(`User deleted: ${user?.name}`);
   };
 
   return (

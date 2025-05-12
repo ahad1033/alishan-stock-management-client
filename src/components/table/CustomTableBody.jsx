@@ -6,7 +6,7 @@ import { TableBody, TableRow, TableCell } from "@/components/ui/table";
 export function CustomTableBody({ data, columns, onEdit, onDelete }) {
   return (
     <TableBody>
-      {data.map((row) => (
+      {data?.map((row) => (
         <TableRow key={row.id}>
           {columns.map((column) => (
             <TableCell key={`${row.id}-${column.key}`}>
