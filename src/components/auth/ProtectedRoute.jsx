@@ -1,7 +1,11 @@
+import { useSelector } from "react-redux";
 import { Navigate, useLocation } from "react-router";
 
 export default function ProtectedRoute({ children }) {
-  const isAuthenticated = true;
+  // USER DATA
+  const currentUser = useSelector((s) => s.auth.user);
+
+  const isAuthenticated = Boolean(currentUser?.user);
 
   const location = useLocation();
 

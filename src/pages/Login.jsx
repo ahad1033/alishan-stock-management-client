@@ -1,35 +1,32 @@
 import * as yup from "yup";
+import { useDispatch } from "react-redux";
 import { yupResolver } from "@hookform/resolvers/yup";
 
-import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import { Lock, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
 
-import { ModeToggle } from "@/components/theme/ModeToggle";
+import { Form } from "@/components/ui/form";
 import { RHFInput } from "@/components/form";
+import { Button } from "@/components/ui/button";
+import { ModeToggle } from "@/components/theme/ModeToggle";
+
+import { verifyToken } from "@/utils/verifty-token";
+import { setUser } from "@/redux/features/auth/authSlice";
+import { useLoginMutation } from "@/redux/features/auth/authAPI";
 
 const loginSchema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
-  password: yup
-    .string()
-    .min(6, "Password must be at least 6 characters")
-    .required("Password is required"),
+  password: yup.string().required("Password is required"),
 });
 
 export default function Login() {
+  const dispatch = useDispatch();
+
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+
+  const [login, { isLoading }] = useLoginMutation();
 
   const defaultValues = {
     email: "",
@@ -41,26 +38,44 @@ export default function Login() {
     defaultValues,
   });
 
-  const { handleSubmit, reset } = methods;
+  const {
+    reset,
+    // watch,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = methods;
+
+  // const isFormFilled = watch("email") && watch("password");
 
   const onSubmit = async (data) => {
+    const loadingToastId = toast.loading("Logging in...");
+
     try {
-      setIsLoading(true);
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      //   localStorage.setItem("isAuthenticated", "true");
-      console.log("Login data:", data);
-      toast.success("Login successful");
+      const response = await login(data).unwrap();
 
-      reset();
+      if (response.success) {
+        const user = await verifyToken(response?.data?.accessToken);
 
-      navigate("/");
-    } catch (error) {
-      console.log(error);
+        dispatch(setUser({ user, token: response?.data?.accessToken }));
 
-      toast.error("Login failed");
+        toast.success(response.message || "Logged in successfully!", {
+          id: loadingToastId,
+        });
+
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        navigate("/", { replace: true });
+
+        reset();
+      }
+    } catch (err) {
+      toast.error(err?.data?.error || "Login failed. Please try again.", {
+        id: loadingToastId,
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 1500));
     } finally {
-      setIsLoading(false);
+      toast.dismiss(loadingToastId);
     }
   };
 
@@ -132,69 +147,10 @@ export default function Login() {
                   className="w-full bg-[#B38A2D] hover:bg-[#E1BE5D]"
                   disabled={isLoading}
                 >
-                  {isLoading ? "Signing in..." : "Sign in"}
+                  {isLoading || isSubmitting ? "Signing in..." : "Sign in"}
                 </Button>
               </form>
             </Form>
-
-            {/* <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-6"
-              >
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                          <Input
-                            {...field}
-                            type="email"
-                            placeholder="Enter your email"
-                            className="pl-10"
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                          <Input
-                            {...field}
-                            type="password"
-                            placeholder="Enter your password"
-                            className="pl-10"
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <Button
-                  type="submit"
-                  className="w-full bg-[#B38A2D] hover:bg-[#E1BE5D]"
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Signing in..." : "Sign in"}
-                </Button>
-              </form>
-            </Form> */}
 
             <p className="text-sm text-center text-muted-foreground mt-6">
               By signing in, you agree to our Terms of Service and Privacy

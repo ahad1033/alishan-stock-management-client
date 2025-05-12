@@ -1,6 +1,10 @@
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
 import { User, Settings, Bell, LogOut, Home, UserCircle } from "lucide-react";
-import { ModeToggle } from "../theme/ModeToggle";
-import { Button } from "@/components/ui/button";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,19 +13,29 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ThemeSettings } from "../settings/ThemeSettings";
+import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
-import { toast } from "react-hot-toast";
-import { useState } from "react";
+
+import { ModeToggle } from "../theme/ModeToggle";
 import { useSidebar } from "@/contexts/SidebarContext";
+import { ThemeSettings } from "../settings/ThemeSettings";
+
+import { logout } from "@/redux/features/auth/authSlice";
 
 export function Topbar() {
+  const dispatch = useDispatch();
+
+  const navigate = useNavigate();
+
   const { isCollapsed } = useSidebar();
 
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const handleLogout = () => {
+    dispatch(logout());
+
+    navigate("/login");
+
     toast.success("Logged out successfully");
   };
 
