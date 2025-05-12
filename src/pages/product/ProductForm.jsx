@@ -103,28 +103,28 @@ export default function ProductForm() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <RHFInput
             name="name"
-            label="Product name"
+            label="Product name *"
             type="text"
             placeholder="Enter product name"
           />
 
           <RHFTextArea
             name="description"
-            label="Description"
+            label="Description *"
             placeholder="Enter product description"
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <RHFInput
               name="sku"
-              label="SKU"
+              label="SKU *"
               type="text"
               placeholder="Enter product code"
             />
 
             <RHFInput
               name="price"
-              label="Price"
+              label="Price *"
               type="number"
               placeholder="Enter product price"
             />
@@ -132,7 +132,7 @@ export default function ProductForm() {
 
           <RHFInput
             name="currentStock"
-            label="Current stock"
+            label="Current stock *"
             type="number"
             placeholder="Enter current stock"
           />
