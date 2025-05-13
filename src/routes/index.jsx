@@ -79,6 +79,14 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "edit-customer/:id",
+        element: (
+          <ProtectedRoute>
+            <CustomerForm />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
   {

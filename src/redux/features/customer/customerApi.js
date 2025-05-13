@@ -28,6 +28,21 @@ const customerApi = baseApi.injectEndpoints({
       }),
       providesTags: ["CUSTOMERS"],
     }),
+    updateCustomer: builder.mutation({
+      query: ({ data, customerId }) => ({
+        url: API_ENDPOINTS.UPDATE_CUSTOMER_BY_ID(customerId),
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["CUSTOMERS"],
+    }),
+    deleteCustomer: builder.mutation({
+      query: (customerId) => ({
+        url: API_ENDPOINTS.DELETE_CUSTOMER_BY_ID(customerId),
+        method: "DELETE",
+      }),
+      invalidatesTags: ["CUSTOMERS"],
+    }),
   }),
 });
 
@@ -35,4 +50,6 @@ export const {
   useGetAllCustomerQuery,
   useGetCustomerByIdQuery,
   useCreateCustomerMutation,
+  useUpdateCustomerMutation,
+  useDeleteCustomerMutation,
 } = customerApi;

@@ -39,8 +39,6 @@ export default function ProductsPage() {
 
   const confirm = useBoolean();
 
-  // const [confirmOpen, setConfirmOpen] = useState(false);
-
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const rowsPerPage = 20;
@@ -71,7 +69,6 @@ export default function ProductsPage() {
 
   const handleDelete = (product) => {
     setSelectedProduct(product);
-    // setConfirmOpen(true);
     confirm.onTrue();
   };
 

@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 
+import ConfirmDialog from "@/components/shared/ConfirmDialog";
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import CircularLoading from "@/components/shared/CircularLoading";
 
@@ -15,40 +16,19 @@ import {
 } from "@/components/table";
 import { Button } from "@/components/ui/button";
 
-// Mock data for customers
-const mockCustomers = [
-  {
-    id: "1",
-    name: "John Doe",
-    email: "john@example.com",
-    phone: "+1 234 567 890",
-    orders: 12,
-    status: "Active",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    email: "jane@example.com",
-    phone: "+1 234 567 891",
-    orders: 8,
-    status: "Active",
-  },
-  {
-    id: "3",
-    name: "Bob Johnson",
-    email: "bob@example.com",
-    phone: "+1 234 567 892",
-    orders: 5,
-    status: "Inactive",
-  },
-];
+import { useBoolean } from "@/hooks";
+
+import {
+  useGetAllCustomerQuery,
+  useDeleteCustomerMutation,
+} from "@/redux/features/customer/customerAPI";
 
 const columns = [
   { key: "name", label: "Customer Name" },
+  { key: "shopName", label: "Shop Name" },
+  { key: "address", label: "Address" },
   { key: "email", label: "Email" },
   { key: "phone", label: "Phone" },
-  { key: "orders", label: "Total Orders" },
-  { key: "status", label: "Status" },
 ];
 
 export default function CustomersPage() {
@@ -58,11 +38,18 @@ export default function CustomersPage() {
 
   const [page, setPage] = useState(1);
 
+  const confirm = useBoolean();
+
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+
   const rowsPerPage = 20;
 
-  const isLoading = false;
+  const { data: customerData, isLoading } = useGetAllCustomerQuery();
 
-  const filtered = mockCustomers?.filter((d) =>
+  const [deleteCustomer, { isLoading: deleteLoading }] =
+    useDeleteCustomerMutation();
+
+  const filtered = customerData?.data?.filter((d) =>
     d.name.toLowerCase().includes(search.toLowerCase())
   );
   const totalPages = Math.ceil(filtered?.length / rowsPerPage) || 1;
@@ -73,11 +60,34 @@ export default function CustomersPage() {
   );
 
   const handleEdit = (customer) => {
-    navigate(`/edit-customer/${customer.id}`, { state: { customer } });
+    navigate(`/edit-customer/${customer?.id}`);
   };
 
   const handleDelete = (customer) => {
-    toast.success(`Customer deleted: ${customer.name}`);
+    setSelectedCustomer(customer);
+    confirm.onTrue();
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      const result = await deleteCustomer(selectedCustomer?.id).unwrap();
+
+      console.log("DELETE RESULT: ", result);
+
+      if (result?.success) {
+        toast.success(result.message || "Product deleted successfully");
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      confirm.onFalse();
+
+      setSelectedCustomer(null);
+    } catch (err) {
+      toast.error(err?.data?.message || "Failed to delete product");
+    }
   };
 
   return (
@@ -120,6 +130,17 @@ export default function CustomersPage() {
           />
         </>
       )}
+
+      {/* CONFIRM DELETE DIALOG */}
+      <ConfirmDialog
+        open={confirm.value}
+        onOpenChange={confirm.onToggle}
+        title="Delete Customer"
+        description={`Are you sure you want to delete "${selectedCustomer?.name}"?`}
+        onCancel={() => confirm.onFalse()}
+        onConfirm={confirmDelete}
+        isLoading={deleteLoading}
+      />
     </>
   );
 }
