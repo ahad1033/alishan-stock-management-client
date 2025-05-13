@@ -1,4 +1,5 @@
 import * as Yup from "yup";
+import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -9,8 +10,15 @@ import { Button } from "@/components/ui/button";
 
 import { RHFInput } from "@/components/form";
 
+import CircularLoading from "@/components/shared/CircularLoading";
 import CustomHeader from "@/components/page-heading/CustomHeader";
-import { useCreateCustomerMutation } from "@/redux/features/customer/customerAPI";
+
+import {
+  useGetCustomerByIdQuery,
+  useCreateCustomerMutation,
+  useUpdateCustomerMutation,
+} from "@/redux/features/customer/customerAPI";
+
 import { cleanPayload } from "@/utils/clean-payload";
 
 const UserSchema = Yup.object().shape({
@@ -38,12 +46,15 @@ export default function CustomerForm() {
 
   const isEdit = Boolean(id);
 
+  // eslint-disable-next-line no-unused-vars
   const [createCustomer, { isLoading, isError, error }] =
     useCreateCustomerMutation();
 
-  console.log(isLoading);
-  console.log(isError);
-  console.log(error);
+  const [updateCustomer, { isLoading: _updateLoading }] =
+    useUpdateCustomerMutation();
+
+  const { data: currentCustomer, isLoading: currentCustomerLoading } =
+    useGetCustomerByIdQuery(id, { skip: !id });
 
   const defaultValues = {
     name: "",
@@ -64,32 +75,44 @@ export default function CustomerForm() {
     formState: { isSubmitting },
   } = methods;
 
+  useEffect(() => {
+    if (currentCustomer?.data && isEdit) {
+      reset({
+        name: currentCustomer?.data?.name || "",
+        shopName: currentCustomer?.data?.shopName || "",
+        address: currentCustomer?.data?.address || "",
+        email: currentCustomer?.data?.email || "",
+        phone: currentCustomer?.data?.phone || "",
+      });
+    }
+  }, [currentCustomer?.data, isEdit, reset]);
+
   const onSubmit = async (data) => {
     const cleanData = cleanPayload(data);
 
-    console.log("formData", data);
-    console.log("cleanData", cleanData);
+    const action = isEdit ? updateCustomer : createCustomer;
+
+    const payload = isEdit ? { data: cleanData, customerId: id } : cleanData;
+
     try {
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      if (!isEdit) {
-        const result = await createCustomer(cleanData).unwrap();
+      const result = await action(payload).unwrap();
 
-        console.log("CREATING CUSTOMER RESULT: ", result);
+      if (result.success) {
+        toast.success(
+          result.message ||
+            (isEdit
+              ? "Customer updated successfully"
+              : "Customer added successfully")
+        );
 
-        if (result.success) {
-          toast.success(result?.message || "Customer added successfully");
+        if (!isEdit) reset();
 
-          reset();
-
-          navigate("/customers");
-        }
+        navigate("/customers");
       }
     } catch (error) {
-      console.log(error);
-
-      toast.error("Something went wrong!");
+      toast.error(error?.data?.message || "Something went wrong!");
     }
   };
 
@@ -100,55 +123,61 @@ export default function CustomerForm() {
         subtitle={isEdit ? "Edit existing customer" : "Create new customer"}
       />
 
-      <Form {...methods}>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <RHFInput
-            name="name"
-            label="Customers full name *"
-            type="text"
-            placeholder="Enter customers full name"
-          />
+      {currentCustomerLoading ? (
+        <CircularLoading />
+      ) : (
+        <>
+          <Form {...methods}>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <RHFInput
+                name="name"
+                label="Customers full name *"
+                type="text"
+                placeholder="Enter customers full name"
+              />
 
-          <RHFInput
-            name="shopName"
-            label="Shop name *"
-            type="text"
-            placeholder="Enter shop name"
-          />
+              <RHFInput
+                name="shopName"
+                label="Shop name *"
+                type="text"
+                placeholder="Enter shop name"
+              />
 
-          <RHFInput
-            name="address"
-            label="Address (optional)"
-            type="text"
-            placeholder="Enter full address"
-          />
+              <RHFInput
+                name="address"
+                label="Address (optional)"
+                type="text"
+                placeholder="Enter full address"
+              />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <RHFInput
-              name="phone"
-              label="Phone (optional)"
-              type="tel"
-              placeholder="Enter customers phone"
-            />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <RHFInput
+                  name="phone"
+                  label="Phone (optional)"
+                  type="tel"
+                  placeholder="Enter customers phone"
+                />
 
-            <RHFInput
-              name="email"
-              label="Email (optional)"
-              placeholder="Enter customers email address"
-            />
-          </div>
+                <RHFInput
+                  name="email"
+                  label="Email (optional)"
+                  placeholder="Enter customers email address"
+                />
+              </div>
 
-          <div className="flex justify-end gap-4">
-            <Button type="submit" className="custom-button">
-              {isSubmitting
-                ? "Submitting..."
-                : isEdit
-                ? "Update"
-                : "Create Customer"}
-            </Button>
-          </div>
-        </form>
-      </Form>
+              <div className="flex justify-end gap-4">
+                <Button type="submit" className="custom-button">
+                  {isSubmitting
+                    ? "Submitting..."
+                    : isEdit
+                    ? "Update"
+                    : "Create Customer"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </>
+      )}
     </>
   );
 }
