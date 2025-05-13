@@ -9,6 +9,7 @@ import { ProductForm, ProductsPage } from "@/pages/product";
 import { CustomerForm, CustomersPage } from "@/pages/customer";
 
 import DashboardLayout from "@/layouts/DashboardLayout";
+import { ExpensePage } from "@/pages/expense";
 
 export const router = createBrowserRouter([
   {
@@ -84,6 +85,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <CustomerForm />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "expense",
+        element: (
+          <ProtectedRoute>
+            <ExpensePage />
           </ProtectedRoute>
         ),
       },

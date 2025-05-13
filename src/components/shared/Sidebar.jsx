@@ -12,6 +12,7 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  Receipt,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/contexts/SidebarContext";
@@ -35,12 +36,13 @@ const navItems = [
     icon: <Users className="h-5 w-5" />,
     path: "/users",
   },
-  {
-    label: "Invoice",
-    icon: <FileText className="h-5 w-5" />,
-    path: "/invoice",
-  },
-  { label: "Sales", icon: <DollarSign className="h-5 w-5" />, path: "/sales" },
+  // {
+  //   label: "Invoice",
+  //   icon: <FileText className="h-5 w-5" />,
+  //   path: "/invoice",
+  // },
+  // { label: "Sales", icon: <DollarSign className="h-5 w-5" />, path: "/sales" },
+  { label: "Expense", icon: <Receipt className="h-5 w-5" />, path: "/expense" },
 ];
 
 export function Sidebar() {

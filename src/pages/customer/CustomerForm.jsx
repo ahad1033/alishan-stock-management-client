@@ -18,7 +18,7 @@ import {
   useGetCustomerByIdQuery,
   useCreateCustomerMutation,
   useUpdateCustomerMutation,
-} from "@/redux/features/customer/customerAPI";
+} from "@/redux/features/customer/customerApi";
 
 import { cleanPayload } from "@/utils/clean-payload";
 

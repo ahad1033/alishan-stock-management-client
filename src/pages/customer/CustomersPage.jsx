@@ -17,11 +17,10 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { useBoolean } from "@/hooks";
-
 import {
-  useGetAllCustomerQuery,
   useDeleteCustomerMutation,
-} from "@/redux/features/customer/customerAPI";
+  useGetAllCustomerQuery,
+} from "@/redux/features/customer/customerApi";
 
 const columns = [
   { key: "name", label: "Customer Name" },

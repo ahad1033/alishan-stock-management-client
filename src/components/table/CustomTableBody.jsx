@@ -26,6 +26,8 @@ export function CustomTableBody({ data, columns, onEdit, onDelete }) {
       : "N/A";
   };
 
+  const hasActions = !!onEdit || !!onDelete;
+
   return (
     <TableBody>
       {data?.map((row) => (
@@ -46,20 +48,30 @@ export function CustomTableBody({ data, columns, onEdit, onDelete }) {
           ))}
 
           {/* Action Buttons Column */}
-          <TableCell className="text-right w-[140px]">
-            <div className="flex justify-end gap-2">
-              <Button size="sm" variant="outline" onClick={() => onEdit(row)}>
-                <Pencil className="w-4 h-4" />
-              </Button>
-              <Button
-                size="sm"
-                variant="destructive"
-                onClick={() => onDelete(row)}
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
-            </div>
-          </TableCell>
+          {hasActions && (
+            <TableCell className="text-right w-[140px]">
+              <div className="flex justify-end gap-2">
+                {onEdit && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => onEdit(row)}
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </Button>
+                )}
+                {onDelete && (
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => onDelete(row)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
+            </TableCell>
+          )}
         </TableRow>
       ))}
     </TableBody>
