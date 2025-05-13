@@ -1,17 +1,17 @@
 import * as Yup from "yup";
 import toast from "react-hot-toast";
-import { yupResolver } from "@hookform/resolvers/yup";
-
-import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 
 import { RHFInput, RHFTextArea } from "@/components/form";
-
 import CustomHeader from "@/components/page-heading/CustomHeader";
+
+import { cleanPayload } from "@/utils/clean-payload";
+import { useCreateProductMutation } from "@/redux/features/product/productApi";
 
 const ProductSchema = Yup.object().shape({
   name: Yup.string()
@@ -19,10 +19,7 @@ const ProductSchema = Yup.object().shape({
     .required("Product name is required")
     .min(3, "Product name must be at least 3 characters"),
 
-  description: Yup.string()
-    .trim()
-    .required("Description is required")
-    .min(10, "Description must be at least 10 characters"),
+  description: Yup.string().trim(),
 
   sku: Yup.string()
     .trim()
@@ -37,7 +34,7 @@ const ProductSchema = Yup.object().shape({
     .required("Price is required")
     .positive("Price must be a positive number"),
 
-  currentStock: Yup.number()
+  stock: Yup.number()
     .typeError("Stock must be a number")
     .required("Current stock is required")
     .min(0, "Stock cannot be negative"),
@@ -50,7 +47,7 @@ export default function ProductForm() {
 
   const isEdit = Boolean(id);
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [createProduct, { isLoading }] = useCreateProductMutation();
 
   console.log(isLoading);
 
@@ -59,7 +56,7 @@ export default function ProductForm() {
     description: "",
     sku: "",
     price: "",
-    currentStock: "",
+    stock: "",
   };
 
   const methods = useForm({
@@ -67,26 +64,34 @@ export default function ProductForm() {
     defaultValues,
   });
 
-  const { handleSubmit, reset } = methods;
+  const {
+    reset,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = methods;
 
   const onSubmit = async (data) => {
-    console.log("PRODUCT FORM DATA: ", data);
+    const cleanData = cleanPayload(data);
+
     try {
-      setIsLoading(true);
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
-      toast.success("Product added successfully");
+      if (!isEdit) {
+        const result = await createProduct(cleanData).unwrap();
 
-      reset();
+        console.log("CREATING PRODUCT RESULT: ", result);
 
-      navigate("/products");
+        if (result.success) {
+          toast.success(result?.message || "Product added successfully");
+
+          reset();
+
+          navigate("/products");
+        }
+      }
     } catch (error) {
-      console.log(error);
-
-      toast.error("Something went wrong!");
-    } finally {
-      setIsLoading(false);
+      toast.error(error?.data?.message || "Something went wrong!");
     }
   };
 
@@ -110,7 +115,7 @@ export default function ProductForm() {
 
           <RHFTextArea
             name="description"
-            label="Description *"
+            label="Description (optional)"
             placeholder="Enter product description"
           />
 
@@ -131,7 +136,7 @@ export default function ProductForm() {
           </div>
 
           <RHFInput
-            name="currentStock"
+            name="stock"
             label="Current stock *"
             type="number"
             placeholder="Enter current stock"
@@ -139,7 +144,7 @@ export default function ProductForm() {
 
           <div className="flex justify-end gap-4">
             <Button type="submit" className="custom-button">
-              {isLoading
+              {isSubmitting
                 ? "Submitting..."
                 : isEdit
                 ? "Update"

@@ -36,6 +36,13 @@ const productApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["PRODUCTS"],
     }),
+    deleteProduct: builder.mutation({
+      query: (productId) => ({
+        url: API_ENDPOINTS.DELETE_PRODUCT_BY_ID(productId),
+        method: "DELETE",
+      }),
+      invalidatesTags: ["PRODUCTS"],
+    }),
   }),
 });
 
@@ -44,4 +51,5 @@ export const {
   useGetProductByIdQuery,
   useUpdateProductMutation,
   useCreateProductMutation,
+  useDeleteProductMutation,
 } = productApi;
