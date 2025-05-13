@@ -86,7 +86,7 @@ export default function CustomersPage() {
         title="Customers"
         subtitle="Manage your customer base"
         actions={
-          <Link to="/add-product">
+          <Link to="/add-customer">
             <Button className="custom-button">
               <Plus className="mr-2 h-4 w-4" />
               Add Customer

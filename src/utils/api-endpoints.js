@@ -22,6 +22,15 @@ export const API_ENDPOINTS = {
   UPDATE_PRODUCT_BY_ID: (id) => `${API_BASE_URL}/products/edit-product/${id}`,
   DELETE_PRODUCT_BY_ID: (id) => `${API_BASE_URL}/products/delete-product/${id}`,
 
+  // CUSTOMERS APIS
+  CREATE_CUSTOMER: `/customers/create-customer`,
+  GET_ALL_CUSTOMER: `/customers/get-all-customer`,
+  GET_CUSTOMER_BY_ID: (id) => `/customers/get-single-customer/${id}`,
+  UPDATE_CUSTOMER_BY_ID: (id) =>
+    `${API_BASE_URL}/customers/edit-customer/${id}`,
+  DELETE_CUSTOMER_BY_ID: (id) =>
+    `${API_BASE_URL}/customers/delete-customer/${id}`,
+
   //
   //
 };
