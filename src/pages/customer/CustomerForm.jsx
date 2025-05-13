@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 
 import { RHFInput } from "@/components/form";
 
+import CardWrapper from "@/components/shared/CardWrapper";
 import CircularLoading from "@/components/shared/CircularLoading";
 import CustomHeader from "@/components/page-heading/CustomHeader";
 
@@ -126,9 +127,9 @@ export default function CustomerForm() {
       {currentCustomerLoading ? (
         <CircularLoading />
       ) : (
-        <>
+        <CardWrapper>
           <Form {...methods}>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pt-5">
               <RHFInput
                 name="name"
                 label="Customers full name *"
@@ -176,7 +177,7 @@ export default function CustomerForm() {
               </div>
             </form>
           </Form>
-        </>
+        </CardWrapper>
       )}
     </>
   );

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 
 import { RHFInput, RHFTextArea } from "@/components/form";
 
+import CardWrapper from "@/components/shared/CardWrapper";
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import CircularLoading from "@/components/shared/CircularLoading";
 
@@ -134,57 +135,59 @@ export default function ProductForm() {
       {currentProductLoading ? (
         <CircularLoading />
       ) : (
-        <Form {...methods}>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <RHFInput
-              name="name"
-              label="Product name *"
-              type="text"
-              placeholder="Enter product name"
-            />
-
-            <RHFTextArea
-              name="description"
-              label="Description (optional)"
-              placeholder="Enter product description"
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CardWrapper>
+          <Form {...methods}>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <RHFInput
-                name="sku"
-                label="SKU *"
+                name="name"
+                label="Product name *"
                 type="text"
-                placeholder="Enter product code"
+                placeholder="Enter product name"
+              />
+
+              <RHFTextArea
+                name="description"
+                label="Description (optional)"
+                placeholder="Enter product description"
+              />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <RHFInput
+                  name="sku"
+                  label="SKU *"
+                  type="text"
+                  placeholder="Enter product code"
+                  disabled={isEdit}
+                />
+
+                <RHFInput
+                  name="price"
+                  label="Price *"
+                  type="number"
+                  placeholder="Enter product price"
+                />
+              </div>
+
+              <RHFInput
+                name="stock"
+                label="Current stock *"
+                type="number"
+                placeholder="Enter current stock"
                 disabled={isEdit}
               />
 
-              <RHFInput
-                name="price"
-                label="Price *"
-                type="number"
-                placeholder="Enter product price"
-              />
-            </div>
-
-            <RHFInput
-              name="stock"
-              label="Current stock *"
-              type="number"
-              placeholder="Enter current stock"
-              disabled={isEdit}
-            />
-
-            <div className="flex justify-end gap-4">
-              <Button type="submit" className="custom-button">
-                {isSubmitting
-                  ? "Submitting..."
-                  : isEdit
-                  ? "Update"
-                  : "Create Product"}
-              </Button>
-            </div>
-          </form>
-        </Form>
+              <div className="flex justify-end gap-4">
+                <Button type="submit" className="custom-button">
+                  {isSubmitting
+                    ? "Submitting..."
+                    : isEdit
+                    ? "Update"
+                    : "Create Product"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardWrapper>
       )}
     </>
   );

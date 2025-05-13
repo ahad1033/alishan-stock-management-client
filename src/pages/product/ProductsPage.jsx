@@ -26,7 +26,11 @@ import { useBoolean } from "@/hooks";
 const columns = [
   { key: "name", label: "Product Name" },
   { key: "sku", label: "SKU" },
-  { key: "price", label: "Price" },
+  {
+    key: "price",
+    label: "Price",
+    render: (row) => `${row.price?.toFixed(0) ?? "N/A"} Tk`,
+  },
   { key: "stock", label: "Stock" },
 ];
 

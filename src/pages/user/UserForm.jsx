@@ -9,7 +9,9 @@ import { Button } from "@/components/ui/button";
 
 import { RHFInput, RHFSelect } from "@/components/form";
 
+import CardWrapper from "@/components/shared/CardWrapper";
 import CustomHeader from "@/components/page-heading/CustomHeader";
+
 import { useCreateUserMutation } from "@/redux/features/user/userApi";
 
 const UserSchema = Yup.object().shape({
@@ -119,69 +121,71 @@ export default function UserForm() {
         subtitle={isEdit ? "Edit existing user" : "Create a new user"}
       />
 
-      <Form {...methods}>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <RHFInput
-            name="name"
-            label="Users full name *"
-            type="text"
-            placeholder="Enter users full name"
-          />
-
-          <RHFInput
-            name="address"
-            label="Address (optional)"
-            type="text"
-            placeholder="Enter full address"
-          />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <CardWrapper>
+        <Form {...methods}>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <RHFInput
-              name="email"
-              label="Email *"
-              placeholder="Enter users email address"
+              name="name"
+              label="Users full name *"
+              type="text"
+              placeholder="Enter users full name"
             />
 
             <RHFInput
-              name="phone"
-              label="Phone *"
-              type="tel"
-              placeholder="Enter users phone"
+              name="address"
+              label="Address (optional)"
+              type="text"
+              placeholder="Enter full address"
             />
 
-            <RHFSelect
-              name="role"
-              label="Role *"
-              placeholder="Select role"
-              options={USER_ROLE_OPTIONS}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <RHFInput
+                name="email"
+                label="Email *"
+                placeholder="Enter users email address"
+              />
+
+              <RHFInput
+                name="phone"
+                label="Phone *"
+                type="tel"
+                placeholder="Enter users phone"
+              />
+
+              <RHFSelect
+                name="role"
+                label="Role *"
+                placeholder="Select role"
+                options={USER_ROLE_OPTIONS}
+              />
+
+              <RHFSelect
+                name="gender"
+                label="Gender *"
+                placeholder="Select gender"
+                options={GENDER_OPTIONS}
+              />
+            </div>
+
+            <RHFInput
+              name="password"
+              label="Password *"
+              type="password"
+              placeholder="Enter initial password"
             />
 
-            <RHFSelect
-              name="gender"
-              label="Gender *"
-              placeholder="Select gender"
-              options={GENDER_OPTIONS}
-            />
-          </div>
-
-          <RHFInput
-            name="password"
-            label="Password *"
-            type="password"
-            placeholder="Enter initial password"
-          />
-
-          <div className="flex justify-end gap-4">
-            <Button type="submit" className="custom-button">
-              {isSubmitting
-                ? "Submitting..."
-                : isEdit
-                ? "Update"
-                : "Create User"}
-            </Button>
-          </div>
-        </form>
-      </Form>
+            <div className="flex justify-end gap-4">
+              <Button type="submit" className="custom-button">
+                {isSubmitting
+                  ? "Submitting..."
+                  : isEdit
+                  ? "Update"
+                  : "Create User"}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </CardWrapper>
     </>
   );
 }
