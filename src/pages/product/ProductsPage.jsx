@@ -21,6 +21,7 @@ import {
   useDeleteProductMutation,
   useGetAllProductQuery,
 } from "@/redux/features/product/productApi";
+import { useBoolean } from "@/hooks";
 
 const columns = [
   { key: "name", label: "Product Name" },
@@ -36,7 +37,9 @@ export default function ProductsPage() {
 
   const [page, setPage] = useState(1);
 
-  const [confirmOpen, setConfirmOpen] = useState(false);
+  const confirm = useBoolean();
+
+  // const [confirmOpen, setConfirmOpen] = useState(false);
 
   const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -68,7 +71,8 @@ export default function ProductsPage() {
 
   const handleDelete = (product) => {
     setSelectedProduct(product);
-    setConfirmOpen(true);
+    // setConfirmOpen(true);
+    confirm.onTrue();
   };
 
   const confirmDelete = async () => {
@@ -85,7 +89,8 @@ export default function ProductsPage() {
 
       await new Promise((resolve) => setTimeout(resolve, 300));
 
-      setConfirmOpen(false);
+      // setConfirmOpen(false);
+      confirm.onFalse();
 
       setSelectedProduct(null);
     } catch (err) {
@@ -136,11 +141,11 @@ export default function ProductsPage() {
 
       {/* CONFIRM DELETE DIALOG */}
       <ConfirmDialog
-        open={confirmOpen}
-        onOpenChange={setConfirmOpen}
+        open={confirm.value}
+        onOpenChange={confirm.onToggle}
         title="Delete Product"
         description={`Are you sure you want to delete "${selectedProduct?.name}"?`}
-        onCancel={() => setConfirmOpen(false)}
+        onCancel={() => confirm.onFalse()}
         onConfirm={confirmDelete}
         isLoading={deleteLoading}
       />
