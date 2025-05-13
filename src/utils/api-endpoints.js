@@ -31,6 +31,15 @@ export const API_ENDPOINTS = {
   DELETE_CUSTOMER_BY_ID: (id) =>
     `${API_BASE_URL}/customers/delete-customer/${id}`,
 
+  // EMPLOYEE APIS
+  CREATE_EMPLOYEE: `/employees/create-employee`,
+  GET_ALL_EMPLOYEE: `/employees/get-all-employee`,
+  GET_EMPLOYEE_BY_ID: (id) => `/employees/get-single-employee/${id}`,
+  UPDATE_EMPLOYEE_BY_ID: (id) =>
+    `${API_BASE_URL}/employees/edit-employee/${id}`,
+  DELETE_EMPLOYEE_BY_ID: (id) =>
+    `${API_BASE_URL}/employees/delete-employee/${id}`,
+
   //
   //
 };
