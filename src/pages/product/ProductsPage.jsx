@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
-import { Link } from "react-router";
 import { Plus } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { Link, useNavigate } from "react-router";
 
 import {
   CustomTableBody,
@@ -13,9 +13,14 @@ import {
 } from "@/components/table";
 import { Button } from "@/components/ui/button";
 
+import ConfirmDialog from "@/components/shared/ConfirmDialog";
 import CustomHeader from "@/components/page-heading/CustomHeader";
+import CircularLoading from "@/components/shared/CircularLoading";
 
-import { useGetAllProductQuery } from "@/redux/features/product/productApi";
+import {
+  useDeleteProductMutation,
+  useGetAllProductQuery,
+} from "@/redux/features/product/productApi";
 
 const columns = [
   { key: "name", label: "Product Name" },
@@ -25,11 +30,17 @@ const columns = [
 ];
 
 export default function ProductsPage() {
+  const navigate = useNavigate();
+
   const [search, setSearch] = useState("");
 
   const [page, setPage] = useState(1);
 
-  const rowsPerPage = 4;
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const rowsPerPage = 20;
 
   const {
     data: productData,
@@ -37,6 +48,9 @@ export default function ProductsPage() {
     isError,
     error,
   } = useGetAllProductQuery();
+
+  const [deleteProduct, { isLoading: deleteLoading }] =
+    useDeleteProductMutation();
 
   const filtered = productData?.data?.filter((d) =>
     d.name.toLowerCase().includes(search.toLowerCase())
@@ -49,18 +63,41 @@ export default function ProductsPage() {
   );
 
   const handleEdit = (product) => {
-    console.log(product);
+    navigate(`/edit-product/${product?.id}`);
   };
 
   const handleDelete = (product) => {
-    toast.success(`Product deleted: ${product.name}`);
+    setSelectedProduct(product);
+    setConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      const result = await deleteProduct(selectedProduct?.id).unwrap();
+
+      console.log("DELETE RESULT: ", result);
+
+      if (result?.success) {
+        toast.success(result.message || "Product deleted successfully");
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      setConfirmOpen(false);
+
+      setSelectedProduct(null);
+    } catch (err) {
+      toast.error(err?.data?.message || "Failed to delete product");
+    }
   };
 
   return (
     <>
       <CustomHeader
         title="Products"
-        subtitle="Manage your product inventory"
+        subtitle="Manage your products"
         actions={
           <Link to="/add-product">
             <Button className="custom-button">
@@ -71,24 +108,41 @@ export default function ProductsPage() {
         }
       />
 
-      {/* PRODUCT TABLE */}
-      <CustomTableSearch value={search} onChange={setSearch} />
+      {isLoading ? (
+        <CircularLoading />
+      ) : (
+        <>
+          {/* PRODUCT TABLE */}
+          <CustomTableSearch value={search} onChange={setSearch} />
 
-      <CustomTableRoot>
-        <CustomTableHeader columns={columns} />
+          <CustomTableRoot>
+            <CustomTableHeader columns={columns} />
 
-        <CustomTableBody
-          data={paginated}
-          columns={columns}
-          onEdit={(row) => handleEdit(row)}
-          onDelete={(row) => handleDelete(row)}
-        />
-      </CustomTableRoot>
+            <CustomTableBody
+              data={paginated}
+              columns={columns}
+              onEdit={(row) => handleEdit(row)}
+              onDelete={(row) => handleDelete(row)}
+            />
+          </CustomTableRoot>
 
-      <CustomTablePagination
-        currentPage={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
+          <CustomTablePagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
+        </>
+      )}
+
+      {/* CONFIRM DELETE DIALOG */}
+      <ConfirmDialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title="Delete Product"
+        description={`Are you sure you want to delete "${selectedProduct?.name}"?`}
+        onCancel={() => setConfirmOpen(false)}
+        onConfirm={confirmDelete}
+        isLoading={deleteLoading}
       />
     </>
   );

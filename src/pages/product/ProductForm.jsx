@@ -1,17 +1,24 @@
 import * as Yup from "yup";
+import { useEffect } from "react";
 import toast from "react-hot-toast";
+import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router";
 import { yupResolver } from "@hookform/resolvers/yup";
 
-import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 
 import { RHFInput, RHFTextArea } from "@/components/form";
-import CustomHeader from "@/components/page-heading/CustomHeader";
 
+import CustomHeader from "@/components/page-heading/CustomHeader";
+import CircularLoading from "@/components/shared/CircularLoading";
+
+import {
+  useCreateProductMutation,
+  useGetProductByIdQuery,
+  useUpdateProductMutation,
+} from "@/redux/features/product/productApi";
 import { cleanPayload } from "@/utils/clean-payload";
-import { useCreateProductMutation } from "@/redux/features/product/productApi";
 
 const ProductSchema = Yup.object().shape({
   name: Yup.string()
@@ -47,9 +54,13 @@ export default function ProductForm() {
 
   const isEdit = Boolean(id);
 
-  const [createProduct, { isLoading }] = useCreateProductMutation();
+  const [createProduct, { _isLoading }] = useCreateProductMutation();
 
-  console.log(isLoading);
+  const [updateProduct, { isLoading: _updateLoading }] =
+    useUpdateProductMutation();
+
+  const { data: currentProduct, isLoading: currentProductLoading } =
+    useGetProductByIdQuery(id, { skip: !id });
 
   const defaultValues = {
     name: "",
@@ -70,25 +81,41 @@ export default function ProductForm() {
     formState: { isSubmitting },
   } = methods;
 
+  useEffect(() => {
+    if (currentProduct?.data && isEdit) {
+      reset({
+        name: currentProduct?.data?.name || "",
+        description: currentProduct?.data?.description || "",
+        sku: currentProduct?.data?.sku || "",
+        price: currentProduct?.data?.price || "",
+        stock: currentProduct?.data?.stock || "",
+      });
+    }
+  }, [currentProduct, isEdit, reset]);
+
   const onSubmit = async (data) => {
     const cleanData = cleanPayload(data);
 
+    const action = isEdit ? updateProduct : createProduct;
+
+    const payload = isEdit ? { data: cleanData, productId: id } : cleanData;
+
     try {
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      if (!isEdit) {
-        const result = await createProduct(cleanData).unwrap();
+      const result = await action(payload).unwrap();
 
-        console.log("CREATING PRODUCT RESULT: ", result);
+      if (result.success) {
+        toast.success(
+          result.message ||
+            (isEdit
+              ? "Product updated successfully"
+              : "Product added successfully")
+        );
 
-        if (result.success) {
-          toast.success(result?.message || "Product added successfully");
+        if (!isEdit) reset();
 
-          reset();
-
-          navigate("/products");
-        }
+        navigate("/products");
       }
     } catch (error) {
       toast.error(error?.data?.message || "Something went wrong!");
@@ -104,55 +131,61 @@ export default function ProductForm() {
         }
       />
 
-      <Form {...methods}>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <RHFInput
-            name="name"
-            label="Product name *"
-            type="text"
-            placeholder="Enter product name"
-          />
-
-          <RHFTextArea
-            name="description"
-            label="Description (optional)"
-            placeholder="Enter product description"
-          />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {currentProductLoading ? (
+        <CircularLoading />
+      ) : (
+        <Form {...methods}>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <RHFInput
-              name="sku"
-              label="SKU *"
+              name="name"
+              label="Product name *"
               type="text"
-              placeholder="Enter product code"
+              placeholder="Enter product name"
             />
+
+            <RHFTextArea
+              name="description"
+              label="Description (optional)"
+              placeholder="Enter product description"
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <RHFInput
+                name="sku"
+                label="SKU *"
+                type="text"
+                placeholder="Enter product code"
+                disabled={isEdit}
+              />
+
+              <RHFInput
+                name="price"
+                label="Price *"
+                type="number"
+                placeholder="Enter product price"
+              />
+            </div>
 
             <RHFInput
-              name="price"
-              label="Price *"
+              name="stock"
+              label="Current stock *"
               type="number"
-              placeholder="Enter product price"
+              placeholder="Enter current stock"
+              disabled={isEdit}
             />
-          </div>
 
-          <RHFInput
-            name="stock"
-            label="Current stock *"
-            type="number"
-            placeholder="Enter current stock"
-          />
-
-          <div className="flex justify-end gap-4">
-            <Button type="submit" className="custom-button">
-              {isSubmitting
-                ? "Submitting..."
-                : isEdit
-                ? "Update"
-                : "Create Product"}
-            </Button>
-          </div>
-        </form>
-      </Form>
+            <div className="flex justify-end gap-4">
+              <Button type="submit" className="custom-button">
+                {isSubmitting
+                  ? "Submitting..."
+                  : isEdit
+                  ? "Update"
+                  : "Create Product"}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      )}
     </>
   );
 }

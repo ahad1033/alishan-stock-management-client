@@ -13,6 +13,7 @@ export default function RHFInput({
   icon: Icon,
   type = "text",
   placeholder,
+  disabled = false,
 }) {
   const {
     control,
@@ -35,7 +36,10 @@ export default function RHFInput({
                 {...field}
                 type={type}
                 placeholder={placeholder}
-                className={Icon ? "pl-10" : ""}
+                disabled={disabled}
+                className={`${Icon ? "pl-10" : ""} ${
+                  disabled ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               />
             </div>
           </FormControl>

@@ -19,7 +19,7 @@ export const API_ENDPOINTS = {
   CREATE_PRODUCT: `/products/create-product`,
   GET_ALL_PRODUCT: `/products/get-all-product`,
   GET_PRODUCT_BY_ID: (id) => `/products/get-single-product/${id}`,
-  UPDATE_PRODUCT_BY_ID: (id) => `${API_BASE_URL}/products/update-product/${id}`,
+  UPDATE_PRODUCT_BY_ID: (id) => `${API_BASE_URL}/products/edit-product/${id}`,
   DELETE_PRODUCT_BY_ID: (id) => `${API_BASE_URL}/products/delete-product/${id}`,
 
   //

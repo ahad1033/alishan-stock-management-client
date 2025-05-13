@@ -27,7 +27,7 @@ export default function UsersPage() {
 
   const [page, setPage] = useState(1);
 
-  const rowsPerPage = 4;
+  const rowsPerPage = 20;
 
   // eslint-disable-next-line no-unused-vars
   const { data: userData, isLoading, isError, error } = useGetAllUserQuery();
