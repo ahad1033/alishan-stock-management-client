@@ -17,3 +17,13 @@ export const GENDER_OPTIONS = [
   { value: "male", label: "Male" },
   { value: "female", label: "Female" },
 ];
+
+export const EMPLOYEES_POSITION_OPTIONS = [
+  { value: "accountant", label: "Accountant" },
+  { value: "junior_sales", label: "Junior Sales" },
+  { value: "senior_sales", label: "Senior Sales" },
+  { value: "stock_manager", label: "Stock Manager" },
+  { value: "junior_worker", label: "Junior Worker" },
+  { value: "senior_worker", label: "Senior Worker" },
+  { value: "managing_director", label: "Managing Director" },
+];

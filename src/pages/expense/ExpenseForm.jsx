@@ -91,6 +91,7 @@ export default function ExpenseForm() {
               label="Pick a date (DD-MM-YYYY) *"
               lockToToday={true}
             />
+            
             <RHFSelect
               name="category"
               label="Category *"

@@ -10,7 +10,7 @@ import { CustomerForm, CustomersPage } from "@/pages/customer";
 
 import DashboardLayout from "@/layouts/DashboardLayout";
 import { ExpenseForm, ExpensePage } from "@/pages/expense";
-import { EmployeePage } from "@/pages/employee";
+import { EmployeeForm, EmployeePage } from "@/pages/employee";
 
 export const router = createBrowserRouter([
   {
@@ -110,6 +110,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <EmployeePage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "add-employee",
+        element: (
+          <ProtectedRoute>
+            <EmployeeForm />
           </ProtectedRoute>
         ),
       },
