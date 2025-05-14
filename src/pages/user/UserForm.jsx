@@ -1,13 +1,14 @@
 import * as Yup from "yup";
 import toast from "react-hot-toast";
+import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router";
 import { yupResolver } from "@hookform/resolvers/yup";
 
-import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 
 import { RHFInput, RHFSelect } from "@/components/form";
+import { GENDER_OPTIONS, USER_ROLE_OPTIONS } from "@/constants";
 
 import CardWrapper from "@/components/shared/CardWrapper";
 import CustomHeader from "@/components/page-heading/CustomHeader";
@@ -36,6 +37,7 @@ const UserSchema = Yup.object().shape({
     .trim()
     .required("Please select the user's role")
     .notOneOf([""], "Please select the user's role"),
+
   gender: Yup.string()
     .trim()
     .required("Please select gender")
@@ -44,17 +46,6 @@ const UserSchema = Yup.object().shape({
   password: Yup.string().trim().required("Initial password is required"),
 });
 
-const USER_ROLE_OPTIONS = [
-  { value: "admin", label: "Admin" },
-  { value: "accountant", label: "Accountant" },
-  { value: "stock_manager", label: "Stock Manager" },
-];
-
-const GENDER_OPTIONS = [
-  { value: "male", label: "Male" },
-  { value: "female", label: "Female" },
-];
-
 export default function UserForm() {
   const navigate = useNavigate();
 
@@ -62,11 +53,8 @@ export default function UserForm() {
 
   const isEdit = Boolean(id);
 
+  // eslint-disable-next-line no-unused-vars
   const [createUser, { isLoading, isError, error }] = useCreateUserMutation();
-
-  console.log(isLoading);
-  console.log(isError);
-  console.log(error);
 
   const defaultValues = {
     name: "",

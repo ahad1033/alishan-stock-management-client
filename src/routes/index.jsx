@@ -9,7 +9,7 @@ import { ProductForm, ProductsPage } from "@/pages/product";
 import { CustomerForm, CustomersPage } from "@/pages/customer";
 
 import DashboardLayout from "@/layouts/DashboardLayout";
-import { ExpensePage } from "@/pages/expense";
+import { ExpenseForm, ExpensePage } from "@/pages/expense";
 
 export const router = createBrowserRouter([
   {
@@ -93,6 +93,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <ExpensePage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "add-expense",
+        element: (
+          <ProtectedRoute>
+            <ExpenseForm />
           </ProtectedRoute>
         ),
       },

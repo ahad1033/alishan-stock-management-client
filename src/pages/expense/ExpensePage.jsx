@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 
@@ -11,8 +11,15 @@ import {
   CustomTableHeader,
   CustomTablePagination,
 } from "@/components/table";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import CircularLoading from "@/components/shared/CircularLoading";
+import { EXPENSE_OPTIONS } from "@/constants";
 
 // Mock data for outlays
 const mockExpenses = [
@@ -71,18 +78,39 @@ export default function ExpensePage() {
     navigate(`/edit-expense/${expense?.id}`);
   };
 
+  const handleSelect = (category) => {
+    navigate(`/add-expense?category=${category}`);
+  };
+
   return (
     <>
       <CustomHeader
         title="Expenses"
         subtitle="Track and manage your business expenses"
         actions={
-          <Link to="/add-expense">
-            <Button className="custom-button">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Expense
-            </Button>
-          </Link>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button className="custom-button">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Expense
+              </Button>
+            </PopoverTrigger>
+
+            <PopoverContent className="w-48 p-2">
+              <div className="space-y-1">
+                {EXPENSE_OPTIONS.map((option) => (
+                  <Button
+                    key={option.value}
+                    variant="ghost"
+                    className="w-full justify-start text-left"
+                    onClick={() => handleSelect(option.value)}
+                  >
+                    {option.label}
+                  </Button>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
         }
       />
 
