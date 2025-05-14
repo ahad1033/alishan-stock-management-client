@@ -18,46 +18,27 @@ import ConfirmDialog from "@/components/shared/ConfirmDialog";
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import CircularLoading from "@/components/shared/CircularLoading";
 
-// Mock data for workers
-const mockEmployees = [
-  {
-    id: "1",
-    name: "John Smith",
-    position: "Senior Worker",
-    joiningDate: "2023-01-15",
-    phone: "+1 234 567 890",
-    status: "Active",
-  },
-  {
-    id: "2",
-    name: "Sarah Johnson",
-    position: "Junior Worker",
-    joiningDate: "2023-03-20",
-    phone: "+1 234 567 891",
-    status: "Active",
-  },
-  {
-    id: "3",
-    name: "Mike Wilson",
-    position: "Senior Worker",
-    joiningDate: "2023-02-10",
-    phone: "+1 234 567 892",
-    status: "On Leave",
-  },
-];
+import {
+  useGetAllEmployeeQuery,
+  useDeleteEmployeeMutation,
+} from "@/redux/features/employee/employeeApi";
 
 const columns = [
   { key: "name", label: "Name" },
+  { key: "email", label: "email" },
+  { key: "phone", label: "Phone" },
+  { key: "emergencyContact", label: "Emergency No." },
   { key: "position", label: "Position" },
   { key: "joiningDate", label: "Joining Date" },
-  { key: "phone", label: "Phone" },
-  { key: "status", label: "Status" },
+  {
+    key: "monthlySalary",
+    label: "Salary",
+    render: (row) => `${row?.monthlySalary?.toFixed(0) ?? "N/A"} Tk`,
+  },
 ];
 
 export default function EmployeePage() {
   const navigate = useNavigate();
-
-  const isLoading = false;
 
   const [search, setSearch] = useState("");
 
@@ -65,11 +46,16 @@ export default function EmployeePage() {
 
   const confirm = useBoolean();
 
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   const rowsPerPage = 20;
 
-  const filtered = mockEmployees?.filter((d) =>
+  const { data: employeeData, isLoading } = useGetAllEmployeeQuery();
+
+  const [deleteEmployee, { isLoading: deleteLoading }] =
+    useDeleteEmployeeMutation();
+
+  const filtered = employeeData?.data?.filter((d) =>
     d.name.toLowerCase().includes(search.toLowerCase())
   );
   const totalPages = Math.ceil(filtered?.length / rowsPerPage) || 1;
@@ -79,14 +65,35 @@ export default function EmployeePage() {
     page * rowsPerPage
   );
 
-  const handleEdit = (product) => {
-    navigate(`/edit-product/${product?.id}`);
+  const handleEdit = (employee) => {
+    navigate(`/edit-employee/${employee?.id}`);
   };
 
-  const handleDelete = (product) => {
-    setSelectedProduct(product);
+  const handleDelete = (employee) => {
+    setSelectedEmployee(employee);
     confirm.onTrue();
   };
+
+  const confirmDelete = async () => {
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      const result = await deleteEmployee(selectedEmployee?.id).unwrap();
+
+      if (result?.success) {
+        toast.success(result.message || "Employee deleted successfully");
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      confirm.onFalse();
+
+      setSelectedEmployee(null);
+    } catch (err) {
+      toast.error(err?.data?.message || "Failed to delete employee");
+    }
+  };
+
   return (
     <>
       <CustomHeader
@@ -132,11 +139,11 @@ export default function EmployeePage() {
       <ConfirmDialog
         open={confirm.value}
         onOpenChange={confirm.onToggle}
-        title="Delete Product"
-        description={`Are you sure you want to delete "${selectedProduct?.name}"?`}
+        title="Delete Employee"
+        description={`Are you sure you want to delete "${selectedEmployee?.name}"?`}
         onCancel={() => confirm.onFalse()}
-        // onConfirm={confirmDelete}
-        // isLoading={deleteLoading}
+        onConfirm={confirmDelete}
+        isLoading={deleteLoading}
       />
     </>
   );

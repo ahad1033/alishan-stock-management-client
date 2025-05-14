@@ -121,6 +121,14 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "edit-employee/:id",
+        element: (
+          <ProtectedRoute>
+            <EmployeeForm />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
   {
