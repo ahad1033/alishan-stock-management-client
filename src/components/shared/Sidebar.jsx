@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Receipt,
+  UserRoundCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/contexts/SidebarContext";
@@ -42,7 +43,16 @@ const navItems = [
   //   path: "/invoice",
   // },
   // { label: "Sales", icon: <DollarSign className="h-5 w-5" />, path: "/sales" },
-  { label: "Expense", icon: <Receipt className="h-5 w-5" />, path: "/expense" },
+  {
+    label: "Expenses",
+    icon: <Receipt className="h-5 w-5" />,
+    path: "/expenses",
+  },
+  {
+    label: "Employees",
+    icon: <UserRoundCheck className="h-5 w-5" />,
+    path: "/employees",
+  },
 ];
 
 export function Sidebar() {
