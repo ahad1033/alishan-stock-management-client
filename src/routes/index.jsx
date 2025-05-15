@@ -11,6 +11,7 @@ import { CustomerForm, CustomersPage } from "@/pages/customer";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import { ExpenseForm, ExpensePage } from "@/pages/expense";
 import { EmployeeForm, EmployeePage } from "@/pages/employee";
+import { InvoicePage } from "@/pages/invoice";
 
 export const router = createBrowserRouter([
   {
@@ -126,6 +127,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <EmployeeForm />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "invoices",
+        element: (
+          <ProtectedRoute>
+            <InvoicePage />
           </ProtectedRoute>
         ),
       },

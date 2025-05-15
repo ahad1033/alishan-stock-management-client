@@ -37,11 +37,11 @@ const navItems = [
     icon: <Users className="h-5 w-5" />,
     path: "/users",
   },
-  // {
-  //   label: "Invoice",
-  //   icon: <FileText className="h-5 w-5" />,
-  //   path: "/invoice",
-  // },
+  {
+    label: "Invoices",
+    icon: <FileText className="h-5 w-5" />,
+    path: "/invoices",
+  },
   // { label: "Sales", icon: <DollarSign className="h-5 w-5" />, path: "/sales" },
   {
     label: "Expenses",
