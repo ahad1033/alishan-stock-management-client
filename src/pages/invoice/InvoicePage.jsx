@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { Link } from "react-router";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import CircularLoading from "@/components/shared/CircularLoading";
@@ -11,102 +12,8 @@ import {
   CustomTableHeader,
   CustomTablePagination,
   CustomTableRoot,
-  CustomTableSearch,
 } from "@/components/table";
-
-// Mock data
-const mockInvoice = [
-  {
-    customerName: "Acme Corp",
-    totalAmount: 1250.0,
-    totalPaidAmount: 1000.0,
-    totalDue: 250.0,
-    invoiceNo: "INV-2023-001",
-    date: "01-01-2025",
-    createdBy: "Zahid Emo",
-  },
-  {
-    customerName: "Beta Industries",
-    totalAmount: 875.5,
-    totalPaidAmount: 875.5,
-    totalDue: 0.0,
-    invoiceNo: "INV-2023-002",
-    date: "05-02-2025",
-    createdBy: "Zahid Emo",
-  },
-  {
-    customerName: "Gamma Co",
-    totalAmount: 2100.0,
-    totalPaidAmount: 1500.0,
-    totalDue: 600.0,
-    invoiceNo: "INV-2023-003",
-    date: "10-03-2025",
-    createdBy: "Zahid Emo",
-  },
-  {
-    customerName: "Delta Ltd",
-    totalAmount: 540.0,
-    totalPaidAmount: 0.0,
-    totalDue: 540.0,
-    invoiceNo: "INV-2023-004",
-    date: "15-04-2025",
-    createdBy: "Zahid Emo",
-  },
-  {
-    customerName: "Epsilon Group",
-    totalAmount: 1780.25,
-    totalPaidAmount: 1780.25,
-    totalDue: 0.0,
-    invoiceNo: "INV-2023-005",
-    date: "20-05-2025",
-    createdBy: "Zahid Emo",
-  },
-  {
-    customerName: "Zeta Systems",
-    totalAmount: 920.0,
-    totalPaidAmount: 500.0,
-    totalDue: 420.0,
-    invoiceNo: "INV-2023-006",
-    date: "25-06-2025",
-    createdBy: "Zahid Emo",
-  },
-  {
-    customerName: "Eta Solutions",
-    totalAmount: 3200.0,
-    totalPaidAmount: 3200.0,
-    totalDue: 0.0,
-    invoiceNo: "INV-2023-007",
-    date: "30-07-2025",
-    createdBy: "Zahid Emo",
-  },
-  {
-    customerName: "Theta Corp",
-    totalAmount: 765.8,
-    totalPaidAmount: 765.8,
-    totalDue: 0.0,
-    invoiceNo: "INV-2023-008",
-    date: "03-08-2025",
-    createdBy: "Zahid Emo",
-  },
-  {
-    customerName: "Iota Industries",
-    totalAmount: 1450.0,
-    totalPaidAmount: 1000.0,
-    totalDue: 450.0,
-    invoiceNo: "INV-2023-009",
-    date: "08-09-2025",
-    createdBy: "Zahid Emo",
-  },
-  {
-    customerName: "Kappa Co",
-    totalAmount: 2800.0,
-    totalPaidAmount: 2000.0,
-    totalDue: 800.0,
-    invoiceNo: "INV-2023-010",
-    date: "12-10-2025",
-    createdBy: "Zahid Emo",
-  },
-];
+import { mockInvoice } from "@/constants";
 
 const columns = [
   { key: "customerName", label: "Customer name" },
@@ -134,17 +41,40 @@ export default function InvoicePage() {
   const isLoading = false;
 
   const [search, setSearch] = useState("");
-
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
   const [page, setPage] = useState(1);
-
   const rowsPerPage = 20;
 
-  const filtered = mockInvoice?.filter((d) =>
-    d.customerName.toLowerCase().includes(search.toLowerCase())
-  );
-  const totalPages = Math.ceil(filtered?.length / rowsPerPage) || 1;
+  // Automatically reset dates if search is active
+  useEffect(() => {
+    if (search.trim() !== "") {
+      setFromDate("");
+      setToDate("");
+    }
+  }, [search]);
 
-  const paginated = filtered?.slice(
+  // Filter logic
+  const filtered = mockInvoice.filter((invoice) => {
+    const matchesSearch = invoice.customerName
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    const invoiceDate = new Date(invoice.date.split("-").reverse().join("-")); // from "DD-MM-YYYY"
+
+    if (search.trim() !== "") return matchesSearch;
+
+    if (fromDate && toDate) {
+      const from = new Date(fromDate);
+      const to = new Date(toDate);
+      return invoiceDate >= from && invoiceDate <= to;
+    }
+
+    return true;
+  });
+
+  const totalPages = Math.ceil(filtered.length / rowsPerPage) || 1;
+  const paginated = filtered.slice(
     (page - 1) * rowsPerPage,
     page * rowsPerPage
   );
@@ -163,16 +93,72 @@ export default function InvoicePage() {
           </Link>
         }
       />
+
       {isLoading ? (
         <CircularLoading />
       ) : (
         <>
-          {/* PRODUCT TABLE */}
-          <CustomTableSearch value={search} onChange={setSearch} />
+          {/* TOP FILTER BAR */}
+          <div className="grid grid-cols-12 gap-4 mb-6 px-1 items-center">
+            {/* Search Input */}
+            <div className="col-span-12 md:col-span-4">
+              <Input
+                type="search"
+                placeholder="Search by customer name"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full"
+              />
+            </div>
 
+            {/* From Date */}
+            <div className="col-span-12 md:col-span-3 flex items-center gap-2">
+              <label className="text-sm min-w-[50px] text-muted-foreground whitespace-nowrap">
+                From:
+              </label>
+              <Input
+                type="date"
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+                className="w-full"
+                disabled={search.trim() !== ""}
+              />
+            </div>
+
+            {/* To Date */}
+            <div className="col-span-12 md:col-span-3 flex items-center gap-2">
+              <label className="text-sm min-w-[50px] text-muted-foreground whitespace-nowrap">
+                To:
+              </label>
+              <Input
+                type="date"
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+                className="w-full"
+                disabled={search.trim() !== ""}
+              />
+            </div>
+
+            {/* Clear Filters Button */}
+            <div className="col-span-12 md:col-span-2">
+              <Button
+                variant="destructive"
+                disabled={!fromDate && !toDate && !search}
+                onClick={() => {
+                  setSearch("");
+                  setFromDate("");
+                  setToDate("");
+                }}
+                className="w-full"
+              >
+                Clear Filters
+              </Button>
+            </div>
+          </div>
+
+          {/* TABLE */}
           <CustomTableRoot>
             <CustomTableHeader columns={columns} />
-
             <CustomTableBody data={paginated} columns={columns} />
           </CustomTableRoot>
 
