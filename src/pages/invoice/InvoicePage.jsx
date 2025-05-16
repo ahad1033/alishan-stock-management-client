@@ -1,19 +1,21 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { Plus } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 
-import { Button } from "@/components/ui/button";
+import {
+  CustomTableBody,
+  CustomTableRoot,
+  CustomTableHeader,
+  CustomTablePagination,
+} from "@/components/table";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+
+import { mockInvoice } from "@/constants";
 
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import CircularLoading from "@/components/shared/CircularLoading";
-import {
-  CustomTableBody,
-  CustomTableHeader,
-  CustomTablePagination,
-  CustomTableRoot,
-} from "@/components/table";
-import { mockInvoice } from "@/constants";
+import CustomDateRangePicker from "@/components/date-picker/CustomDateRangePicker";
 
 const columns = [
   { key: "customerName", label: "Customer name" },
@@ -40,11 +42,25 @@ const columns = [
 export default function InvoicePage() {
   const isLoading = false;
 
+  const [filterDates, setFilterDates] = useState({ from: null, to: null });
+
+  console.log("filterDates: ", filterDates);
+
+  const handleDateRangeChange = (range) => {
+    setFilterDates(range);
+  };
+
   const [search, setSearch] = useState("");
+
   const [fromDate, setFromDate] = useState("");
+
   const [toDate, setToDate] = useState("");
+
   const [page, setPage] = useState(1);
   const rowsPerPage = 20;
+
+  console.log(fromDate);
+  console.log(toDate);
 
   // Automatically reset dates if search is active
   useEffect(() => {
@@ -54,19 +70,26 @@ export default function InvoicePage() {
     }
   }, [search]);
 
+  useEffect(() => {
+    setToDate("");
+  }, [fromDate]);
+
   // Filter logic
   const filtered = mockInvoice.filter((invoice) => {
     const matchesSearch = invoice.customerName
       .toLowerCase()
       .includes(search.toLowerCase());
 
-    const invoiceDate = new Date(invoice.date.split("-").reverse().join("-")); // from "DD-MM-YYYY"
+    const invoiceDate = new Date(invoice.date.split("-").reverse().join("-"));
 
     if (search.trim() !== "") return matchesSearch;
 
-    if (fromDate && toDate) {
-      const from = new Date(fromDate);
-      const to = new Date(toDate);
+    if (filterDates.from && filterDates.to) {
+      const from = new Date(filterDates.from.split("-").reverse().join("-"));
+      const to = new Date(filterDates.to.split("-").reverse().join("-"));
+
+      console.log("hello1: ", from);
+      console.log("hello2: ", to);
       return invoiceDate >= from && invoiceDate <= to;
     }
 
@@ -101,7 +124,7 @@ export default function InvoicePage() {
           {/* TOP FILTER BAR */}
           <div className="grid grid-cols-12 gap-4 mb-6 px-1 items-center">
             {/* Search Input */}
-            <div className="col-span-12 md:col-span-4">
+            <div className="col-span-12 md:col-span-6">
               <Input
                 type="search"
                 placeholder="Search by customer name"
@@ -111,31 +134,11 @@ export default function InvoicePage() {
               />
             </div>
 
-            {/* From Date */}
-            <div className="col-span-12 md:col-span-3 flex items-center gap-2">
-              <label className="text-sm min-w-[50px] text-muted-foreground whitespace-nowrap">
-                From:
-              </label>
-              <Input
-                type="date"
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-                className="w-full"
-                disabled={search.trim() !== ""}
-              />
-            </div>
-
-            {/* To Date */}
-            <div className="col-span-12 md:col-span-3 flex items-center gap-2">
-              <label className="text-sm min-w-[50px] text-muted-foreground whitespace-nowrap">
-                To:
-              </label>
-              <Input
-                type="date"
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
-                className="w-full"
-                disabled={search.trim() !== ""}
+            <div className="col-span-12 md:col-span-4 flex items-center gap-2">
+              <CustomDateRangePicker
+                fromDate={filterDates.from}
+                toDate={filterDates.to}
+                onChange={handleDateRangeChange}
               />
             </div>
 
@@ -143,11 +146,15 @@ export default function InvoicePage() {
             <div className="col-span-12 md:col-span-2">
               <Button
                 variant="destructive"
-                disabled={!fromDate && !toDate && !search}
+                disabled={
+                  search.trim() === "" &&
+                  (!filterDates.from || filterDates.from === "") &&
+                  (!filterDates.to || filterDates.to === "")
+                }
                 onClick={() => {
+                  setPage(1);
                   setSearch("");
-                  setFromDate("");
-                  setToDate("");
+                  setFilterDates({ from: null, to: null });
                 }}
                 className="w-full"
               >
