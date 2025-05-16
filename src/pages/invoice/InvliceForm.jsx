@@ -1,0 +1,704 @@
+import * as Yup from "yup";
+import toast from "react-hot-toast";
+import { Trash2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { useEffect, useMemo, useState } from "react";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Form } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+
+import { RHFInput, RHFSelect } from "@/components/form";
+import { useGetAllCustomerQuery } from "@/redux/features/customer/customerApi";
+import { useGetAllProductQuery } from "@/redux/features/product/productApi";
+
+const ProductSchema = Yup.object().shape({
+  customerId: Yup.string().trim().required("Customer is required"),
+
+  phone: Yup.string()
+    .trim()
+    .notRequired()
+    .matches(
+      /^$|^01[0-9]{9}$/,
+      "Phone number must be a valid 11-digit Bangladeshi number"
+    )
+    .required("Phone is required"),
+
+  address: Yup.string().trim().required("Address is required"),
+});
+
+export default function InvoiceForm() {
+  const [items, setItems] = useState([]);
+
+  const [selectedProduct, setSelectedProduct] = useState("");
+
+  const [quantity, setQuantity] = useState("");
+
+  const [paidAmount, setPaidAmount] = useState("");
+
+  // CUSTOMERS
+  const { data: customerData, isSuccess } = useGetAllCustomerQuery();
+
+  // PRODUCTS
+  const { data: productData } = useGetAllProductQuery();
+
+  const customerOptions = useMemo(() => {
+    if (!isSuccess || !Array.isArray(customerData?.data)) return [];
+    return customerData.data.map((customer) => ({
+      value: customer._id,
+      label: customer.name,
+      phone: customer.phone,
+      address: customer.address,
+    }));
+  }, [customerData, isSuccess]);
+
+  const methods = useForm({
+    resolver: yupResolver(ProductSchema),
+    defaultValues: {
+      customerId: "",
+      phone: "",
+      address: "",
+    },
+  });
+
+  const {
+    watch,
+    reset,
+    setValue,
+    handleSubmit,
+    formState: { isSubmitting, errors },
+  } = methods;
+
+  const selectedCustomerId = watch("customerId");
+
+  console.log("selectedCustomerId", selectedCustomerId);
+  console.log("errors", errors);
+
+  useEffect(() => {
+    const selectedCustomer = customerOptions.find(
+      (c) => c.value === selectedCustomerId
+    );
+    if (selectedCustomer) {
+      setValue("phone", selectedCustomer.phone || "");
+      setValue("address", selectedCustomer.address || "");
+    }
+  }, [selectedCustomerId, customerOptions, setValue]);
+
+  const addItem = () => {
+    if (!selectedProduct || !quantity) {
+      toast.error("Please select a product and quantity");
+      return;
+    }
+
+    const product = productData?.data?.find((p) => p._id === selectedProduct);
+    if (!product) return;
+
+    if (parseInt(quantity) > product.stock) {
+      toast.error(`Quantity exceeds available stock`);
+      return;
+    }
+
+    const newItem = {
+      id: Date.now(),
+      productId: product.id,
+      name: product.name,
+      sku: product.sku,
+      price: product.price,
+      quantity: parseInt(quantity),
+      total: product.price * parseInt(quantity),
+    };
+
+    setItems([...items, newItem]);
+    setSelectedProduct("");
+    setQuantity("");
+  };
+
+  const removeItem = (id) => {
+    setItems(items.filter((item) => item.id !== id));
+  };
+
+  const subtotal = items.reduce((sum, item) => sum + item.total, 0);
+  const total = subtotal;
+  const due = total - (parseFloat(paidAmount) || 0);
+
+  const onSubmit = (formData) => {
+    if (items.length === 0) {
+      toast.error("Please add at least one product");
+      return;
+    }
+
+    if (paidAmount > total) {
+      toast.error("Paid amount can't be more then total amount");
+      return;
+    }
+
+    const payload = {
+      customerId: formData.customerId,
+      totalAmount: subtotal,
+      totalPaidAmount: parseFloat(paidAmount) || 0,
+      totalDue: due,
+      products: items.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+    };
+
+    console.log("Submitting payload:", payload);
+
+    // TODO: replace with your API call
+    toast.success("Invoice submitted successfully!");
+
+    setItems([]);
+    setPaidAmount("");
+    reset();
+  };
+
+  return (
+    <>
+      <div className="shadow-lg">
+        {/* Invoice Header */}
+        <div className="p-6 border-b">
+          <div className="flex justify-between items-start mb-8">
+            <div>
+              <h1 className="text-3xl font-bold mb-2">Invoice</h1>
+
+              <p className="text-sm text-gray-500">
+                {new Date().toLocaleDateString()}
+              </p>
+            </div>
+            <div className="text-right">
+              <h2 className="text-2xl font-bold mb-2">Alishan</h2>
+              <p className="text-sm text-gray-500">Painadi Shiddhirganj</p>
+              <p className="text-sm text-gray-500">Narayanganj</p>
+              <p className="text-xs text-gray-500">01636428996</p>
+            </div>
+          </div>
+
+          <Form {...methods}>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              {/* Customer Details */}
+              <RHFSelect
+                name="customerId"
+                label="Select customer *"
+                placeholder="Select customer"
+                options={customerOptions?.map(({ value, label }) => ({
+                  value,
+                  label,
+                }))}
+              />
+
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <RHFInput
+                  name="phone"
+                  label="Phone *"
+                  type="tel"
+                  disabled
+                  placeholder="Customers phone"
+                />
+
+                <RHFInput
+                  name="address"
+                  label="Address *"
+                  type="text"
+                  disabled
+                  placeholder="Address"
+                />
+              </div>
+
+              {/* ------------------------------------------- */}
+
+              {/* Add Item Form */}
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div>
+                  <Label className="mb-2">Product</Label>
+                  <Select
+                    value={selectedProduct}
+                    onValueChange={setSelectedProduct}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select product" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {productData?.data?.map((product) => (
+                        <SelectItem key={product._id} value={product._id}>
+                          {product.name} - ${product.price}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="mb-2">Quantity</Label>
+                  <Input
+                    type="number"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    placeholder="Enter quantity"
+                    min="1"
+                  />
+                </div>
+                <div className="flex items-end">
+                  <Button
+                    type="button"
+                    onClick={addItem}
+                    disabled={!selectedCustomerId}
+                    className="bg-[#B38A2D] hover:bg-[#E1BE5D] w-full"
+                  >
+                    Add Item
+                  </Button>
+                </div>
+              </div>
+
+              {/* Invoice Items */}
+              <div className="p-6">
+                <div className="w-full overflow-x-auto">
+                  <table className="min-w-[700px] w-full table-auto">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left py-2">Name</th>
+                        <th className="text-left py-2">SKU</th>
+                        <th className="text-right py-2">Price</th>
+                        <th className="text-right py-2">Qty</th>
+                        <th className="text-right py-2">Total</th>
+                        <th className="text-right py-2">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {items.map((item) => (
+                        <tr key={item.id} className="border-b">
+                          <td className="py-2">{item.name}</td>
+                          <td className="py-2">{item.sku}</td>
+                          <td className="text-right py-2">${item.price}</td>
+                          <td className="text-right py-2">{item.quantity}</td>
+                          <td className="text-right py-2">${item.total}</td>
+                          <td className="text-right py-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeItem(item.id)}
+                            >
+                              <Trash2 className="h-4 w-4 text-red-500" />
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Totals */}
+                <div className="flex justify-end mt-5">
+                  <div className="w-72">
+                    <div className="flex justify-between mb-2">
+                      <span>Subtotal:</span>
+                      <span>${subtotal.toFixed(2)}</span>
+                    </div>
+
+                    <div className="flex justify-between mb-2 font-bold">
+                      <span>Total:</span>
+                      <span>${total.toFixed(2)}</span>
+                    </div>
+
+                    <div className="mb-2">
+                      <Label className="mb-2">Paid Amount</Label>
+                      <Input
+                        type="number"
+                        value={paidAmount}
+                        onChange={(e) => setPaidAmount(e.target.value)}
+                        placeholder="Enter paid amount"
+                      />
+                    </div>
+
+                    <div className="flex justify-between font-bold text-red-500">
+                      <span>Due:</span>
+                      <span>${due.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ------------------------------------------- */}
+
+              <div className="flex justify-end mt-4">
+                <Button
+                  type="submit"
+                  className="custom-button"
+                  disabled={!selectedCustomerId || !items?.length}
+                >
+                  {isSubmitting ? "Submitting..." : "Create Invoice"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// import * as Yup from "yup";
+// import { useEffect, useMemo, useState } from "react";
+// import toast from "react-hot-toast";
+// import { useForm } from "react-hook-form";
+// import { yupResolver } from "@hookform/resolvers/yup";
+
+// import { Button } from "@/components/ui/button";
+// import { Input } from "@/components/ui/input";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
+// import { Label } from "@/components/ui/label";
+// import { Printer, Trash2 } from "lucide-react";
+// import { RHFInput, RHFSelect } from "@/components/form";
+// import { Form } from "@/components/ui/form";
+// import { useGetAllCustomerQuery } from "@/redux/features/customer/customerApi";
+// import { useGetAllProductQuery } from "@/redux/features/product/productApi";
+
+// const ProductSchema = Yup.object().shape({
+//   customerId: Yup.string().trim().required("Customer is required"),
+
+//   phone: Yup.string()
+//     .trim()
+//     .notRequired()
+//     .matches(
+//       /^$|^01[0-9]{9}$/,
+//       "Phone number must be a valid 11-digit Bangladeshi number"
+//     ),
+
+//   address: Yup.string().trim().required("Address is required"),
+// });
+
+// export default function InvoiceForm() {
+//   const [items, setItems] = useState([]);
+
+//   const [selectedProduct, setSelectedProduct] = useState("");
+
+//   console.log("selectedProduct: ", selectedProduct);
+
+//   const [quantity, setQuantity] = useState("");
+
+//   const [paidAmount, setPaidAmount] = useState("");
+
+//   // CUSTOMERS
+//   const { data: customerData, isSuccess } = useGetAllCustomerQuery();
+
+//   console.log(selectedProduct);
+
+//   // PRODUCTS
+//   const { data: productData } = useGetAllProductQuery();
+
+//   const customerOptions = useMemo(() => {
+//     if (!isSuccess || !Array.isArray(customerData?.data)) return [];
+//     return customerData.data.map((customer) => ({
+//       value: customer._id,
+//       label: customer.name,
+//       phone: customer.phone,
+//       address: customer.address,
+//     }));
+//   }, [customerData, isSuccess]);
+
+//   const methods = useForm({
+//     resolver: yupResolver(ProductSchema),
+//     defaultValues: {
+//       customerId: "",
+//       phone: "",
+//       address: "",
+//     },
+//   });
+
+//   const {
+//     setValue,
+//     watch,
+//     // reset,
+//     handleSubmit,
+//     formState: { isSubmitting, errors },
+//   } = methods;
+
+//   const selectedCustomerId = watch("customerId");
+
+//   console.log("selectedCustomerId", selectedCustomerId);
+//   console.log("errors", errors);
+
+//   useEffect(() => {
+//     const selectedCustomer = customerOptions.find(
+//       (c) => c.value === selectedCustomerId
+//     );
+//     if (selectedCustomer) {
+//       setValue("phone", selectedCustomer.phone || "");
+//       setValue("address", selectedCustomer.address || "");
+//     }
+//   }, [selectedCustomerId, customerOptions, setValue]);
+
+//   const addItem = () => {
+//     if (!selectedProduct || !quantity) {
+//       toast.error("Please select a product and quantity");
+//       return;
+//     }
+
+//     const product = productData?.data?.find((p) => p._id === selectedProduct);
+//     if (!product) return;
+
+//     if (parseInt(quantity) > product.stock) {
+//       toast.error(`Quantity exceeds available stock`);
+//       return;
+//     }
+
+//     const newItem = {
+//       id: Date.now(),
+//       productId: product.id,
+//       name: product.name,
+//       sku: product.sku,
+//       price: product.price,
+//       quantity: parseInt(quantity),
+//       total: product.price * parseInt(quantity),
+//     };
+
+//     setItems([...items, newItem]);
+//     setSelectedProduct("");
+//     setQuantity("");
+//   };
+
+//   const removeItem = (id) => {
+//     setItems(items.filter((item) => item.id !== id));
+//   };
+
+//   const subtotal = items.reduce((sum, item) => sum + item.total, 0);
+//   const total = subtotal;
+//   const due = total - (parseFloat(paidAmount) || 0);
+
+//   const handlePrint = () => {
+//     // if (!customerName || !customerPhone || !customerAddress) {
+//     //   toast.error("Please fill in all customer details");
+//     //   return;
+//     // }
+//     if (items.length === 0) {
+//       toast.error("Please add at least one item");
+//       return;
+//     }
+//     window.print();
+
+//     onSubmit();
+//   };
+
+//   const onSubmit = (formData) => {
+//     if (items.length === 0) {
+//       toast.error("Please add at least one product");
+//       return;
+//     }
+
+//     const payload = {
+//       customerId: formData.customerId,
+//       totalAmount: subtotal,
+//       totalPaidAmount: parseFloat(paidAmount) || 0,
+//       totalDue: due,
+//       products: items.map((item) => ({
+//         productId: item.productId,
+//         quantity: item.quantity,
+//         price: item.price,
+//       })),
+//     };
+
+//     console.log("Submitting payload:", payload);
+
+//     // TODO: replace with your API call
+//     toast.success("Invoice submitted successfully!");
+//   };
+
+//   return (
+//     <>
+//       <div className="shadow-lg">
+//         {/* Invoice Header */}
+//         <div className="p-6 border-b">
+//           <div className="flex justify-between items-start mb-8">
+//             <div>
+//               <h1 className="text-3xl font-bold mb-2">Invoice</h1>
+
+//               <p className="text-sm text-gray-500">
+//                 {new Date().toLocaleDateString()}
+//               </p>
+//             </div>
+//             <div className="text-right">
+//               <h2 className="text-2xl font-bold mb-2">Alishan</h2>
+//               <p className="text-sm text-gray-500">Painadi Shiddhirganj</p>
+//               <p className="text-sm text-gray-500">Narayanganj</p>
+//               <p className="text-xs text-gray-500">01636428996</p>
+//             </div>
+//           </div>
+
+//           <Form {...methods}>
+//             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+//               {/* Customer Details */}
+//               <RHFSelect
+//                 name="customerId"
+//                 label="Select customer *"
+//                 placeholder="Select customer"
+//                 options={customerOptions?.map(({ value, label }) => ({
+//                   value,
+//                   label,
+//                 }))}
+//               />
+
+//               <div className="grid grid-cols-2 gap-4 mb-6">
+//                 <RHFInput
+//                   name="phone"
+//                   label="Phone *"
+//                   type="tel"
+//                   disabled
+//                   placeholder="Customers phone"
+//                 />
+
+//                 <RHFInput
+//                   name="address"
+//                   label="Address *"
+//                   type="text"
+//                   disabled
+//                   placeholder="Address"
+//                 />
+//               </div>
+
+//               <div className="flex justify-end mt-4">
+//                 <Button type="submit" className="custom-button">
+//                   {isSubmitting ? "Submitting..." : "Create Product"}
+//                 </Button>
+//               </div>
+//             </form>
+//           </Form>
+
+//           {/* Add Item Form */}
+//           <div className="grid grid-cols-3 gap-4 mb-6">
+//             <div>
+//               <Label className="mb-2">Product</Label>
+//               <Select
+//                 value={selectedProduct}
+//                 onValueChange={setSelectedProduct}
+//               >
+//                 <SelectTrigger className="w-full">
+//                   <SelectValue placeholder="Select product" />
+//                 </SelectTrigger>
+//                 <SelectContent>
+//                   {productData?.data?.map((product) => (
+//                     <SelectItem key={product._id} value={product._id}>
+//                       {product.name} - ${product.price}
+//                     </SelectItem>
+//                   ))}
+//                 </SelectContent>
+//               </Select>
+//             </div>
+//             <div>
+//               <Label className="mb-2">Quantity</Label>
+//               <Input
+//                 type="number"
+//                 value={quantity}
+//                 onChange={(e) => setQuantity(e.target.value)}
+//                 placeholder="Enter quantity"
+//                 min="1"
+//               />
+//             </div>
+//             <div className="flex items-end">
+//               <Button
+//                 onClick={addItem}
+//                 className="bg-[#B38A2D] hover:bg-[#E1BE5D] w-full"
+//               >
+//                 Add Item
+//               </Button>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Invoice Items */}
+//         <div className="p-6">
+//           <div className="w-full overflow-x-auto">
+//             <table className="min-w-[700px] w-full table-auto">
+//               <thead>
+//                 <tr className="border-b">
+//                   <th className="text-left py-2">Name</th>
+//                   <th className="text-left py-2">SKU</th>
+//                   <th className="text-right py-2">Price</th>
+//                   <th className="text-right py-2">Qty</th>
+//                   <th className="text-right py-2">Total</th>
+//                   <th className="text-right py-2">Action</th>
+//                 </tr>
+//               </thead>
+//               <tbody>
+//                 {items.map((item) => (
+//                   <tr key={item.id} className="border-b">
+//                     <td className="py-2">{item.name}</td>
+//                     <td className="py-2">{item.sku}</td>
+//                     <td className="text-right py-2">${item.price}</td>
+//                     <td className="text-right py-2">{item.quantity}</td>
+//                     <td className="text-right py-2">${item.total}</td>
+//                     <td className="text-right py-2">
+//                       <Button
+//                         variant="ghost"
+//                         size="sm"
+//                         onClick={() => removeItem(item.id)}
+//                       >
+//                         <Trash2 className="h-4 w-4 text-red-500" />
+//                       </Button>
+//                     </td>
+//                   </tr>
+//                 ))}
+//               </tbody>
+//             </table>
+//           </div>
+
+//           {/* Totals */}
+//           <div className="flex justify-end mt-5">
+//             <div className="w-72">
+//               <div className="flex justify-between mb-2">
+//                 <span>Subtotal:</span>
+//                 <span>${subtotal.toFixed(2)}</span>
+//               </div>
+
+//               <div className="flex justify-between mb-2 font-bold">
+//                 <span>Total:</span>
+//                 <span>${total.toFixed(2)}</span>
+//               </div>
+
+//               <div className="mb-2">
+//                 <Label className="mb-2">Paid Amount</Label>
+//                 <Input
+//                   type="number"
+//                   value={paidAmount}
+//                   onChange={(e) => setPaidAmount(e.target.value)}
+//                   placeholder="Enter paid amount"
+//                 />
+//               </div>
+
+//               <div className="flex justify-between font-bold text-red-500">
+//                 <span>Due:</span>
+//                 <span>${due.toFixed(2)}</span>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Print Button */}
+//           <div className="flex justify-end mt-6">
+//             <Button
+//               // onClick={handlePrint}
+//               type="submit"
+//               className="bg-[#B38A2D] hover:bg-[#E1BE5D]"
+//             >
+//               <Printer className="mr-2 h-4 w-4" />
+//               Print Invoice
+//             </Button>
+//           </div>
+//         </div>
+//       </div>
+//     </>
+//   );
+// }
