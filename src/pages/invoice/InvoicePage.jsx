@@ -1,6 +1,6 @@
 import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 import {
   CustomTableBody,
@@ -11,56 +11,97 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-import { mockInvoice } from "@/constants";
-
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import CircularLoading from "@/components/shared/CircularLoading";
 import CustomDateRangePicker from "@/components/date-picker/CustomDateRangePicker";
 
+import { useGetAllInvoiceQuery } from "@/redux/features/invoice/invoiceApi";
+import { debounce } from "lodash";
+
 const columns = [
   { key: "customerName", label: "Customer name" },
-  { key: "invoiceNo", label: "Invoice number" },
-  { key: "date", label: "Date" },
-  { key: "createdBy", label: "Created by" },
+  { key: "invoiceNumber", label: "Invoice number" },
+  {
+    key: "createdAt",
+    label: "Date",
+    render: (row) => {
+      const date = new Date(row.createdAt);
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      return `${day}-${month}-${year}`;
+    },
+  },
+  { key: "issuedBy", label: "Created by" },
   {
     key: "totalAmount",
     label: "Total amount",
     render: (row) => `${row.totalAmount?.toFixed(0) ?? "N/A"} Tk`,
   },
   {
-    key: "totalPaidAmount",
+    key: "paidAmount",
     label: "Total paid",
-    render: (row) => `${row.totalPaidAmount?.toFixed(0) ?? "N/A"} Tk`,
+    render: (row) => `${row.paidAmount?.toFixed(0) ?? "N/A"} Tk`,
   },
   {
-    key: "totalDue",
+    key: "dueAmount",
     label: "Total due",
-    render: (row) => `${row.totalDue?.toFixed(0) ?? "N/A"} Tk`,
+    render: (row) => `${row.dueAmount?.toFixed(0) ?? "N/A"} Tk`,
   },
 ];
 
 export default function InvoicePage() {
-  const isLoading = false;
-
   const [filterDates, setFilterDates] = useState({ from: null, to: null });
 
   console.log("filterDates: ", filterDates);
 
-  const handleDateRangeChange = (range) => {
-    setFilterDates(range);
-  };
-
   const [search, setSearch] = useState("");
+
+  const [inputValue, setInputValue] = useState("");
 
   const [fromDate, setFromDate] = useState("");
 
   const [toDate, setToDate] = useState("");
 
   const [page, setPage] = useState(1);
+  
   const rowsPerPage = 20;
+
+  // const { data: invoiceData } = useGetAllInvoiceQuery();
+
+  const { data: invoiceData, isLoading } = useGetAllInvoiceQuery({
+    search,
+    fromDate: filterDates.from || "",
+    toDate: filterDates.to || "",
+  });
+
+  console.log("invoiceData: ", invoiceData);
 
   console.log(fromDate);
   console.log(toDate);
+
+  // Debounced setter for search value
+  const debouncedSetSearch = useMemo(
+    () =>
+      debounce((value) => {
+        setSearch(value.trim());
+      }, 500), // 500ms delay
+    []
+  );
+
+  // Handle input changes
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setInputValue(value);
+    debouncedSetSearch(value);
+  };
+
+  // Cleanup debounce on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      debouncedSetSearch.cancel();
+    };
+  }, [debouncedSetSearch]);
 
   // Automatically reset dates if search is active
   useEffect(() => {
@@ -74,30 +115,14 @@ export default function InvoicePage() {
     setToDate("");
   }, [fromDate]);
 
-  // Filter logic
-  const filtered = mockInvoice.filter((invoice) => {
-    const matchesSearch = invoice.customerName
-      .toLowerCase()
-      .includes(search.toLowerCase());
+  const handleDateRangeChange = (range) => {
+    setFilterDates(range);
+  };
 
-    const invoiceDate = new Date(invoice.date.split("-").reverse().join("-"));
+  const filtered = invoiceData?.data || [];
 
-    if (search.trim() !== "") return matchesSearch;
-
-    if (filterDates.from && filterDates.to) {
-      const from = new Date(filterDates.from.split("-").reverse().join("-"));
-      const to = new Date(filterDates.to.split("-").reverse().join("-"));
-
-      console.log("hello1: ", from);
-      console.log("hello2: ", to);
-      return invoiceDate >= from && invoiceDate <= to;
-    }
-
-    return true;
-  });
-
-  const totalPages = Math.ceil(filtered.length / rowsPerPage) || 1;
-  const paginated = filtered.slice(
+  const totalPages = Math.ceil(filtered?.length / rowsPerPage) || 1;
+  const paginated = filtered?.slice(
     (page - 1) * rowsPerPage,
     page * rowsPerPage
   );
@@ -128,8 +153,8 @@ export default function InvoicePage() {
               <Input
                 type="search"
                 placeholder="Search by customer name"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                value={inputValue}
+                onChange={handleSearchChange}
                 className="w-full"
               />
             </div>

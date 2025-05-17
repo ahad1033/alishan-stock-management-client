@@ -40,6 +40,13 @@ export const API_ENDPOINTS = {
   DELETE_EMPLOYEE_BY_ID: (id) =>
     `${API_BASE_URL}/employees/delete-employee/${id}`,
 
+  // INVOICE APIS
+  CREATE_INVOICE: `/invoices/create-invoice`,
+  GET_ALL_INVOICE: `/invoices/get-all-invoice`,
+  GET_INVOICE_BY_ID: (id) => `/invoices/get-single-invoice/${id}`,
+  UPDATE_INVOICE_BY_ID: (id) => `${API_BASE_URL}/invoices/edit-invoice/${id}`,
+  DELETE_INVOICE_BY_ID: (id) => `${API_BASE_URL}/invoices/delete-invoice/${id}`,
+
   //
   //
 };

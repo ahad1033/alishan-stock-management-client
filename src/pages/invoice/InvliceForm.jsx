@@ -18,8 +18,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import { RHFInput, RHFSelect } from "@/components/form";
-import { useGetAllCustomerQuery } from "@/redux/features/customer/customerApi";
+
 import { useGetAllProductQuery } from "@/redux/features/product/productApi";
+import { useGetAllCustomerQuery } from "@/redux/features/customer/customerApi";
+import { useCreateInvoiceMutation } from "@/redux/features/invoice/invoiceApi";
+import { useParams } from "react-router";
+import { useSelector } from "react-redux";
+import { useCurrentUser } from "@/redux/features/auth/authSlice";
 
 const ProductSchema = Yup.object().shape({
   customerId: Yup.string().trim().required("Customer is required"),
@@ -37,6 +42,16 @@ const ProductSchema = Yup.object().shape({
 });
 
 export default function InvoiceForm() {
+  const currentUser = useSelector(useCurrentUser);
+
+  const currentUserId = currentUser?.user?.userId;
+
+  console.log("currentUser: ", currentUser?.user?.userId);
+
+  const { id } = useParams();
+
+  const isEdit = Boolean(id);
+
   const [items, setItems] = useState([]);
 
   const [selectedProduct, setSelectedProduct] = useState("");
@@ -50,6 +65,9 @@ export default function InvoiceForm() {
 
   // PRODUCTS
   const { data: productData } = useGetAllProductQuery();
+
+  // INVOICE
+  const [createInvoice, { _isLoading }] = useCreateInvoiceMutation();
 
   const customerOptions = useMemo(() => {
     if (!isSuccess || !Array.isArray(customerData?.data)) return [];
@@ -75,13 +93,10 @@ export default function InvoiceForm() {
     reset,
     setValue,
     handleSubmit,
-    formState: { isSubmitting, errors },
+    formState: { isSubmitting },
   } = methods;
 
   const selectedCustomerId = watch("customerId");
-
-  console.log("selectedCustomerId", selectedCustomerId);
-  console.log("errors", errors);
 
   useEffect(() => {
     const selectedCustomer = customerOptions.find(
@@ -128,9 +143,12 @@ export default function InvoiceForm() {
 
   const subtotal = items.reduce((sum, item) => sum + item.total, 0);
   const total = subtotal;
-  const due = total - (parseFloat(paidAmount) || 0);
+  const due = total - (paidAmount || 0);
 
-  const onSubmit = (formData) => {
+  console.log("due: ", due);
+  console.log("paidAmount: ", paidAmount);
+
+  const onSubmit = async (formData) => {
     if (items.length === 0) {
       toast.error("Please add at least one product");
       return;
@@ -144,8 +162,9 @@ export default function InvoiceForm() {
     const payload = {
       customerId: formData.customerId,
       totalAmount: subtotal,
-      totalPaidAmount: parseFloat(paidAmount) || 0,
-      totalDue: due,
+      paidAmount: parseFloat(paidAmount) || 0,
+      dueAmount: due,
+      issuedBy: currentUserId,
       products: items.map((item) => ({
         productId: item.productId,
         quantity: item.quantity,
@@ -155,12 +174,32 @@ export default function InvoiceForm() {
 
     console.log("Submitting payload:", payload);
 
-    // TODO: replace with your API call
-    toast.success("Invoice submitted successfully!");
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
-    setItems([]);
-    setPaidAmount("");
-    reset();
+      const result = await createInvoice(payload).unwrap();
+
+      console.log("result: ", result);
+
+      if (result.success) {
+        toast.success(
+          result.message ||
+            (isEdit
+              ? "Invoice updated successfully"
+              : "Invoice added successfully")
+        );
+
+        // if (!isEdit) reset();
+
+        setItems([]);
+        setPaidAmount("");
+        reset();
+
+        // navigate("/products");
+      }
+    } catch (error) {
+      toast.error(error?.data?.message || "Something went wrong!");
+    }
   };
 
   return (
@@ -242,9 +281,15 @@ export default function InvoiceForm() {
                   <Input
                     type="number"
                     value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (/^\d*$/.test(value)) {
+                        setQuantity(value);
+                      }
+                    }}
                     placeholder="Enter quantity"
                     min="1"
+                    step="1"
                   />
                 </div>
                 <div className="flex items-end">
@@ -314,8 +359,14 @@ export default function InvoiceForm() {
                       <Input
                         type="number"
                         value={paidAmount}
-                        onChange={(e) => setPaidAmount(e.target.value)}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (/^\d*$/.test(value)) {
+                            setPaidAmount(value);
+                          }
+                        }}
                         placeholder="Enter paid amount"
+                        min="1"
                       />
                     </div>
 

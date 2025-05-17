@@ -25,9 +25,24 @@ import {
 const columns = [
   { key: "name", label: "Customer Name" },
   { key: "shopName", label: "Shop Name" },
-  { key: "address", label: "Address" },
+  // { key: "address", label: "Address" },
   { key: "email", label: "Email" },
   { key: "phone", label: "Phone" },
+  {
+    key: "totalPurchaseAmount",
+    label: "Purchase",
+    render: (row) => `${row.totalPurchaseAmount?.toFixed(0) ?? "0"} Tk`,
+  },
+  {
+    key: "totalPaidAmount",
+    label: "Paid",
+    render: (row) => `${row.totalPaidAmount?.toFixed(0) ?? "0"} Tk`,
+  },
+  {
+    key: "totalDue",
+    label: "Due",
+    render: (row) => `${row.totalDue?.toFixed(0) ?? "0"} Tk`,
+  },
 ];
 
 export default function CustomersPage() {
