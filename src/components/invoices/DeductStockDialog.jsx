@@ -3,6 +3,7 @@ import {
   DialogTitle,
   DialogHeader,
   DialogContent,
+  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -14,10 +15,10 @@ import {
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { X } from "lucide-react";
 
 export default function DeductStockDialog({
   isDeductStockOpen,
-  setIsDeductStockOpen,
   invoiceNo,
   setInvoiceNo,
   selectedProduct,
@@ -27,11 +28,22 @@ export default function DeductStockDialog({
   setQuantity,
   handleDeductStock,
 }) {
+  // console.log("isDeductStockOpen: ", isDeductStockOpen);
   return (
-    <Dialog open={isDeductStockOpen} onOpenChange={setIsDeductStockOpen}>
+    <Dialog
+      open={isDeductStockOpen.value}
+      onOpenChange={isDeductStockOpen.onToggle}
+    >
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Deduct Stock</DialogTitle>
+          <DialogClose
+            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+            onClick={isDeductStockOpen.onFalse}
+          >
+            <X className="h-4 w-4" />
+            <span className="sr-only">Close</span>
+          </DialogClose>
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="space-y-2">

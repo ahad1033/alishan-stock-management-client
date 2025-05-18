@@ -1,73 +1,122 @@
+import * as Yup from "yup";
+import { useMemo } from "react";
+import { X } from "lucide-react";
+import toast from "react-hot-toast";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+
 import {
-    Dialog,
-    DialogTitle,
-    DialogHeader,
-    DialogContent,
-  } from "@/components/ui/dialog";
-  import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-  } from "@/components/ui/select";
-  import { Label } from "../ui/label";
-  import { Input } from "../ui/input";
-  import { Button } from "../ui/button";
+  Dialog,
+  DialogTitle,
+  DialogClose,
+  DialogHeader,
+  DialogContent,
+} from "@/components/ui/dialog";
+import { Form } from "../ui/form";
+import { Button } from "../ui/button";
 
+import { RHFInput, RHFSelect } from "../form";
 
-export default function AddStockDialog(
-  isAddStockOpen,
-  setIsAddStockOpen,
-  selectedProduct,
-  setSelectedProduct,
-  products,
-  quantity,
-  setQuantity,
-  handleAddStock
-) {
+import { useGetAllProductQuery } from "@/redux/features/product/productApi";
+
+const ProductSchema = Yup.object().shape({
+  productId: Yup.string().trim().required("Product is required"),
+
+  quantity: Yup.number()
+    .typeError("Quantity must be a number")
+    .required("Quantity is required")
+    .min(1, "Quantity must be at least 1")
+    .integer("Quantity must be a whole number"),
+});
+
+export default function AddStockDialog({ stockInModal }) {
+  const { data: productData, isSuccess } = useGetAllProductQuery({
+    skip: !stockInModal.value,
+  });
+
+  const productOptions = useMemo(() => {
+    if (!isSuccess || !Array.isArray(productData?.data)) return [];
+    return productData.data.map((product) => ({
+      value: product._id,
+      label: product.name,
+    }));
+  }, [isSuccess, productData]);
+
+  const defaultValues = {
+    productId: "",
+    quantity: "",
+  };
+
+  const methods = useForm({
+    resolver: yupResolver(ProductSchema),
+    defaultValues,
+  });
+
+  const {
+    reset,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = methods;
+
+  const onSubmit = async (data) => {
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      console.log("FORM DATA: ", data);
+
+      // const result = await action(payload).unwrap();
+      const result = {};
+
+      stockInModal.onFalse();
+
+      if (result.success) {
+        toast.success(result.message || "Product updated successfully");
+      }
+    } catch (error) {
+      toast.error(error?.data?.message || "Something went wrong!");
+    }
+  };
+
   return (
-    <Dialog open={isAddStockOpen} onOpenChange={setIsAddStockOpen}>
+    <Dialog open={stockInModal.value} onOpenChange={stockInModal.onToggle}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add Stock</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label>Select Product</Label>
-            <Select value={selectedProduct} onValueChange={setSelectedProduct}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a product" />
-              </SelectTrigger>
-              <SelectContent>
-                {products?.map((product) => (
-                  <SelectItem key={product.id} value={product.id}>
-                    {product.name} ({product.model}) - Current:{" "}
-                    {product.currentStock}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Quantity to Add</Label>
-            <Input
-              type="number"
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              placeholder="Enter quantity"
-              min="1"
-            />
-          </div>
-
-          <Button
-            className="w-full bg-[#B38A2D] hover:bg-[#E1BE5D]"
-            onClick={handleAddStock}
+          <DialogClose
+            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+            onClick={() => {
+              stockInModal.onFalse();
+              reset();
+            }}
           >
-            Add Stock
-          </Button>
-        </div>
+            <X className="h-4 w-4" />
+            <span className="sr-only">Close</span>
+          </DialogClose>
+        </DialogHeader>
+        <Form {...methods}>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4">
+            <RHFSelect
+              name="productId"
+              label="Select product *"
+              placeholder="Select product"
+              options={productOptions?.map(({ value, label }) => ({
+                value,
+                label,
+              }))}
+            />
+
+            <RHFInput
+              name="quantity"
+              label="Quantity *"
+              type="number"
+              placeholder="Enter product quantity"
+            />
+
+            <Button type="submit" variant="success" className="w-full">
+              {isSubmitting ? "Submitting..." : "Add Stock"}
+            </Button>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

@@ -14,6 +14,7 @@ import {
   ChevronRight,
   Receipt,
   UserRoundCheck,
+  PackageSearch,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/contexts/SidebarContext";
@@ -41,6 +42,11 @@ const navItems = [
     label: "Invoices",
     icon: <FileText className="h-5 w-5" />,
     path: "/invoices",
+  },
+  {
+    label: "Stocks",
+    icon: <PackageSearch className="h-5 w-5" />,
+    path: "/stocks",
   },
   // { label: "Sales", icon: <DollarSign className="h-5 w-5" />, path: "/sales" },
   {

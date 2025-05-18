@@ -12,6 +12,7 @@ import DashboardLayout from "@/layouts/DashboardLayout";
 import { ExpenseForm, ExpensePage } from "@/pages/expense";
 import { EmployeeForm, EmployeePage } from "@/pages/employee";
 import { InvoiceForm, InvoicePage } from "@/pages/invoice";
+import { StockPage } from "@/pages/stock";
 
 export const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      //  PRODUCT ROUTES
       {
         path: "products",
         element: (
@@ -50,6 +52,7 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      //  USER ROUTES
       {
         path: "users",
         element: (
@@ -66,6 +69,7 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      //  CUSTOMER ROUTES
       {
         path: "customers",
         element: (
@@ -90,6 +94,7 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      //  EXPENSE ROUTES
       {
         path: "expenses",
         element: (
@@ -106,6 +111,7 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      //  EMPLOYEE ROUTES
       {
         path: "employees",
         element: (
@@ -130,6 +136,7 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      // INVOICE ROUTES
       {
         path: "invoices",
         element: (
@@ -143,6 +150,15 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <InvoiceForm />
+          </ProtectedRoute>
+        ),
+      },
+      // STOCK ROUTES
+      {
+        path: "stocks",
+        element: (
+          <ProtectedRoute>
+            <StockPage />
           </ProtectedRoute>
         ),
       },

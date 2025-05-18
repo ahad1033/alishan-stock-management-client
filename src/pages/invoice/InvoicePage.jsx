@@ -1,3 +1,4 @@
+import { debounce } from "lodash";
 import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
@@ -16,7 +17,6 @@ import CircularLoading from "@/components/shared/CircularLoading";
 import CustomDateRangePicker from "@/components/date-picker/CustomDateRangePicker";
 
 import { useGetAllInvoiceQuery } from "@/redux/features/invoice/invoiceApi";
-import { debounce } from "lodash";
 
 const columns = [
   { key: "customerName", label: "Customer name" },
@@ -64,7 +64,7 @@ export default function InvoicePage() {
   const [toDate, setToDate] = useState("");
 
   const [page, setPage] = useState(1);
-  
+
   const rowsPerPage = 20;
 
   // const { data: invoiceData } = useGetAllInvoiceQuery();
@@ -160,6 +160,7 @@ export default function InvoicePage() {
             </div>
 
             <div className="col-span-12 md:col-span-4 flex items-center gap-2">
+              {/* TODO: NEED TO FIX DATE PICKER PROPERLY  */}
               <CustomDateRangePicker
                 fromDate={filterDates.from}
                 toDate={filterDates.to}
