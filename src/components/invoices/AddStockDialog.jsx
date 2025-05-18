@@ -18,6 +18,7 @@ import { Button } from "../ui/button";
 import { RHFInput, RHFSelect } from "../form";
 
 import { useGetAllProductQuery } from "@/redux/features/product/productApi";
+import { useAddStockMutation } from "@/redux/features/stock/stockApi";
 
 const ProductSchema = Yup.object().shape({
   productId: Yup.string().trim().required("Product is required"),
@@ -33,6 +34,8 @@ export default function AddStockDialog({ stockInModal }) {
   const { data: productData, isSuccess } = useGetAllProductQuery({
     skip: !stockInModal.value,
   });
+
+  const [addStock, { _isLoading }] = useAddStockMutation();
 
   const productOptions = useMemo(() => {
     if (!isSuccess || !Array.isArray(productData?.data)) return [];
@@ -64,13 +67,13 @@ export default function AddStockDialog({ stockInModal }) {
 
       console.log("FORM DATA: ", data);
 
-      // const result = await action(payload).unwrap();
-      const result = {};
-
-      stockInModal.onFalse();
+      const result = await addStock(data).unwrap();
+      console.log("result: ", result);
 
       if (result.success) {
         toast.success(result.message || "Product updated successfully");
+
+        stockInModal.onFalse();
       }
     } catch (error) {
       toast.error(error?.data?.message || "Something went wrong!");

@@ -47,6 +47,11 @@ export const API_ENDPOINTS = {
   UPDATE_INVOICE_BY_ID: (id) => `${API_BASE_URL}/invoices/edit-invoice/${id}`,
   DELETE_INVOICE_BY_ID: (id) => `${API_BASE_URL}/invoices/delete-invoice/${id}`,
 
+  // STOCK APIS
+  ADD_STOCK: `/stocks/add-stock`,
+  DEDUCT_STOCK: `/stocks/deduct-stock`,
+  GET_ALL_STOCK_HISTORY: `/stocks/stock-history`,
+
   //
   //
 };

@@ -80,6 +80,7 @@ export default function StockPage() {
   const [products, setProducts] = useState(mockProducts);
 
   const [stockHistory] = useState(mockStockHistory);
+  // eslint-disable-next-line no-unused-vars
   const [isDeductStockOpen, setIsDeductStockOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantity, setQuantity] = useState("");
