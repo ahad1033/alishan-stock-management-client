@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 
+import { useGetAllStockHistoryQuery } from "@/redux/features/stock/stockApi";
+
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import AddStockDialog from "@/components/invoices/AddStockDialog";
 import DeductStockDialog from "@/components/invoices/DeductStockDialog";
@@ -47,39 +49,9 @@ const mockProducts = [
   },
 ];
 
-// Mock data for stock history
-const mockStockHistory = [
-  {
-    id: "1",
-    productId: "1",
-    type: "add",
-    quantity: 50,
-    date: "2024-03-20T10:30:00",
-    reference: "PO-001",
-  },
-  {
-    id: "2",
-    productId: "1",
-    type: "deduct",
-    quantity: 5,
-    date: "2024-03-20T14:15:00",
-    reference: "INV-001",
-  },
-  {
-    id: "3",
-    productId: "2",
-    type: "add",
-    quantity: 25,
-    date: "2024-03-19T09:00:00",
-    reference: "PO-002",
-  },
-  // Add more history entries...
-];
-
 export default function StockPage() {
   const [products, setProducts] = useState(mockProducts);
 
-  const [stockHistory] = useState(mockStockHistory);
   // eslint-disable-next-line no-unused-vars
   const [isDeductStockOpen, setIsDeductStockOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -91,6 +63,10 @@ export default function StockPage() {
   const stockInModal = useBoolean();
 
   const stockOutModal = useBoolean();
+
+  const { data: stockHistory } = useGetAllStockHistoryQuery();
+
+  console.log("stockHistory: ", stockHistory);
 
   const handleDeductStock = () => {
     if (!selectedProduct || !quantity || !invoiceNo) {
@@ -118,7 +94,8 @@ export default function StockPage() {
     setInvoiceNo("");
   };
 
-  const filteredHistory = stockHistory.filter((entry) => {
+  // eslint-disable-next-line no-unused-vars
+  const filteredHistory = stockHistory?.data?.filter((entry) => {
     const entryDate = new Date(entry.date);
     const now = new Date();
 
@@ -261,31 +238,34 @@ export default function StockPage() {
                 <th className="text-left p-4">Product</th>
                 <th className="text-left p-4">Type</th>
                 <th className="text-right p-4">Quantity</th>
-                <th className="text-left p-4">Reference</th>
+                <th className="text-left p-4">Issued By</th>
               </tr>
             </thead>
             <tbody>
-              {filteredHistory.map((entry) => {
-                const product = products.find((p) => p.id === entry.productId);
+              {stockHistory?.data.map((entry) => {
+                // const product = products.find((p) => p.id === entry.productId);
+
+                console.log("entry :", entry);
+
                 return (
-                  <tr key={entry.id} className="border-b">
+                  <tr key={entry?.id} className="border-b">
                     <td className="p-4">
-                      {format(new Date(entry.date), "PPp")}
+                      {format(new Date(entry?.createdAt), "PPp")}
                     </td>
-                    <td className="p-4">{product?.name}</td>
+                    <td className="p-4">{entry?.productId?.name}</td>
                     <td className="p-4">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          entry.type === "add"
+                          entry?.status === "in"
                             ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
                             : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
                         }`}
                       >
-                        {entry.type === "add" ? "Added" : "Deducted"}
+                        {entry?.status === "in" ? "Added" : "Deducted"}
                       </span>
                     </td>
                     <td className="p-4 text-right">{entry.quantity}</td>
-                    <td className="p-4">{entry.reference}</td>
+                    <td className="p-4">{entry?.issuedBy?.name || "Admin"}</td>
                   </tr>
                 );
               })}
