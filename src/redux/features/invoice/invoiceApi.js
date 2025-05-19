@@ -8,10 +8,11 @@ const invoiceApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllInvoice: builder.query({
       query: (args = {}) => {
-        const { search, fromDate, toDate } = args;
+        const { search, fromDate, toDate, invoiceNumber } = args;
 
         const params = {};
         if (search?.trim()) params.search = search.trim();
+        if (invoiceNumber?.trim()) params.invoiceNumber = invoiceNumber.trim();
         if (fromDate && toDate) {
           params.fromDate = fromDate;
           params.toDate = toDate;

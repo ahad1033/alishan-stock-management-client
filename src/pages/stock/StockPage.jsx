@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { format } from "date-fns";
-import { toast } from "react-hot-toast";
 import { Plus, Minus, Filter } from "lucide-react";
 
 import { useBoolean } from "@/hooks";
@@ -18,45 +17,8 @@ import CustomHeader from "@/components/page-heading/CustomHeader";
 import AddStockDialog from "@/components/invoices/AddStockDialog";
 import DeductStockDialog from "@/components/invoices/DeductStockDialog";
 
-// Mock data for products with stock
-const mockProducts = [
-  {
-    id: "1",
-    name: "iPhone 14 Pro",
-    model: "IP14P-256",
-    category: "Electronics",
-    currentStock: 45,
-    minStock: 10,
-    status: "In Stock",
-  },
-  {
-    id: "2",
-    name: "MacBook Pro M2",
-    model: "MBP-M2-512",
-    category: "Electronics",
-    currentStock: 23,
-    minStock: 5,
-    status: "Low Stock",
-  },
-  {
-    id: "3",
-    name: "AirPods Pro",
-    model: "APP-2ND",
-    category: "Electronics",
-    currentStock: 156,
-    minStock: 20,
-    status: "In Stock",
-  },
-];
-
 export default function StockPage() {
-  const [products, setProducts] = useState(mockProducts);
 
-  // eslint-disable-next-line no-unused-vars
-  const [isDeductStockOpen, setIsDeductStockOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [quantity, setQuantity] = useState("");
-  const [invoiceNo, setInvoiceNo] = useState("");
   const [timeFilter, setTimeFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
 
@@ -67,32 +29,6 @@ export default function StockPage() {
   const { data: stockHistory } = useGetAllStockHistoryQuery();
 
   console.log("stockHistory: ", stockHistory);
-
-  const handleDeductStock = () => {
-    if (!selectedProduct || !quantity || !invoiceNo) {
-      toast.error("Please fill in all fields");
-      return;
-    }
-
-    const updatedProducts = products.map((product) => {
-      if (product.id === selectedProduct) {
-        const newStock = Math.max(0, product.currentStock - parseInt(quantity));
-        return {
-          ...product,
-          currentStock: newStock,
-          status: newStock <= product.minStock ? "Low Stock" : "In Stock",
-        };
-      }
-      return product;
-    });
-
-    setProducts(updatedProducts);
-    toast.success("Stock deducted successfully");
-    setIsDeductStockOpen(false);
-    setSelectedProduct(null);
-    setQuantity("");
-    setInvoiceNo("");
-  };
 
   // eslint-disable-next-line no-unused-vars
   const filteredHistory = stockHistory?.data?.filter((entry) => {
@@ -245,7 +181,7 @@ export default function StockPage() {
               {stockHistory?.data.map((entry) => {
                 // const product = products.find((p) => p.id === entry.productId);
 
-                console.log("entry :", entry);
+                // console.log("entry :", entry);
 
                 return (
                   <tr key={entry?.id} className="border-b">
@@ -278,17 +214,7 @@ export default function StockPage() {
       <AddStockDialog stockInModal={stockInModal} />
 
       {/* Deduct Stock Dialog */}
-      <DeductStockDialog
-        isDeductStockOpen={stockOutModal}
-        invoiceNo={invoiceNo}
-        setInvoiceNo={setInvoiceNo}
-        selectedProduct={selectedProduct}
-        setSelectedProduct={setSelectedProduct}
-        products={products}
-        quantity={quantity}
-        setQuantity={setQuantity}
-        handleDeductStock={handleDeductStock}
-      />
+      <DeductStockDialog isDeductStockOpen={stockOutModal} />
     </>
   );
 }

@@ -19,7 +19,7 @@ const stockApi = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["STOCKS", "PRODUCTS"],
+      invalidatesTags: ["STOCKS", "PRODUCTS", "STOCKS", "INVOICES"],
     }),
     deductStock: builder.mutation({
       query: (data) => ({
@@ -27,7 +27,7 @@ const stockApi = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["STOCKS", "PRODUCTS"],
+      invalidatesTags: ["STOCKS", "PRODUCTS", "STOCKS", "INVOICES"],
     }),
   }),
 });
