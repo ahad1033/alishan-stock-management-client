@@ -52,6 +52,13 @@ export const API_ENDPOINTS = {
   DEDUCT_STOCK: `/stocks/deduct-stock`,
   GET_ALL_STOCK_HISTORY: `/stocks/stock-history`,
 
+  // EXPENSE APIS
+  CREATE_EXPENSE: `/expenses/add-expense`,
+  GET_ALL_EXPENSE: `/expenses/get-all-expense`,
+  GET_EXPENSE_BY_ID: (id) => `/expenses/get-single-expense/${id}`,
+  UPDATE_EXPENSE_BY_ID: (id) => `${API_BASE_URL}/expenses/edit-expense/${id}`,
+  DELETE_EXPENSE_BY_ID: (id) => `${API_BASE_URL}/expenses/delete-expense/${id}`,
+
   //
   //
 };
