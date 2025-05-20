@@ -2,8 +2,6 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-import { Button } from "@/components/ui/button";
-
 import {
   CustomTableBody,
   CustomTableRoot,
@@ -16,41 +14,29 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
 
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import CircularLoading from "@/components/shared/CircularLoading";
-import { EXPENSE_OPTIONS } from "@/constants";
 
-// Mock data for outlays
-const mockExpenses = [
-  {
-    id: "1",
-    date: "2024-03-15",
-    category: "Salary",
-    description: "Monthly salary payment for workers",
-    amount: 5000,
-  },
-  {
-    id: "2",
-    date: "2024-03-14",
-    category: "Material",
-    description: "Raw materials purchase",
-    amount: 3500,
-  },
-  {
-    id: "3",
-    date: "2024-03-13",
-    category: "Utility",
-    description: "Electricity bill payment",
-    amount: 800,
-  },
-];
+import { useGetAllExpenseQuery } from "@/redux/features/expense/expenseApi";
+
+import { EXPENSE_OPTIONS } from "@/constants";
 
 const columns = [
   { key: "date", label: "Date" },
   { key: "category", label: "Category" },
   { key: "description", label: "Description" },
-  { key: "amount", label: "Amount" },
+  {
+    key: "issuedBy",
+    label: "Issued By",
+    render: (row) => row.issuedBy?.name || "N/A",
+  },
+  {
+    key: "amount",
+    label: "Amount",
+    render: (row) => `${row.amount?.toFixed(0) ?? "N/A"} Tk`,
+  },
 ];
 
 export default function ExpensePage() {
@@ -60,11 +46,11 @@ export default function ExpensePage() {
 
   const [page, setPage] = useState(1);
 
-  const isLoading = false;
-
   const rowsPerPage = 20;
 
-  const filtered = mockExpenses?.filter((d) =>
+  const { data: expenseHistory, isLoading } = useGetAllExpenseQuery();
+
+  const filtered = expenseHistory?.data?.filter((d) =>
     d.date.toLowerCase().includes(search.toLowerCase())
   );
   const totalPages = Math.ceil(filtered?.length / rowsPerPage) || 1;
@@ -74,6 +60,7 @@ export default function ExpensePage() {
     page * rowsPerPage
   );
 
+  // eslint-disable-next-line no-unused-vars
   const handleEdit = (expense) => {
     navigate(`/edit-expense/${expense?.id}`);
   };
@@ -127,7 +114,7 @@ export default function ExpensePage() {
             <CustomTableBody
               data={paginated}
               columns={columns}
-              onEdit={(row) => handleEdit(row)}
+              // onEdit={(row) => handleEdit(row)}
             />
           </CustomTableRoot>
 

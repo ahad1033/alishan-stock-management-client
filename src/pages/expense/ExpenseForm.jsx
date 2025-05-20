@@ -1,8 +1,9 @@
 import * as Yup from "yup";
+import { useMemo } from "react";
 import { toast } from "react-hot-toast";
 import { useForm } from "react-hook-form";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import {
   RHFInput,
@@ -16,7 +17,14 @@ import { Button } from "@/components/ui/button";
 import CardWrapper from "@/components/shared/CardWrapper";
 import CustomHeader from "@/components/page-heading/CustomHeader";
 
+import { useGetAllEmployeeQuery } from "@/redux/features/employee/employeeApi";
+import {
+  useCreateExpenseMutation,
+  useUpdateExpenseMutation,
+} from "@/redux/features/expense/expenseApi";
+
 import { EXPENSE_OPTIONS } from "@/constants";
+import { cleanPayload } from "@/utils/clean-payload";
 
 const ExpenseSchema = Yup.object().shape({
   date: Yup.string().trim().required("Date is required"),
@@ -32,13 +40,9 @@ const ExpenseSchema = Yup.object().shape({
     .typeError("Price must be a number")
     .required("Expense amount is required")
     .positive("Expense amount must be a positive number"),
-});
 
-const mockEmployee = [
-  { value: 1, label: "employee 1" },
-  { value: 2, label: "employee 2" },
-  { value: 3, label: "employee 3" },
-];
+  employeeId: Yup.string(),
+});
 
 export default function ExpenseForm() {
   const navigate = useNavigate();
@@ -50,6 +54,23 @@ export default function ExpenseForm() {
   const isEdit = Boolean(id);
 
   const selectedCategory = searchParams.get("category") ?? "";
+
+  // EMPLOYEES
+  const { data: employeeData, isSuccess } = useGetAllEmployeeQuery();
+
+  console.log("employeeData: ", employeeData);
+
+  const [createExpense] = useCreateExpenseMutation();
+
+  const [updateExpense] = useUpdateExpenseMutation();
+
+  const employeeOptions = useMemo(() => {
+    if (!isSuccess || !Array.isArray(employeeData?.data)) return [];
+    return employeeData.data.map((customer) => ({
+      value: customer._id,
+      label: customer.name,
+    }));
+  }, [employeeData, isSuccess]);
 
   const defaultValues = {
     date: new Date().toISOString().split("T")[0],
@@ -65,7 +86,7 @@ export default function ExpenseForm() {
   });
 
   const {
-    // reset,
+    reset,
     watch,
     handleSubmit,
     formState: { isSubmitting },
@@ -74,9 +95,33 @@ export default function ExpenseForm() {
   const watchCategory = watch("category");
   console.log("watchCategory: ", watchCategory);
 
-  const onSubmit = (data) => {
-    console.log("Outlay data:", data);
-    toast.success("Outlay added successfully");
+  const onSubmit = async (data) => {
+    const cleanData = cleanPayload(data);
+
+    const action = isEdit ? updateExpense : createExpense;
+
+    const payload = isEdit ? { data: cleanData, productId: id } : cleanData;
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      const result = await action(payload).unwrap();
+
+      if (result.success) {
+        toast.success(
+          result.message ||
+            (isEdit
+              ? "Expense updated successfully"
+              : "Expense added successfully")
+        );
+
+        if (!isEdit) reset();
+
+        navigate("/expenses");
+      }
+    } catch (error) {
+      toast.error(error?.data?.message || "Something went wrong!");
+    }
   };
 
   return (
@@ -91,7 +136,7 @@ export default function ExpenseForm() {
               label="Pick a date (DD-MM-YYYY) *"
               lockToToday={true}
             />
-            
+
             <RHFSelect
               name="category"
               label="Category *"
@@ -104,25 +149,28 @@ export default function ExpenseForm() {
                 name="employeeId"
                 label="Select Employee *"
                 placeholder="Choose employee"
-                options={mockEmployee}
+                options={employeeOptions}
               />
             )}
+
             <RHFTextArea
               name="description"
               label="Description *"
               placeholder="Enter description"
             />
+
             <RHFInput
               name="amount"
               label="Amount *"
               type="number"
               placeholder="Enter expense amount"
             />
+
             <div className="flex justify-end gap-4">
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => navigate("/expense")}
+                onClick={() => navigate("/expenses")}
               >
                 Cancel
               </Button>
@@ -132,7 +180,7 @@ export default function ExpenseForm() {
                   ? "Submitting..."
                   : isEdit
                   ? "Update"
-                  : "Create Product"}
+                  : "Add Expense"}
               </Button>
             </div>
           </form>

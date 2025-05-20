@@ -1,4 +1,5 @@
 import * as Yup from "yup";
+import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,6 @@ import {
   useUpdateEmployeeMutation,
   useCreateEmployeeMutation,
 } from "@/redux/features/employee/employeeApi";
-import { useEffect } from "react";
 
 const EmployeeSchema = Yup.object().shape({
   name: Yup.string()
@@ -185,6 +185,7 @@ export default function EmployeeForm() {
               />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* TODO - DEFAULT VALUE IS NOT SETTING WHILE EDIT MODE */}
                 <RHFSelect
                   name="gender"
                   label="Gender *"
@@ -212,6 +213,7 @@ export default function EmployeeForm() {
                   placeholder="Enter employee's emergency phone"
                 />
 
+                {/* TODO - DEFAULT VALUE IS NOT SETTING WHILE EDIT MODE */}
                 <RHFSelect
                   name="position"
                   label="Position *"
@@ -229,6 +231,7 @@ export default function EmployeeForm() {
                   label="Monthly salary *"
                   type="number"
                   placeholder="Enter monthly salary"
+                  disabled={isEdit}
                 />
 
                 <RHFDatePicker
