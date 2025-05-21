@@ -64,7 +64,13 @@ export default function Login() {
 
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        navigate("/", { replace: true });
+        if (
+          response.userRole === "super_admin" ||
+          response.userRole === "admin"
+        ) {
+          navigate("/", { replace: true });
+        }
+        navigate("/products", { replace: true });
 
         reset();
       }

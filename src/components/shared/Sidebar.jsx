@@ -7,7 +7,6 @@ import {
   ShoppingBag,
   Users,
   FileText,
-  DollarSign,
   Menu,
   X,
   ChevronLeft,
@@ -27,37 +26,43 @@ const navItems = [
     label: "Products",
     icon: <ShoppingBag className="h-5 w-5" />,
     path: "/products",
+    role: ["super_admin", "admin", "accountant", "stock_manager"],
   },
   {
     label: "Customers",
     icon: <Users className="h-5 w-5" />,
     path: "/customers",
+    role: ["super_admin", "admin", "accountant"],
   },
   {
     label: "Users",
     icon: <Users className="h-5 w-5" />,
     path: "/users",
+    role: ["super_admin", "admin"],
   },
   {
     label: "Invoices",
     icon: <FileText className="h-5 w-5" />,
     path: "/invoices",
+    role: ["super_admin", "admin", "accountant"],
   },
   {
     label: "Stocks",
     icon: <PackageSearch className="h-5 w-5" />,
     path: "/stocks",
+    role: ["super_admin", "admin", "stock_manager"],
   },
-  // { label: "Sales", icon: <DollarSign className="h-5 w-5" />, path: "/sales" },
   {
     label: "Expenses",
     icon: <Receipt className="h-5 w-5" />,
     path: "/expenses",
+    role: ["super_admin", "admin", "accountant"],
   },
   {
     label: "Employees",
     icon: <UserRoundCheck className="h-5 w-5" />,
     path: "/employees",
+    role: ["super_admin", "admin", "accountant"],
   },
 ];
 
@@ -73,6 +78,14 @@ export function Sidebar() {
   const [mounted, setMounted] = useState(false);
 
   const currentUser = useSelector(useCurrentUser);
+
+  // USER ROLE
+  const userRole = currentUser?.user?.role;
+  console.log("userRole on nav item: ", userRole);
+
+  const accessibleNavItems = navItems.filter((item) =>
+    item?.role?.includes(userRole)
+  );
 
   useEffect(() => {
     setMounted(true);
@@ -147,7 +160,7 @@ export function Sidebar() {
           {/* Navigation */}
           <nav className="flex-1 py-4">
             <ul className="space-y-1">
-              {navItems.map((item) => (
+              {accessibleNavItems.map((item) => (
                 <li key={item.label} className="">
                   <button
                     onClick={() => {

@@ -2,17 +2,19 @@ import { createBrowserRouter } from "react-router";
 
 import Login from "@/pages/Login";
 import Analytics from "@/pages/Analytics";
+import DashboardLayout from "@/layouts/DashboardLayout";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
+import { StockPage } from "@/pages/stock";
 import { UserForm, UsersPage } from "@/pages/user";
+import { ExpenseForm, ExpensePage } from "@/pages/expense";
+import { InvoiceForm, InvoicePage } from "@/pages/invoice";
 import { ProductForm, ProductsPage } from "@/pages/product";
 import { CustomerForm, CustomersPage } from "@/pages/customer";
-
-import DashboardLayout from "@/layouts/DashboardLayout";
-import { ExpenseForm, ExpensePage } from "@/pages/expense";
 import { EmployeeDetails, EmployeeForm, EmployeePage } from "@/pages/employee";
-import { InvoiceForm, InvoicePage } from "@/pages/invoice";
-import { StockPage } from "@/pages/stock";
+
+import Unauthorized from "@/pages/Unauthorized";
+import RoleBasedRoute from "@/components/auth/RoleBasedRoute";
 
 export const router = createBrowserRouter([
   {
@@ -23,7 +25,9 @@ export const router = createBrowserRouter([
         index: true,
         element: (
           <ProtectedRoute>
-            <Analytics />
+            <RoleBasedRoute allowedRoles={["admin", "super_admin"]}>
+              <Analytics />
+            </RoleBasedRoute>
           </ProtectedRoute>
         ),
       },
@@ -32,7 +36,16 @@ export const router = createBrowserRouter([
         path: "products",
         element: (
           <ProtectedRoute>
-            <ProductsPage />
+            <RoleBasedRoute
+              allowedRoles={[
+                "admin",
+                "super_admin",
+                "accountant",
+                "stock_manager",
+              ]}
+            >
+              <ProductsPage />
+            </RoleBasedRoute>
           </ProtectedRoute>
         ),
       },
@@ -40,7 +53,9 @@ export const router = createBrowserRouter([
         path: "add-product",
         element: (
           <ProtectedRoute>
-            <ProductForm />
+            <RoleBasedRoute allowedRoles={["admin", "super_admin"]}>
+              <ProductForm />
+            </RoleBasedRoute>
           </ProtectedRoute>
         ),
       },
@@ -48,7 +63,9 @@ export const router = createBrowserRouter([
         path: "edit-product/:id",
         element: (
           <ProtectedRoute>
-            <ProductForm />
+            <RoleBasedRoute allowedRoles={["admin", "super_admin"]}>
+              <ProductForm />
+            </RoleBasedRoute>
           </ProtectedRoute>
         ),
       },
@@ -57,7 +74,9 @@ export const router = createBrowserRouter([
         path: "users",
         element: (
           <ProtectedRoute>
-            <UsersPage />
+            <RoleBasedRoute allowedRoles={["admin", "super_admin"]}>
+              <UsersPage />
+            </RoleBasedRoute>
           </ProtectedRoute>
         ),
       },
@@ -65,7 +84,9 @@ export const router = createBrowserRouter([
         path: "add-user",
         element: (
           <ProtectedRoute>
-            <UserForm />
+            <RoleBasedRoute allowedRoles={["admin", "super_admin"]}>
+              <UserForm />
+            </RoleBasedRoute>
           </ProtectedRoute>
         ),
       },
@@ -74,7 +95,11 @@ export const router = createBrowserRouter([
         path: "customers",
         element: (
           <ProtectedRoute>
-            <CustomersPage />
+            <RoleBasedRoute
+              allowedRoles={["admin", "super_admin", "accountant"]}
+            >
+              <CustomersPage />
+            </RoleBasedRoute>
           </ProtectedRoute>
         ),
       },
@@ -82,7 +107,11 @@ export const router = createBrowserRouter([
         path: "add-customer",
         element: (
           <ProtectedRoute>
-            <CustomerForm />
+            <RoleBasedRoute
+              allowedRoles={["admin", "super_admin", "accountant"]}
+            >
+              <CustomerForm />
+            </RoleBasedRoute>
           </ProtectedRoute>
         ),
       },
@@ -90,7 +119,11 @@ export const router = createBrowserRouter([
         path: "edit-customer/:id",
         element: (
           <ProtectedRoute>
-            <CustomerForm />
+            <RoleBasedRoute
+              allowedRoles={["admin", "super_admin", "accountant"]}
+            >
+              <CustomerForm />
+            </RoleBasedRoute>
           </ProtectedRoute>
         ),
       },
@@ -99,7 +132,11 @@ export const router = createBrowserRouter([
         path: "expenses",
         element: (
           <ProtectedRoute>
-            <ExpensePage />
+            <RoleBasedRoute
+              allowedRoles={["admin", "super_admin", "accountant"]}
+            >
+              <ExpensePage />
+            </RoleBasedRoute>
           </ProtectedRoute>
         ),
       },
@@ -107,7 +144,11 @@ export const router = createBrowserRouter([
         path: "add-expense",
         element: (
           <ProtectedRoute>
-            <ExpenseForm />
+            <RoleBasedRoute
+              allowedRoles={["admin", "super_admin", "accountant"]}
+            >
+              <ExpenseForm />
+            </RoleBasedRoute>
           </ProtectedRoute>
         ),
       },
@@ -116,7 +157,11 @@ export const router = createBrowserRouter([
         path: "employees",
         element: (
           <ProtectedRoute>
-            <EmployeePage />
+            <RoleBasedRoute
+              allowedRoles={["admin", "super_admin", "accountant"]}
+            >
+              <EmployeePage />
+            </RoleBasedRoute>
           </ProtectedRoute>
         ),
       },
@@ -124,7 +169,9 @@ export const router = createBrowserRouter([
         path: "add-employee",
         element: (
           <ProtectedRoute>
-            <EmployeeForm />
+            <RoleBasedRoute allowedRoles={["admin", "super_admin"]}>
+              <EmployeeForm />
+            </RoleBasedRoute>
           </ProtectedRoute>
         ),
       },
@@ -132,7 +179,9 @@ export const router = createBrowserRouter([
         path: "edit-employee/:id",
         element: (
           <ProtectedRoute>
-            <EmployeeForm />
+            <RoleBasedRoute allowedRoles={["admin", "super_admin"]}>
+              <EmployeeForm />
+            </RoleBasedRoute>
           </ProtectedRoute>
         ),
       },
@@ -140,7 +189,11 @@ export const router = createBrowserRouter([
         path: "employee-details/:id",
         element: (
           <ProtectedRoute>
-            <EmployeeDetails />
+            <RoleBasedRoute
+              allowedRoles={["admin", "super_admin", "accountant"]}
+            >
+              <EmployeeDetails />
+            </RoleBasedRoute>
           </ProtectedRoute>
         ),
       },
@@ -149,7 +202,11 @@ export const router = createBrowserRouter([
         path: "invoices",
         element: (
           <ProtectedRoute>
-            <InvoicePage />
+            <RoleBasedRoute
+              allowedRoles={["admin", "super_admin", "accountant"]}
+            >
+              <InvoicePage />
+            </RoleBasedRoute>
           </ProtectedRoute>
         ),
       },
@@ -157,7 +214,11 @@ export const router = createBrowserRouter([
         path: "add-invoice",
         element: (
           <ProtectedRoute>
-            <InvoiceForm />
+            <RoleBasedRoute
+              allowedRoles={["admin", "super_admin", "accountant"]}
+            >
+              <InvoiceForm />
+            </RoleBasedRoute>
           </ProtectedRoute>
         ),
       },
@@ -166,9 +227,17 @@ export const router = createBrowserRouter([
         path: "stocks",
         element: (
           <ProtectedRoute>
-            <StockPage />
+            <RoleBasedRoute
+              allowedRoles={["admin", "super_admin", "stock_manager"]}
+            >
+              <StockPage />
+            </RoleBasedRoute>
           </ProtectedRoute>
         ),
+      },
+      {
+        path: "unauthorized",
+        element: <Unauthorized />,
       },
     ],
   },
