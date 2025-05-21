@@ -1,11 +1,12 @@
-import { Users, Banknote, BanknoteX, BanknoteArrowDown } from "lucide-react";
 import { useThemeContext } from "@/components/theme/ThemeProvider";
+import { Users, Banknote, BanknoteX, BanknoteArrowDown } from "lucide-react";
 
 import { StatCard } from "../components/analytics/StatCard";
 import { ChartCard } from "@/components/analytics/ChartCard";
 
 import { useGetBalanceQuery } from "@/redux/features/balance/balanceApi";
-import { RecentActivityCard } from "@/components/analytics/RecentActivityCard";
+import { useGetAllExpenseQuery } from "@/redux/features/expense/expenseApi";
+import { RecentExpenseCard } from "@/components/analytics/RecentExpenseCard";
 import { useGetAllCustomerQuery } from "@/redux/features/customer/customerApi";
 
 import CustomHeader from "@/components/page-heading/CustomHeader";
@@ -37,61 +38,24 @@ const mockCustomerData = [
   { name: "Week 4", value: 260 },
 ];
 
-const mockActivities = [
-  {
-    id: "1",
-    title: "New order received",
-    description: "Order #12345 for $1,250.00 received from John Doe",
-    timestamp: "2 mins ago",
-    status: "pending",
-  },
-  {
-    id: "2",
-    title: "Product stock low",
-    description:
-      "iPhone 14 Pro Max (Black) is running low on stock (5 items left)",
-    timestamp: "1 hour ago",
-    status: "pending",
-  },
-  {
-    id: "3",
-    title: "Invoice paid",
-    description: "Invoice #INV-2023-004 has been paid by ABC Corp.",
-    timestamp: "3 hours ago",
-    status: "completed",
-  },
-  {
-    id: "4",
-    title: "New customer registered",
-    description: "Jane Smith has created a new account",
-    timestamp: "5 hours ago",
-  },
-  {
-    id: "5",
-    title: "Shipment delayed",
-    description: "Shipment to Tokyo, Japan has been delayed by 2 days",
-    timestamp: "1 day ago",
-    status: "failed",
-  },
-  {
-    id: "6",
-    title: "Product returned",
-    description:
-      "Samsung Galaxy S23 returned by Mark Johnson (Reason: Defective)",
-    timestamp: "2 days ago",
-  },
-];
 
 export default function Analytics() {
   const { primaryColor } = useThemeContext();
 
+  // BALANCE DATA
   const { data: balanceData, isLoading: balanceLoadingState } =
     useGetBalanceQuery();
 
+  // CUSTOMER DATA
   const { data: customerData, isLoading: customerLoadingState } =
     useGetAllCustomerQuery();
 
-  const loadingState = balanceLoadingState && customerLoadingState;
+  // EXPENSE DATA
+  const { data: expenseHistory, isLoading: expenseLoadingState } =
+    useGetAllExpenseQuery();
+
+  const loadingState =
+    balanceLoadingState && customerLoadingState && expenseLoadingState;
 
   console.log("getBalance :", balanceData);
 
@@ -185,8 +149,9 @@ export default function Analytics() {
 
           {/* Activity + Stats Row */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <RecentActivityCard
-              activities={mockActivities}
+            <RecentExpenseCard
+              activities={expenseHistory}
+              primaryColor={primaryColor}
               className="lg:col-span-2"
             />
             <ChartCard
