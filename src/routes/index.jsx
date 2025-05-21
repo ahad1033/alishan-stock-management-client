@@ -19,7 +19,11 @@ import RoleBasedRoute from "@/components/auth/RoleBasedRoute";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute>
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,

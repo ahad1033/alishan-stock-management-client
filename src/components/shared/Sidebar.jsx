@@ -1,27 +1,35 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import { useThemeContext } from "../theme/ThemeProvider";
+import { useNavigate, useLocation } from "react-router-dom";
+
+import { useSidebar } from "@/contexts/SidebarContext";
+
 import {
+  X,
+  Menu,
+  Users,
+  Receipt,
+  FileText,
   BarChart3,
   ShoppingBag,
-  Users,
-  FileText,
-  Menu,
-  X,
   ChevronLeft,
   ChevronRight,
-  Receipt,
-  UserRoundCheck,
   PackageSearch,
+  UserRoundCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useSidebar } from "@/contexts/SidebarContext";
-import { useSelector } from "react-redux";
+
 import { useCurrentUser } from "@/redux/features/auth/authSlice";
 
 const navItems = [
-  { label: "Analytics", icon: <BarChart3 className="h-5 w-5" />, path: "/" },
+  {
+    label: "Analytics",
+    icon: <BarChart3 className="h-5 w-5" />,
+    path: "/",
+    role: ["super_admin", "admin"],
+  },
   {
     label: "Products",
     icon: <ShoppingBag className="h-5 w-5" />,
@@ -77,11 +85,11 @@ export function Sidebar() {
 
   const [mounted, setMounted] = useState(false);
 
+  // CURRENT USER
   const currentUser = useSelector(useCurrentUser);
 
   // USER ROLE
   const userRole = currentUser?.user?.role;
-  console.log("userRole on nav item: ", userRole);
 
   const accessibleNavItems = navItems.filter((item) =>
     item?.role?.includes(userRole)
@@ -133,8 +141,11 @@ export function Sidebar() {
           {/* Logo */}
           <div className={cn("p-6", isCollapsed && "p-6")}>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#B38A2D] to-[#E1BE5D]" />
-              {!isCollapsed && <h3 className="text-xl font-bold">Alishan</h3>}
+              {/* <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#B38A2D] to-[#E1BE5D]" /> */}
+              <img src="/logo.png" className="w-12" />
+              {!isCollapsed && (
+                <h3 className="text-xl font-bold text-[#B38A2D]">Alishan</h3>
+              )}
             </div>
           </div>
 
@@ -204,7 +215,10 @@ export function Sidebar() {
                 isCollapsed && "justify-center"
               )}
             >
-              <div className="w-8 h-8 rounded-full bg-neutral-200 dark:bg-neutral-800 flex-shrink-0" />
+              {/* <div className="w-8 h-8 rounded-full bg-neutral-200 dark:bg-neutral-800 flex-shrink-0" /> */}
+              <div className="h-12 w-12 flex justify-center items-center p-2 rounded-full bg-neutral-300 dark:bg-neutral-800 flex-shrink-0">
+                <img src="/icon.png" className="w-12" />
+              </div>
               {!isCollapsed && currentUser !== null && (
                 <div>
                   <p className="font-medium text-foreground">

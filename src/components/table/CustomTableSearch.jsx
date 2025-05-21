@@ -1,6 +1,10 @@
-export function CustomTableSearch({ value, onChange, placeholder = "Search..." }) {
+export function CustomTableSearch({
+  value,
+  onChange,
+  placeholder = "Search...",
+}) {
   return (
-    <div className="p-4">
+    <div className="py-4">
       <input
         type="text"
         value={value}

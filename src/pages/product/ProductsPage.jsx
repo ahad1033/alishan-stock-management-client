@@ -2,7 +2,10 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router";
+
+import { useBoolean } from "@/hooks";
 
 import {
   CustomTableBody,
@@ -21,7 +24,9 @@ import {
   useDeleteProductMutation,
   useGetAllProductQuery,
 } from "@/redux/features/product/productApi";
-import { useBoolean } from "@/hooks";
+import { useCurrentUser } from "@/redux/features/auth/authSlice";
+
+import { canManageProduct } from "@/utils/role-utils";
 
 const columns = [
   { key: "name", label: "Product Name" },
@@ -46,6 +51,14 @@ export default function ProductsPage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const rowsPerPage = 20;
+
+  // CURRENT USER
+  const currentUser = useSelector(useCurrentUser);
+
+  // USER ROLE
+  const userRole = currentUser?.user?.role;
+
+  const isAuthorized = canManageProduct(userRole);
 
   const {
     data: productData,
@@ -105,12 +118,14 @@ export default function ProductsPage() {
         title="Products"
         subtitle="Manage your products"
         actions={
-          <Link to="/add-product">
-            <Button className="custom-button">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Product
-            </Button>
-          </Link>
+          isAuthorized && (
+            <Link to="/add-product">
+              <Button className="custom-button">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Product
+              </Button>
+            </Link>
+          )
         }
       />
 
@@ -127,8 +142,8 @@ export default function ProductsPage() {
             <CustomTableBody
               data={paginated}
               columns={columns}
-              onEdit={(row) => handleEdit(row)}
-              onDelete={(row) => handleDelete(row)}
+              onEdit={isAuthorized ? (row) => handleEdit(row) : undefined}
+              onDelete={isAuthorized ? (row) => handleDelete(row) : undefined}
             />
           </CustomTableRoot>
 

@@ -65,12 +65,12 @@ export default function Login() {
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
         if (
-          response.userRole === "super_admin" ||
-          response.userRole === "admin"
+          response.userRole === "accountant" ||
+          response.userRole === "stock_manager"
         ) {
-          navigate("/", { replace: true });
+          navigate("/products", { replace: true });
         }
-        navigate("/products", { replace: true });
+        navigate("/", { replace: true });
 
         reset();
       }
@@ -101,14 +101,17 @@ export default function Login() {
         />
         <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
         <div className="absolute top-4 left-0 right-0 p-8 text-white">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#B38A2D] to-[#E1BE5D]" />
-            <h1 className="text-2xl font-bold">Alishan</h1>
+          <div className="flex items-center gap-3 mb-2">
+            {/* <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#B38A2D] to-[#E1BE5D]" /> */}
+            <img src="/icon.png" className="w-24" />
+            <h1 className="text-2xl font-bold text-[#B38A2D]">Alishan</h1>
           </div>
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent text-white">
-          <h2 className="text-2xl font-bold mb-2">Welcome to Alishan</h2>
+          <h2 className="text-2xl font-bold mb-2 text-[#B38A2D]">
+            Welcome to Alishan
+          </h2>
           <p className="text-sm text-gray-200">
             Your complete inventory management solution with real-time analytics
             and insights

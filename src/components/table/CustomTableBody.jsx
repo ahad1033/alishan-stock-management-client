@@ -33,7 +33,7 @@ export function CustomTableBody({
       : "N/A";
   };
 
-  const hasActions = !!onEdit || !!onDelete;
+  const hasActions = !!onEdit || !!onDelete || onDetails;
 
   return (
     <TableBody>
@@ -59,7 +59,12 @@ export function CustomTableBody({
             <TableCell className="text-right w-[140px]">
               <div className="flex justify-end gap-2">
                 {onEdit && (
-                  <Button size="sm" className="rounded-full" variant="info" onClick={() => onEdit(row)}>
+                  <Button
+                    size="sm"
+                    className="rounded-full"
+                    variant="info"
+                    onClick={() => onEdit(row)}
+                  >
                     <Pencil className="w-4 h-4" />
                   </Button>
                 )}

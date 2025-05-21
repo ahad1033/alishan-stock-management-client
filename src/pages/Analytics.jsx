@@ -11,6 +11,8 @@ import { useGetAllCustomerQuery } from "@/redux/features/customer/customerApi";
 
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import CircularLoading from "@/components/shared/CircularLoading";
+import { useBoolean } from "@/hooks";
+import { useEffect } from "react";
 
 // Mock data for the dashboard
 const mockSalesData = [
@@ -38,9 +40,10 @@ const mockCustomerData = [
   { name: "Week 4", value: 260 },
 ];
 
-
 export default function Analytics() {
   const { primaryColor } = useThemeContext();
+
+  const mount = useBoolean();
 
   // BALANCE DATA
   const { data: balanceData, isLoading: balanceLoadingState } =
@@ -57,7 +60,13 @@ export default function Analytics() {
   const loadingState =
     balanceLoadingState && customerLoadingState && expenseLoadingState;
 
-  console.log("getBalance :", balanceData);
+  useEffect(() => {
+    mount.onTrue();
+  }, [mount]);
+
+  if (!mount.value) return null;
+
+  console.log("mount: ", mount);
 
   return (
     <>
