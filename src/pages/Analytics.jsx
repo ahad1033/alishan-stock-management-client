@@ -1,16 +1,15 @@
-import {
-  BarChart3,
-  Users,
-  ShoppingBag,
-  DollarSign,
-  TrendingUp,
-} from "lucide-react";
+import { Users, Banknote, BanknoteX, BanknoteArrowDown } from "lucide-react";
 import { useThemeContext } from "@/components/theme/ThemeProvider";
 
 import { StatCard } from "../components/analytics/StatCard";
 import { ChartCard } from "@/components/analytics/ChartCard";
+
+import { useGetBalanceQuery } from "@/redux/features/balance/balanceApi";
 import { RecentActivityCard } from "@/components/analytics/RecentActivityCard";
+import { useGetAllCustomerQuery } from "@/redux/features/customer/customerApi";
+
 import CustomHeader from "@/components/page-heading/CustomHeader";
+import CircularLoading from "@/components/shared/CircularLoading";
 
 // Mock data for the dashboard
 const mockSalesData = [
@@ -86,7 +85,15 @@ const mockActivities = [
 export default function Analytics() {
   const { primaryColor } = useThemeContext();
 
-  console.log("primaryColor: ", primaryColor);
+  const { data: balanceData, isLoading: balanceLoadingState } =
+    useGetBalanceQuery();
+
+  const { data: customerData, isLoading: customerLoadingState } =
+    useGetAllCustomerQuery();
+
+  const loadingState = balanceLoadingState && customerLoadingState;
+
+  console.log("getBalance :", balanceData);
 
   return (
     <>
@@ -96,70 +103,101 @@ export default function Analytics() {
         subtitle="Welcome back! Here's what's happening with your store today."
       />
 
-      {/* Stats Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard
-          title="Total Revenue"
-          value="$148,280"
-          icon={
-            <DollarSign className="h-5 w-5" style={{ color: primaryColor }} />
-          }
-          trend={{ value: 12, positive: true }}
-        />
-        <StatCard
-          title="Total Products"
-          value="2,580"
-          icon={
-            <ShoppingBag className="h-5 w-5" style={{ color: primaryColor }} />
-          }
-          trend={{ value: 8, positive: true }}
-        />
-        <StatCard
-          title="Total Customers"
-          value="12,786"
-          icon={<Users className="h-5 w-5" style={{ color: primaryColor }} />}
-          trend={{ value: 15, positive: true }}
-        />
-        <StatCard
-          title="Growth Rate"
-          value="8.5%"
-          icon={
-            <TrendingUp className="h-5 w-5" style={{ color: primaryColor }} />
-          }
-          trend={{ value: 3, positive: true }}
-        />
-      </div>
+      {loadingState ? (
+        <CircularLoading />
+      ) : (
+        <>
+          {/* Stats Row */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <StatCard
+              title="Total Revenue"
+              value={
+                balanceData?.data
+                  ? `${balanceData?.data[0]?.totalPaid} Tk`
+                  : "0 Tk"
+              }
+              icon={<Banknote className="h-5 w-5" style={{ color: "green" }} />}
+              // trend={{ value: 12, positive: true }}
+            />
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        <ChartCard
-          title="Monthly Sales"
-          description="Revenue breakdown by month"
-          data={mockSalesData}
-          type="line"
-          className="lg:col-span-2"
-        />
-        <ChartCard
-          title="Product Categories"
-          description="Distribution by product type"
-          data={mockProductData}
-          type="pie"
-        />
-      </div>
+            <StatCard
+              title="Total expense"
+              value={
+                balanceData?.data
+                  ? `${balanceData?.data[0]?.totalExpense} Tk`
+                  : "0 Tk"
+              }
+              icon={
+                <BanknoteArrowDown
+                  className="h-5 w-5"
+                  style={{ color: "red" }}
+                />
+              }
+              // trend={{ value: 8, positive: true }}
+            />
 
-      {/* Activity + Stats Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <RecentActivityCard
-          activities={mockActivities}
-          className="lg:col-span-2"
-        />
-        <ChartCard
-          title="New Customers"
-          description="Customer acquisition by week"
-          data={mockCustomerData}
-          type="bar"
-        />
-      </div>
+            <StatCard
+              title={
+                customerData?.data && customerData?.data?.length > 1
+                  ? "Total customers"
+                  : "Total customer"
+              }
+              value={customerData?.data ? customerData?.data.length : 0}
+              icon={
+                <Users className="h-5 w-5" style={{ color: primaryColor }} />
+              }
+              // trend={{ value: 15, positive: true }}
+            />
+
+            <StatCard
+              title="Total Due"
+              value={
+                balanceData?.data
+                  ? `${balanceData?.data[0]?.totalUnPaid} Tk`
+                  : "0 Tk"
+              }
+              icon={
+                <BanknoteX
+                  className="h-5 w-5"
+                  style={{ color: "yellowgreen" }}
+                />
+              }
+              // trend={{ value: 3, positive: true }}
+            />
+          </div>
+
+          {/* Charts Row */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <ChartCard
+              title="Monthly Sales"
+              description="Revenue breakdown by month"
+              data={mockSalesData}
+              type="line"
+              className="lg:col-span-2"
+            />
+            <ChartCard
+              title="Product Categories"
+              description="Distribution by product type"
+              data={mockProductData}
+              type="pie"
+            />
+          </div>
+
+          {/* Activity + Stats Row */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <RecentActivityCard
+              activities={mockActivities}
+              className="lg:col-span-2"
+            />
+            <ChartCard
+              title="New Customers"
+              description="Customer acquisition by week"
+              data={mockCustomerData}
+              type="bar"
+            />
+          </div>
+        </>
+      )}
     </>
   );
 }

@@ -25,7 +25,12 @@ import { EXPENSE_OPTIONS } from "@/constants";
 
 const columns = [
   { key: "date", label: "Date" },
-  { key: "category", label: "Category" },
+  {
+    key: "category",
+    label: "Category",
+    render: (row) =>
+      row.category.charAt(0).toUpperCase() + row.category.slice(1),
+  },
   { key: "description", label: "Description" },
   {
     key: "issuedBy",

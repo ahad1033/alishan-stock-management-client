@@ -59,6 +59,9 @@ export const API_ENDPOINTS = {
   UPDATE_EXPENSE_BY_ID: (id) => `${API_BASE_URL}/expenses/edit-expense/${id}`,
   DELETE_EXPENSE_BY_ID: (id) => `${API_BASE_URL}/expenses/delete-expense/${id}`,
 
+  // BALANCE APIS
+  GET_BALANCE: `/balances/get-balance`,
+
   //
   //
 };
