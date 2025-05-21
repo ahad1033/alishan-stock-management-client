@@ -74,6 +74,10 @@ export default function EmployeePage() {
     confirm.onTrue();
   };
 
+  const handleDetails = (employee) => {
+    navigate(`/employee-details/${employee?.id}`);
+  };
+
   const confirmDelete = async () => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -124,6 +128,7 @@ export default function EmployeePage() {
               columns={columns}
               onEdit={(row) => handleEdit(row)}
               onDelete={(row) => handleDelete(row)}
+              onDetails={(row) => handleDetails(row)}
             />
           </CustomTableRoot>
 

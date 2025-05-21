@@ -1,10 +1,17 @@
-import { Pencil, Trash2 } from "lucide-react";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { TableBody, TableRow, TableCell } from "@/components/ui/table";
 
-export function CustomTableBody({ data, columns, onEdit, onDelete }) {
+export function CustomTableBody({
+  data,
+  columns,
+  //
+  onEdit,
+  onDelete,
+  onDetails,
+}) {
   if (!data?.length) {
     return (
       <TableBody>
@@ -52,21 +59,28 @@ export function CustomTableBody({ data, columns, onEdit, onDelete }) {
             <TableCell className="text-right w-[140px]">
               <div className="flex justify-end gap-2">
                 {onEdit && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => onEdit(row)}
-                  >
+                  <Button size="sm" className="rounded-full" variant="info" onClick={() => onEdit(row)}>
                     <Pencil className="w-4 h-4" />
                   </Button>
                 )}
                 {onDelete && (
                   <Button
                     size="sm"
-                    variant="destructive"
+                    className="rounded-full"
+                    variant="danger"
                     onClick={() => onDelete(row)}
                   >
                     <Trash2 className="w-4 h-4" />
+                  </Button>
+                )}
+                {onDetails && (
+                  <Button
+                    size="sm"
+                    className="rounded-full"
+                    variant="success"
+                    onClick={() => onDetails(row)}
+                  >
+                    <Eye className="w-4 h-4" />
                   </Button>
                 )}
               </div>

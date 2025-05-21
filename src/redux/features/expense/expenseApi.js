@@ -19,7 +19,7 @@ const expenseApi = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["EXPENSES"],
+      invalidatesTags: ["EXPENSES", "BALANCES"],
     }),
     getExpenseById: builder.query({
       query: (id) => ({
@@ -34,14 +34,14 @@ const expenseApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ["EXPENSES"],
+      invalidatesTags: ["EXPENSES", "BALANCES"],
     }),
     deleteExpense: builder.mutation({
       query: (productId) => ({
         url: API_ENDPOINTS.DELETE_EXPENSE_BY_ID(productId),
         method: "DELETE",
       }),
-      invalidatesTags: ["EXPENSES"],
+      invalidatesTags: ["EXPENSES", "BALANCES"],
     }),
   }),
 });

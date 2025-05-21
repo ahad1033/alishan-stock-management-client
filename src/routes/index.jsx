@@ -10,7 +10,7 @@ import { CustomerForm, CustomersPage } from "@/pages/customer";
 
 import DashboardLayout from "@/layouts/DashboardLayout";
 import { ExpenseForm, ExpensePage } from "@/pages/expense";
-import { EmployeeForm, EmployeePage } from "@/pages/employee";
+import { EmployeeDetails, EmployeeForm, EmployeePage } from "@/pages/employee";
 import { InvoiceForm, InvoicePage } from "@/pages/invoice";
 import { StockPage } from "@/pages/stock";
 
@@ -133,6 +133,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <EmployeeForm />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "employee-details/:id",
+        element: (
+          <ProtectedRoute>
+            <EmployeeDetails />
           </ProtectedRoute>
         ),
       },
