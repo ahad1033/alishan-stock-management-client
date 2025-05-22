@@ -11,6 +11,7 @@ export function CustomTableBody({
   onEdit,
   onDelete,
   onDetails,
+  actions,
 }) {
   if (!data?.length) {
     return (
@@ -33,7 +34,7 @@ export function CustomTableBody({
       : "N/A";
   };
 
-  const hasActions = !!onEdit || !!onDelete || onDetails;
+  const hasActions = !!onEdit || !!onDelete || onDetails || actions;
 
   return (
     <TableBody>
@@ -88,6 +89,9 @@ export function CustomTableBody({
                     <Eye className="w-4 h-4" />
                   </Button>
                 )}
+
+                {/* CUSTOM ACTIONS */}
+                {actions && actions(row)}
               </div>
             </TableCell>
           )}

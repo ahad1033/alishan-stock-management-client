@@ -1,28 +1,49 @@
-import React, { useState } from "react";
-import { Circle, Download, Eye, X } from "lucide-react";
-import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
+import { useMemo } from "react";
 import { useLocation, useParams } from "react-router";
+import { CircleDashed, Download, Eye, X } from "lucide-react";
+import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useBoolean } from "@/hooks";
+import { useThemeContext } from "@/components/theme/ThemeProvider";
+
 import {
   Table,
+  TableRow,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import CustomHeader from "@/components/page-heading/CustomHeader";
+import { SelectSeparator } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+import { useGetInvoiceByIdQuery } from "@/redux/features/invoice/invoiceApi";
 
 import InvoicePDF from "./InvoicePDF";
+import CustomHeader from "@/components/page-heading/CustomHeader";
+import CircularLoading from "@/components/shared/CircularLoading";
 
-const InvoiceDetails = ({ currentInvoice }) => {
+const InvoiceDetails = () => {
   const { id } = useParams();
+
+  const { primaryColor } = useThemeContext();
+
   const location = useLocation();
 
+  const showPdf = useBoolean();
+
   const invoice = location.state?.currentInvoice;
-  const invoiceData = id ? currentInvoice : invoice || {};
+
+  const { data: currentInvoice, isLoading } = useGetInvoiceByIdQuery(id, {
+    skip: !id,
+  });
+
+  const invoiceData = useMemo(() => {
+    if (currentInvoice) return currentInvoice?.data;
+    if (invoice) return invoice;
+    return {};
+  }, [currentInvoice, invoice]);
 
   const {
     customerId,
@@ -34,8 +55,6 @@ const InvoiceDetails = ({ currentInvoice }) => {
     dueAmount,
   } = invoiceData;
 
-  const [showPdfViewer, setShowPdfViewer] = useState(false);
-
   return (
     <div className="space-y-6 relative">
       <CustomHeader
@@ -43,114 +62,133 @@ const InvoiceDetails = ({ currentInvoice }) => {
         subtitle={`Here is the detailed invoice of ${customerId?.name}`}
       />
 
-      <div className="flex gap-3 justify-end">
-        <Button variant="outline" onClick={() => setShowPdfViewer(true)}>
-          <Eye className="h-4 w-4" />
-        </Button>
+      {isLoading ? (
+        <CircularLoading />
+      ) : (
+        <>
+          <div className="flex gap-3 justify-end">
+            <Button variant="outline" onClick={showPdf.onTrue}>
+              <Eye className="h-4 w-4" />
+            </Button>
 
-        <PDFDownloadLink
-          document={<InvoicePDF invoiceData={invoiceData} />}
-          fileName={`invoice-${invoiceData.invoiceNo}.pdf`}
-        >
-          {({ loading }) =>
-            loading ? (
-              <Button variant="outline" disabled>
-                <Circle className="w-4 h-4" />
-              </Button>
-            ) : (
-              <Button variant="outline">
-                <Download className="h-4 w-4" />
-              </Button>
-            )
-          }
-        </PDFDownloadLink>
-      </div>
-
-      {/* SINGLE CARD with all invoice details */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl">Invoice Summary</CardTitle>
-        </CardHeader>
-
-        <CardContent className="space-y-6">
-          {/* Customer & Invoice Info */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-            <div>
-              <p>
-                <strong>Name:</strong> {customerId?.name}
-              </p>
-              <p>
-                <strong>Phone:</strong> {customerId?.phone}
-              </p>
-              <p>
-                <strong>Address:</strong> {customerId?.address || "N/A"}
-              </p>
-            </div>
-            <div>
-              <p>
-                <strong>Invoice Date:</strong> {createdAt}
-              </p>
-              <p>
-                <strong>Invoice No:</strong> {invoiceNumber}
-              </p>
-            </div>
+            <PDFDownloadLink
+              document={<InvoicePDF invoiceData={invoiceData} />}
+              fileName={`invoice-${invoiceData.invoiceNo}.pdf`}
+            >
+              {({ loading }) =>
+                loading ? (
+                  <Button variant="outline" disabled>
+                    <CircleDashed className="w-4 h-4" />
+                  </Button>
+                ) : (
+                  <Button variant="outline">
+                    <Download className="h-4 w-4" />
+                  </Button>
+                )
+              }
+            </PDFDownloadLink>
           </div>
 
-          <hr className="border-gray-300" />
+          {/* SINGLE CARD with all invoice details */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl" style={{ color: primaryColor }}>
+                Invoice Summary
+              </CardTitle>
+            </CardHeader>
 
-          {/* Product Details */}
-          <div>
-            <h3 className="text-lg font-semibold mb-3">Products</h3>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Product</TableHead>
-                  <TableHead>Quantity</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Total</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {products?.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{item?.name || "product name"}</TableCell>
-                    <TableCell>{item.quantity}</TableCell>
-                    <TableCell>৳{item.price}</TableCell>
-                    <TableCell>৳{item.quantity * item.price}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+            <CardContent className="space-y-6">
+              {/* Customer & Invoice Info */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <DetailRow label="Name" value={`: ${customerId?.name}`} />
 
-          <hr className="border-gray-300" />
+                  <DetailRow label="Phone" value={`: ${customerId?.phone}`} />
 
-          {/* Payment Summary aligned right */}
-          <div className="flex justify-end space-x-12 text-sm font-semibold">
-            <div className="min-w-[150px]">
-              <p className="mb-1">
-                <span className="font-normal">Total Amount:</span> ৳
-                {totalAmount}
-              </p>
-              <p className="mb-1">
-                <span className="font-normal">Total Paid:</span> ৳{paidAmount}
-              </p>
-              <p className="mb-0">
-                <span className="font-normal">Total Due:</span> ৳ {dueAmount}
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+                  <DetailRow
+                    label="Address"
+                    value={`: ${customerId?.address}`}
+                  />
+                </div>
+                <div>
+                  <DetailRow
+                    label="Invoice Date"
+                    value={new Date(createdAt).toLocaleDateString("en-US", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  />
+                  <DetailRow label="Invoice No" value={invoiceNumber} />
+                </div>
+              </div>
+
+              <SelectSeparator className="mb-4" />
+
+              {/* Product Details */}
+              <div>
+                <h3
+                  style={{ color: primaryColor }}
+                  className="text-lg font-semibold mb-3"
+                >
+                  Products
+                </h3>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Product</TableHead>
+                      <TableHead>Quantity</TableHead>
+                      <TableHead>Price</TableHead>
+                      <TableHead>Total</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {products?.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{item?.productId.name || "N/A"}</TableCell>
+                        <TableCell>{item.quantity}</TableCell>
+                        <TableCell>{`${item.price} Tk`}</TableCell>
+                        <TableCell>{`${
+                          item.quantity * item.price
+                        } Tk`}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              <SelectSeparator className="mb-4" />
+
+              {/* Payment Summary aligned right */}
+              <div className="flex justify-end space-x-12 text-base font-semibold">
+                <div className="min-w-[150px]">
+                  <p className="mb-1">
+                    <span className="font-normal">Total:</span>
+                    {`${totalAmount} Tk`}
+                  </p>
+                  <p className="mb-1">
+                    <span className="font-normal">Paid:</span>
+                    {`${paidAmount} Tk`}
+                  </p>
+                  <p className="mb-0">
+                    <span className="font-normal">Due:</span>
+                    {`${dueAmount} Tk`}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </>
+      )}
 
       {/* PDF Viewer Modal */}
-      {showPdfViewer && (
+      {showPdf.value && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-70 flex flex-col items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl h-[80vh] flex flex-col">
             <div className="flex justify-between items-center border-b p-3">
               <h3 className="text-lg font-semibold">Invoice PDF Preview</h3>
               <button
-                onClick={() => setShowPdfViewer(false)}
+                onClick={showPdf.onFalse}
                 className="text-gray-600 hover:text-gray-900"
                 aria-label="Close PDF viewer"
               >
@@ -170,3 +208,15 @@ const InvoiceDetails = ({ currentInvoice }) => {
 };
 
 export default InvoiceDetails;
+
+// Reusable detail row component
+function DetailRow({ label, value }) {
+  return (
+    <div className="flex mb-2">
+      <div className="min-w-[100px] text-base font-medium text-muted-foreground">
+        {label}:
+      </div>
+      <div className="text-primary text-base">{value || "—"}</div>
+    </div>
+  );
+}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { AlertCircle } from "lucide-react";
 import { Link, useParams } from "react-router";
 
@@ -10,16 +11,21 @@ import {
   CardContent,
   CardDescription,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { SelectSeparator } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+
+import { useThemeContext } from "@/components/theme/ThemeProvider";
+
 import {
   CustomTableBody,
   CustomTableRoot,
   CustomTableHeader,
   CustomTablePagination,
 } from "@/components/table";
-import { Button } from "@/components/ui/button";
-import { SelectSeparator } from "@/components/ui/select";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
+import { canManageEmployee } from "@/utils/role-utils";
+import { useCurrentUser } from "@/redux/features/auth/authSlice";
 import { useGetEmployeeByIdQuery } from "@/redux/features/employee/employeeApi";
 
 import CustomHeader from "@/components/page-heading/CustomHeader";
@@ -41,6 +47,8 @@ const columns = [
 export default function EmployeeDetails() {
   const { id } = useParams();
 
+  const { primaryColor } = useThemeContext();
+
   const { data: currentEmployee, isLoading } = useGetEmployeeByIdQuery(id);
 
   const employee = currentEmployee?.data;
@@ -50,6 +58,14 @@ export default function EmployeeDetails() {
   const [page, setPage] = useState(1);
 
   const rowsPerPage = 24;
+
+  // CURRENT USER
+  const currentUser = useSelector(useCurrentUser);
+
+  // USER ROLE
+  const userRole = currentUser?.user?.role;
+
+  const isAuthorized = canManageEmployee(userRole);
 
   const totalPages = Math.ceil(salaryHistory?.length / rowsPerPage) || 1;
 
@@ -78,9 +94,12 @@ export default function EmployeeDetails() {
       ) : (
         <Card className="mt-6">
           <CardHeader>
-            <CardTitle className="text-xl">{employee?.name}</CardTitle>
+            <CardTitle className="text-xl" style={{ color: primaryColor }}>
+              {employee?.name}
+            </CardTitle>
             <CardDescription className="text-base">
-              {employee?.position}
+              {employee?.position.charAt(0).toUpperCase() +
+                employee?.position?.slice(1)}
             </CardDescription>
 
             <SelectSeparator />
@@ -91,18 +110,22 @@ export default function EmployeeDetails() {
               {employee?.name && (
                 <DetailRow label="Name" value={employee.name} />
               )}
+
               {employee?.email && (
                 <DetailRow label="Email" value={employee.email} />
               )}
+
               {employee?.phone && (
                 <DetailRow label="Phone" value={employee.phone} />
               )}
+
               {employee?.emergencyContact && (
                 <DetailRow
                   label="Emergency Contact"
                   value={employee.emergencyContact}
                 />
               )}
+
               {employee?.gender && (
                 <DetailRow
                   label="Gender"
@@ -112,33 +135,40 @@ export default function EmployeeDetails() {
                   }
                 />
               )}
+
               {employee?.dateOfBirth && (
                 <DetailRow label="Date of Birth" value={employee.dateOfBirth} />
               )}
+
               {employee?.joiningDate && (
                 <DetailRow label="Joining Date" value={employee.joiningDate} />
               )}
+
               {employee?.monthlySalary !== undefined && (
                 <DetailRow
                   label="Monthly Salary"
                   value={`${employee.monthlySalary} Tk`}
                 />
               )}
+
               {employee?.nidNumber && (
                 <DetailRow label="NID Number" value={employee.nidNumber} />
               )}
+
               {employee?.presentAddress && (
                 <DetailRow
                   label="Present Address"
                   value={employee.presentAddress}
                 />
               )}
+
               {employee?.permanentAddress && (
                 <DetailRow
                   label="Permanent Address"
                   value={employee.permanentAddress}
                 />
               )}
+
               {employee?.position && (
                 <DetailRow label="Position" value={employee.position} />
               )}
@@ -147,7 +177,9 @@ export default function EmployeeDetails() {
                 <>
                   {/* EMPLOYEE SALARY TABLE */}
 
-                  <h2 className="mt-5">Salary history:</h2>
+                  <h2 className="mt-5" style={{ color: primaryColor }}>
+                    Salary history:
+                  </h2>
                   {/* <CustomTableSearch value={search} onChange={setSearch} /> */}
 
                   <CustomTableRoot>
@@ -173,18 +205,20 @@ export default function EmployeeDetails() {
             </div>
           </CardContent>
 
-          <CardFooter className="d-flex justify-end">
-            <Link to={`/edit-employee/${id}`}>
-              <Button>Edit Details</Button>
-            </Link>
-          </CardFooter>
+          {isAuthorized && (
+            <CardFooter className="d-flex justify-end">
+              <Link to={`/edit-employee/${id}`}>
+                <Button>Edit Details</Button>
+              </Link>
+            </CardFooter>
+          )}
         </Card>
       )}
     </>
   );
 }
 
-// Reusable detail row component
+// DETAILS ROW
 function DetailRow({ label, value }) {
   return (
     <div className="flex">

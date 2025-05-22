@@ -167,6 +167,14 @@ export default function CustomerForm() {
               </div>
 
               <div className="flex justify-end gap-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate("/customers")}
+                >
+                  Cancel
+                </Button>
+
                 <Button type="submit" className="custom-button">
                   {isSubmitting
                     ? "Submitting..."

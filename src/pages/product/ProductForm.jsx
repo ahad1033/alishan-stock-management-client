@@ -177,6 +177,14 @@ export default function ProductForm() {
               />
 
               <div className="flex justify-end gap-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate("/products")}
+                >
+                  Cancel
+                </Button>
+                
                 <Button type="submit" className="custom-button">
                   {isSubmitting
                     ? "Submitting..."

@@ -84,11 +84,20 @@ export default function CustomersPage() {
 
   const confirmDelete = async () => {
     try {
+      if (selectedCustomer?.totalDue > 0) {
+        toast.error(
+          `Cannot delete customer "${
+            selectedCustomer?.name
+          }" because he has an outstanding due of ${selectedCustomer?.totalDue?.toFixed(
+            0
+          )} Tk`
+        );
+        return;
+      }
+
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       const result = await deleteCustomer(selectedCustomer?.id).unwrap();
-
-      console.log("DELETE RESULT: ", result);
 
       if (result?.success) {
         toast.success(result.message || "Product deleted successfully");

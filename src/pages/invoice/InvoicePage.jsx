@@ -1,6 +1,6 @@
 import { debounce } from "lodash";
 import { Plus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
 
 import {
@@ -51,9 +51,9 @@ const columns = [
 ];
 
 export default function InvoicePage() {
-  const [filterDates, setFilterDates] = useState({ from: null, to: null });
+  const navigate = useNavigate();
 
-  console.log("filterDates: ", filterDates);
+  const [filterDates, setFilterDates] = useState({ from: null, to: null });
 
   const [search, setSearch] = useState("");
 
@@ -61,24 +61,18 @@ export default function InvoicePage() {
 
   const [fromDate, setFromDate] = useState("");
 
+  // eslint-disable-next-line no-unused-vars
   const [toDate, setToDate] = useState("");
 
   const [page, setPage] = useState(1);
 
   const rowsPerPage = 20;
 
-  // const { data: invoiceData } = useGetAllInvoiceQuery();
-
   const { data: invoiceData, isLoading } = useGetAllInvoiceQuery({
     search,
     fromDate: filterDates.from || "",
     toDate: filterDates.to || "",
   });
-
-  console.log("invoiceData: ", invoiceData);
-
-  console.log(fromDate);
-  console.log(toDate);
 
   // Debounced setter for search value
   const debouncedSetSearch = useMemo(
@@ -126,6 +120,12 @@ export default function InvoicePage() {
     (page - 1) * rowsPerPage,
     page * rowsPerPage
   );
+
+  const handleDetails = (invoice) => {
+    const invoiceId = invoice?._id;
+
+    navigate(`/invoice-details/${invoiceId}`);
+  };
 
   return (
     <>
@@ -192,7 +192,12 @@ export default function InvoicePage() {
           {/* TABLE */}
           <CustomTableRoot>
             <CustomTableHeader columns={columns} />
-            <CustomTableBody data={paginated} columns={columns} />
+
+            <CustomTableBody
+              data={paginated}
+              columns={columns}
+              onDetails={(row) => handleDetails(row)}
+            />
           </CustomTableRoot>
 
           <CustomTablePagination

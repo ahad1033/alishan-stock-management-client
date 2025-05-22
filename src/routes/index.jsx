@@ -246,7 +246,19 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <RoleBasedRoute
-              allowedRoles={["admin", "super_admin", "stock_manager"]}
+              allowedRoles={["admin", "super_admin", "accountant"]}
+            >
+              <InvoiceDetails />
+            </RoleBasedRoute>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "invoice-details/:id",
+        element: (
+          <ProtectedRoute>
+            <RoleBasedRoute
+              allowedRoles={["admin", "super_admin", "accountant"]}
             >
               <InvoiceDetails />
             </RoleBasedRoute>

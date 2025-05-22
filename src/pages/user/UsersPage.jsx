@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { toast } from "react-hot-toast";
-
 import { Plus } from "lucide-react";
+// import { toast } from "react-hot-toast";
 
 import {
   CustomTableBody,
@@ -12,14 +11,34 @@ import {
   CustomTableSearch,
 } from "@/components/table";
 import { Button } from "@/components/ui/button";
-import CustomHeader from "@/components/page-heading/CustomHeader";
+
 import { useGetAllUserQuery } from "@/redux/features/user/userApi";
+
+import CustomHeader from "@/components/page-heading/CustomHeader";
+import CircularLoading from "@/components/shared/CircularLoading";
 
 const columns = [
   { key: "name", label: "Name" },
   { key: "email", label: "Email" },
   { key: "phone", label: "Phone" },
-  { key: "role", label: "Role" },
+  {
+    key: "role",
+    label: "Role",
+    render: (row) => {
+      switch (row.role) {
+        case "super_admin":
+          return "Super Admin";
+        case "admin":
+          return "Admin";
+        case "accountant":
+          return "Accountant";
+        case "stock_manager":
+          return "Stock Manager";
+        default:
+          return "";
+      }
+    },
+  },
 ];
 
 export default function UsersPage() {
@@ -42,14 +61,14 @@ export default function UsersPage() {
     page * rowsPerPage
   );
 
-  const handleEdit = (user) => {
-    toast.error("Can't edit user at this moment!");
-    console.log(user);
-  };
+  // const handleEdit = (user) => {
+  //   toast.error("Can't edit user at this moment!");
+  //   console.log(user);
+  // };
 
-  const handleDelete = (user) => {
-    toast.success(`User deleted: ${user?.name}`);
-  };
+  // const handleDelete = (user) => {
+  //   toast.success(`User deleted: ${user?.name}`);
+  // };
 
   return (
     <>
@@ -66,25 +85,31 @@ export default function UsersPage() {
         }
       />
 
-      {/* USER TABLE */}
-      <CustomTableSearch value={search} onChange={setSearch} />
+      {isLoading ? (
+        <CircularLoading />
+      ) : (
+        <>
+          {/* USER TABLE */}
+          <CustomTableSearch value={search} onChange={setSearch} />
 
-      <CustomTableRoot>
-        <CustomTableHeader columns={columns} />
+          <CustomTableRoot>
+            <CustomTableHeader columns={columns} />
 
-        <CustomTableBody
-          data={paginated}
-          columns={columns}
-          onEdit={(row) => handleEdit(row)}
-          onDelete={(row) => handleDelete(row)}
-        />
-      </CustomTableRoot>
+            <CustomTableBody
+              data={paginated}
+              columns={columns}
+              // onEdit={(row) => handleEdit(row)}
+              // onDelete={(row) => handleDelete(row)}
+            />
+          </CustomTableRoot>
 
-      <CustomTablePagination
-        currentPage={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
-      />
+          <CustomTablePagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
+        </>
+      )}
     </>
   );
 }

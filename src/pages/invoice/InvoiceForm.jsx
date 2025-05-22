@@ -7,10 +7,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 
 import {
   Select,
-  SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
+  SelectContent,
+  SelectTrigger,
 } from "@/components/ui/select";
 import { Form } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
@@ -186,10 +186,10 @@ export default function InvoiceForm() {
               : "Invoice added successfully")
         );
 
-        // if (!isEdit) reset();
-
         setItems([]);
+
         setPaidAmount("");
+
         reset();
 
         navigate("/invoice-details", {
@@ -252,8 +252,6 @@ export default function InvoiceForm() {
                   placeholder="Address"
                 />
               </div>
-
-              {/* ------------------------------------------- */}
 
               {/* Add Item Form */}
               <div className="grid grid-cols-3 gap-4 mb-6">
@@ -377,9 +375,15 @@ export default function InvoiceForm() {
                 </div>
               </div>
 
-              {/* ------------------------------------------- */}
+              <div className="flex justify-end mt-4 gap-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate("/invoices")}
+                >
+                  Cancel
+                </Button>
 
-              <div className="flex justify-end mt-4">
                 <Button
                   type="submit"
                   className="custom-button"

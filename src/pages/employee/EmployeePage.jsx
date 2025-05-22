@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+
+import { useBoolean } from "@/hooks";
 
 import {
   CustomTableBody,
@@ -12,8 +15,6 @@ import {
 } from "@/components/table";
 import { Button } from "@/components/ui/button";
 
-import { useBoolean } from "@/hooks";
-
 import ConfirmDialog from "@/components/shared/ConfirmDialog";
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import CircularLoading from "@/components/shared/CircularLoading";
@@ -22,6 +23,8 @@ import {
   useGetAllEmployeeQuery,
   useDeleteEmployeeMutation,
 } from "@/redux/features/employee/employeeApi";
+import { canManageEmployee } from "@/utils/role-utils";
+import { useCurrentUser } from "@/redux/features/auth/authSlice";
 
 const columns = [
   { key: "name", label: "Name" },
@@ -49,6 +52,14 @@ export default function EmployeePage() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   const rowsPerPage = 20;
+
+  // CURRENT USER
+  const currentUser = useSelector(useCurrentUser);
+
+  // USER ROLE
+  const userRole = currentUser?.user?.role;
+
+  const isAuthorized = canManageEmployee(userRole);
 
   const { data: employeeData, isLoading } = useGetAllEmployeeQuery();
 
@@ -104,12 +115,14 @@ export default function EmployeePage() {
         title="Employees"
         subtitle="Manage your workforce and their details"
         actions={
-          <Link to="/add-employee">
-            <Button className="custom-button">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Employee
-            </Button>
-          </Link>
+          isAuthorized && (
+            <Link to="/add-employee">
+              <Button className="custom-button">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Employee
+              </Button>
+            </Link>
+          )
         }
       />
 
@@ -126,8 +139,8 @@ export default function EmployeePage() {
             <CustomTableBody
               data={paginated}
               columns={columns}
-              onEdit={(row) => handleEdit(row)}
-              onDelete={(row) => handleDelete(row)}
+              onEdit={isAuthorized ? (row) => handleEdit(row) : undefined}
+              onDelete={isAuthorized ? (row) => handleDelete(row) : undefined}
               onDetails={(row) => handleDetails(row)}
             />
           </CustomTableRoot>
