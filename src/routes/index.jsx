@@ -8,13 +8,14 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { StockPage } from "@/pages/stock";
 import { UserForm, UsersPage } from "@/pages/user";
 import { ExpenseForm, ExpensePage } from "@/pages/expense";
-import { InvoiceForm, InvoicePage } from "@/pages/invoice";
 import { ProductForm, ProductsPage } from "@/pages/product";
 import { CustomerForm, CustomersPage } from "@/pages/customer";
+import { InvoiceForm, InvoicePage } from "@/pages/invoice";
 import { EmployeeDetails, EmployeeForm, EmployeePage } from "@/pages/employee";
 
 import Unauthorized from "@/pages/Unauthorized";
 import RoleBasedRoute from "@/components/auth/RoleBasedRoute";
+import InvoiceDetails from "@/pages/invoice/InvoiceDetails";
 
 export const router = createBrowserRouter([
   {
@@ -235,6 +236,19 @@ export const router = createBrowserRouter([
               allowedRoles={["admin", "super_admin", "stock_manager"]}
             >
               <StockPage />
+            </RoleBasedRoute>
+          </ProtectedRoute>
+        ),
+      },
+      // INVOICE ROUTES
+      {
+        path: "invoice-details",
+        element: (
+          <ProtectedRoute>
+            <RoleBasedRoute
+              allowedRoles={["admin", "super_admin", "stock_manager"]}
+            >
+              <InvoiceDetails />
             </RoleBasedRoute>
           </ProtectedRoute>
         ),

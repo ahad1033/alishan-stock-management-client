@@ -1,18 +1,17 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { toast } from 'react-hot-toast';
-import { Check, Palette, Type } from 'lucide-react';
-import { useThemeContext } from '../theme/ThemeProvider';
-
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "react-hot-toast";
+import { Check, Palette, Type } from "lucide-react";
+import { useThemeContext } from "../theme/ThemeProvider";
 
 export function ThemeSettings({ onClose }) {
   const {
@@ -29,26 +28,26 @@ export function ThemeSettings({ onClose }) {
   const [tempFont, setTempFont] = useState(fontFamily);
 
   const colorOptions = [
-    { label: 'Gold', primary: '#B38A2D', secondary: '#E1BE5D' },
-    { label: 'Blue', primary: '#2563EB', secondary: '#60A5FA' },
-    { label: 'Green', primary: '#059669', secondary: '#34D399' },
-    { label: 'Purple', primary: '#7C3AED', secondary: '#A78BFA' },
-    { label: 'Rose', primary: '#E11D48', secondary: '#FB7185' },
+    { label: "Gold", primary: "#B38A2D", secondary: "#E1BE5D" },
+    { label: "Blue", primary: "#2563EB", secondary: "#60A5FA" },
+    { label: "Green", primary: "#059669", secondary: "#34D399" },
+    { label: "Purple", primary: "#7C3AED", secondary: "#A78BFA" },
+    { label: "Rose", primary: "#E11D48", secondary: "#FB7185" },
   ];
 
   const fontOptions = [
-    { value: 'Inter, sans-serif', label: 'Inter' },
-    { value: 'Poppins, sans-serif', label: 'Poppins' },
-    { value: 'Roboto, sans-serif', label: 'Roboto' },
-    { value: 'Montserrat, sans-serif', label: 'Montserrat' },
-    { value: 'System, sans-serif', label: 'System UI' },
+    { value: "Inter, sans-serif", label: "Inter" },
+    { value: "Poppins, sans-serif", label: "Poppins" },
+    { value: "Roboto, sans-serif", label: "Roboto" },
+    { value: "Montserrat, sans-serif", label: "Montserrat" },
+    { value: "System, sans-serif", label: "System UI" },
   ];
 
   const handleApply = () => {
     setPrimaryColor(tempPrimary);
     setSecondaryColor(tempSecondary);
     setFontFamily(tempFont);
-    toast.success('Theme settings updated');
+    toast.success("Theme settings updated");
     if (onClose) onClose();
   };
 
@@ -128,9 +127,10 @@ export function ThemeSettings({ onClose }) {
             <label className="text-sm font-medium">Font Family</label>
             <Select
               value={tempFont}
+              className="w-full"
               onValueChange={setTempFont}
             >
-              <SelectTrigger className="mt-2">
+              <SelectTrigger className="mt-2 w-full">
                 <SelectValue placeholder="Select a font" />
               </SelectTrigger>
               <SelectContent>
@@ -150,9 +150,7 @@ export function ThemeSettings({ onClose }) {
               style={{ fontFamily: tempFont }}
             >
               <h3 className="text-lg font-bold">The quick brown fox</h3>
-              <p>
-                Jumps over the lazy dog. 1234567890
-              </p>
+              <p>Jumps over the lazy dog. 1234567890</p>
             </div>
           </div>
         </TabsContent>
@@ -162,9 +160,7 @@ export function ThemeSettings({ onClose }) {
         <Button variant="outline" onClick={onClose}>
           Cancel
         </Button>
-        <Button onClick={handleApply}>
-          Apply Changes
-        </Button>
+        <Button onClick={handleApply}>Apply Changes</Button>
       </div>
     </div>
   );
