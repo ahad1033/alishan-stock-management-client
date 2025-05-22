@@ -1,5 +1,8 @@
+import { useEffect } from "react";
 import { useThemeContext } from "@/components/theme/ThemeProvider";
 import { Users, Banknote, BanknoteX, BanknoteArrowDown } from "lucide-react";
+
+import { useBoolean } from "@/hooks";
 
 import { StatCard } from "../components/analytics/StatCard";
 import { ChartCard } from "@/components/analytics/ChartCard";
@@ -11,27 +14,14 @@ import { useGetAllCustomerQuery } from "@/redux/features/customer/customerApi";
 
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import CircularLoading from "@/components/shared/CircularLoading";
-import { useBoolean } from "@/hooks";
-import { useEffect } from "react";
 
-// Mock data for the dashboard
-const mockSalesData = [
-  { name: "Jan", value: 12000 },
-  { name: "Feb", value: 19000 },
-  { name: "Mar", value: 15000 },
-  { name: "Apr", value: 22000 },
-  { name: "May", value: 28000 },
-  { name: "Jun", value: 24000 },
-  { name: "Jul", value: 30000 },
-];
-
-const mockProductData = [
-  { name: "Electronics", value: 35 },
-  { name: "Clothing", value: 25 },
-  { name: "Food", value: 20 },
-  { name: "Books", value: 15 },
-  { name: "Other", value: 5 },
-];
+// const mockProductData = [
+//   { name: "Electronics", value: 35 },
+//   { name: "Clothing", value: 25 },
+//   { name: "Food", value: 20 },
+//   { name: "Books", value: 15 },
+//   { name: "Other", value: 5 },
+// ];
 
 const mockCustomerData = [
   { name: "Week 1", value: 120 },
@@ -59,6 +49,15 @@ export default function Analytics() {
 
   const loadingState =
     balanceLoadingState && customerLoadingState && expenseLoadingState;
+
+  const mockSalesData = [];
+
+  for (let i = 1; i <= 15; i++) {
+    mockSalesData.push({
+      name: String("June " + i),
+      value: Math.floor(Math.random() * (1500 - 500 + 1)) + 500,
+    });
+  }
 
   useEffect(() => {
     mount.onTrue();
@@ -140,20 +139,21 @@ export default function Analytics() {
           </div>
 
           {/* Charts Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6"> */}
+          <div className="grid grid-cols-1 mb-6">
             <ChartCard
-              title="Monthly Sales"
-              description="Revenue breakdown by month"
+              title="Daily sales"
+              description="Last 15 days sell"
               data={mockSalesData}
               type="line"
               className="lg:col-span-2"
             />
-            <ChartCard
+            {/* <ChartCard
               title="Product Categories"
               description="Distribution by product type"
               data={mockProductData}
               type="pie"
-            />
+            /> */}
           </div>
 
           {/* Activity + Stats Row */}
