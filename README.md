@@ -104,6 +104,21 @@ src/
 └── App.jsx            # Main app component
 
 
+
+## 📊 Dashboard Access control
+
+| Feature / Role   | Admin | Stock Manager | Accountant |
+| ---------------- | :---: | :-----------: | :--------: |
+| Manage Users     |   ✔️  |       ❌     |      ❌    |
+| View Products    |   ✔️  |       ✔️     |      ✔️    |
+| Manage Stock     |   ✔️  |       ✔️     |      ❌    |
+| Create Invoices  |   ✔️  |       ❌     |      ✔️    |
+| Manage Expenses  |   ✔️  |       ❌     |      ✔️    |
+| View Collections |   ✔️  |       ❌     |      ✔️    |
+| Manage Employees |   ✔️  |       ❌     |      ❌    |
+| Access Analytics |   ✔️  |       ❌     |      ❌    |
+
+
 # Clone the frontend repository
 git clone https://github.com/ahad1033/alishan-stock-management-client
 cd alishan-frontend
