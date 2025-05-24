@@ -1,12 +1,116 @@
-# React + Vite
+# Alishan — Stock Management Web Application (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Alishan is a modern, role-based stock management web application built with **React 19**, **Redux Toolkit**, **Tailwind CSS**, and **Vite**. This project serves as the frontend of a MERN stack solution, designed to streamline inventory control, invoice processing, expense tracking, and financial analytics in a structured and scalable way.
 
-Currently, two official plugins are available:
+> ⚠️ This is the **frontend** codebase only. The backend (Express + MongoDB) is maintained separately.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🚀 Features Overview
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 👤 User Roles
+
+- **Admin**
+  - Create, update, and delete users (Admin, Stock Manager, Accountant)
+  - Full access to all dashboard features
+- **Stock Manager**
+  - Manage product stock (add/deduct)
+  - View product and stock-related data
+- **Accountant**
+  - Manage invoices, expenses, collections
+  - Cannot access stock or employee management
+
+### 📦 Products & Stock Management
+
+- Add, edit, and delete products
+- Add new stock entries by date
+- Deduct stock using invoice number (confirmation required)
+- View complete stock history
+
+### 🧾 Invoice & Customer Management
+
+- Create invoices with customer selection
+- Download and print invoice as PDF format
+- Auto-calculates total, due, and paid amounts
+- Updates customer profile with:
+  - Total Purchase
+  - Total Paid
+  - Total Due
+
+### 👥 Employee Management
+
+- Create, update, delete employees
+- View employee salary history (if salary is issued via expenses)
+
+### 💸 Expense & Cash Flow Tracking
+
+- Categorized expense creation
+- Tracks:
+  - Total Revenue
+  - Total Expense
+  - Current Balance
+- Salary category links expense to employee
+- Full expense history view
+
+### 💰 Collections
+
+- Add collection against customer dues
+- View collection history
+- Automatically updates customer due and balance
+
+### 📊 Analytics Dashboard
+
+- Last 15 days revenue and sales trends
+- Recent expense list
+- Summary of:
+  - Total Revenue
+  - Total Expenses
+  - Total Customers
+
+---
+
+## 🛠 Tech Stack
+
+| Tech                  | Description                           |
+| --------------------- | ------------------------------------- |
+| **React 19**          | UI Framework                          |
+| **Redux Toolkit**     | Global state management               |
+| **React Router 7**    | Client-side routing                   |
+| **Tailwind CSS v4**   | Utility-first CSS framework           |
+| **ShadCN + Radix UI** | Accessible and styled components      |
+| **React Hook Form**   | Form handling and validation          |
+| **Yup**               | Schema-based form validation          |
+| **Recharts**          | Visual data representation (charts)   |
+| **Redux Persist**     | Persistent Redux state across reloads |
+| **JWT Decode**        | Token decoding for auth               |
+| **React Hot Toast**   | Notifications                         |
+| **Date-fns**          | Date utilities                        |
+| **Lodash**            | Utility functions                     |
+
+---
+
+## 📁 Project Structure
+
+```bash
+src/
+│
+├── components/        # Reusable UI components
+├── redux/             # Redux slices (auth, product, stock, etc.)
+├── hooks/             # Custom React hooks
+├── layouts/           # Dashboard and page layouts
+├── pages/             # Route-based pages
+├── routes/            # Route definitions and role-based access
+├── utils/             # Utility functions (auth, token, etc.)
+└── App.jsx            # Main app component
+
+
+# Clone the frontend repository
+git clone https://github.com/ahad1033/alishan-stock-management-client
+cd alishan-frontend
+
+# Install dependencies
+yarn install
+
+# Start development server
+yarn dev
+```
