@@ -16,6 +16,7 @@ import { EmployeeDetails, EmployeeForm, EmployeePage } from "@/pages/employee";
 import Unauthorized from "@/pages/Unauthorized";
 import RoleBasedRoute from "@/components/auth/RoleBasedRoute";
 import InvoiceDetails from "@/pages/invoice/InvoiceDetails";
+import { CollectionPage } from "@/pages/collection";
 
 export const router = createBrowserRouter([
   {
@@ -261,6 +262,19 @@ export const router = createBrowserRouter([
               allowedRoles={["admin", "super_admin", "accountant"]}
             >
               <InvoiceDetails />
+            </RoleBasedRoute>
+          </ProtectedRoute>
+        ),
+      },
+      // COLLECTION ROUTES
+      {
+        path: "collections",
+        element: (
+          <ProtectedRoute>
+            <RoleBasedRoute
+              allowedRoles={["admin", "super_admin", "accountant"]}
+            >
+              <CollectionPage />
             </RoleBasedRoute>
           </ProtectedRoute>
         ),

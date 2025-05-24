@@ -27,3 +27,10 @@ export const EMPLOYEES_POSITION_OPTIONS = [
   { value: "senior_worker", label: "Senior Worker" },
   { value: "managing_director", label: "Managing Director" },
 ];
+
+export const PAYMENT_OPTIONS = [
+  { value: "cash", label: "Cash" },
+  { value: "cheque", label: "Cheque" },
+  { value: "bank_transfer", label: "Bank Transfer" },
+  { value: "mobile_banking", label: "Mobile banking" },
+];

@@ -18,6 +18,7 @@ import {
   ChevronRight,
   PackageSearch,
   UserRoundCheck,
+  HandCoins,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -52,6 +53,12 @@ const navItems = [
     label: "Invoices",
     icon: <FileText className="h-5 w-5" />,
     path: "/invoices",
+    role: ["super_admin", "admin", "accountant"],
+  },
+  {
+    label: "Collections",
+    icon: <HandCoins className="h-5 w-5" />,
+    path: "/collections",
     role: ["super_admin", "admin", "accountant"],
   },
   {

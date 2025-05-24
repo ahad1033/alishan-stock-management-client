@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { formatDistance, subDays } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -41,13 +42,18 @@ export function RecentExpenseCard({
                         activity.category.slice(1)}
                     </h4>
                     <span className="text-xs text-muted-foreground">
-                      {new Date(activity?.createdAt).toLocaleDateString(
+                      {/* {new Date(activity?.createdAt).toLocaleDateString(
                         "en-US",
                         {
                           day: "numeric",
                           month: "short",
                           year: "numeric",
                         }
+                      )} */}
+                      {formatDistance(
+                        subDays(new Date(activity.createdAt), 3),
+                        new Date(),
+                        { addSuffix: true }
                       )}
                     </span>
                   </div>
