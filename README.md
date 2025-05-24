@@ -121,7 +121,7 @@ src/
 
 # Clone the frontend repository
 git clone https://github.com/ahad1033/alishan-stock-management-client
-cd alishan-frontend
+cd alishan-stock-management-client
 
 # Install dependencies
 yarn install
