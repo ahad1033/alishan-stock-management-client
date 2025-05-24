@@ -33,7 +33,7 @@ const invoiceApi = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["INVOICES", "CUSTOMERS", "BALANCES"],
+      invalidatesTags: ["INVOICES", "CUSTOMERS", "BALANCES", "PRODUCTS"],
     }),
     getInvoiceById: builder.query({
       query: (id) => ({
@@ -48,14 +48,14 @@ const invoiceApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ["INVOICES", "CUSTOMERS", "BALANCES"],
+      invalidatesTags: ["INVOICES", "CUSTOMERS", "BALANCES", "PRODUCTS"],
     }),
     deleteInvoice: builder.mutation({
       query: (invoiceId) => ({
         url: API_ENDPOINTS.DELETE_INVOICE_BY_ID(invoiceId),
         method: "DELETE",
       }),
-      invalidatesTags: ["INVOICES", "CUSTOMERS", "BALANCES"],
+      invalidatesTags: ["INVOICES", "CUSTOMERS", "BALANCES", "PRODUCTS"],
     }),
   }),
 });

@@ -6,9 +6,9 @@ import { useBoolean } from "@/hooks";
 
 import {
   CustomTableBody,
+  CustomTableRoot,
   CustomTableHeader,
   CustomTablePagination,
-  CustomTableRoot,
 } from "@/components/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -119,6 +119,7 @@ export default function StockPage() {
       to: null,
     }));
     setSearch("");
+    setInputValue("");
   }, [filterDates.from]);
 
   const handleDateRangeChange = (range) => {
@@ -184,13 +185,14 @@ export default function StockPage() {
                 variant="destructive"
                 disabled={
                   search.trim() === "" &&
+                  inputValue.trim() === "" &&
                   (!filterDates.from || filterDates.from === "") &&
                   (!filterDates.to || filterDates.to === "")
                 }
                 onClick={() => {
                   setPage(1);
                   setSearch("");
-                  setFilterDates({ from: null, to: null });
+                  setInputValue(""), setFilterDates({ from: null, to: null });
                 }}
                 className="w-full"
               >
