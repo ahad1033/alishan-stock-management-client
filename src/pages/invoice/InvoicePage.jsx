@@ -79,7 +79,7 @@ export default function InvoicePage() {
     () =>
       debounce((value) => {
         setSearch(value.trim());
-      }, 500), // 500ms delay
+      }, 500),
     []
   );
 

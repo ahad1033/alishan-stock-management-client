@@ -1,62 +1,137 @@
-import { useState } from "react";
-import { format } from "date-fns";
-import { Plus, Minus, Filter } from "lucide-react";
+import { debounce } from "lodash";
+import { Plus, Minus } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useBoolean } from "@/hooks";
 
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  CustomTableBody,
+  CustomTableHeader,
+  CustomTablePagination,
+  CustomTableRoot,
+} from "@/components/table";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import { useGetAllStockHistoryQuery } from "@/redux/features/stock/stockApi";
 
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import AddStockDialog from "@/components/invoices/AddStockDialog";
+import CircularLoading from "@/components/shared/CircularLoading";
 import DeductStockDialog from "@/components/invoices/DeductStockDialog";
+import CustomDateRangePicker from "@/components/date-picker/CustomDateRangePicker";
+
+const columns = [
+  {
+    key: "createdAt",
+    label: "Date",
+    render: (row) => {
+      const date = new Date(row.createdAt);
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      return `${day}-${month}-${year}`;
+    },
+  },
+  { key: "product", label: "Product", render: (row) => row.productId?.name },
+  {
+    key: "type",
+    label: "Status",
+    align: "center",
+    render: (row) => (
+      <span
+        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+          row?.status === "in"
+            ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+            : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+        }`}
+      >
+        {row?.status === "in" ? "Added" : "Deducted"}
+      </span>
+    ),
+  },
+  {
+    key: "quantity",
+    label: "Quantity",
+    align: "center",
+  },
+  {
+    key: "issuesBy",
+    label: "Issued by",
+    render: (row) => row.issuedBy?.name,
+  },
+];
 
 export default function StockPage() {
+  const [filterDates, setFilterDates] = useState({ from: null, to: null });
 
-  const [timeFilter, setTimeFilter] = useState("all");
-  const [typeFilter, setTypeFilter] = useState("all");
+  const [search, setSearch] = useState("");
+
+  const [inputValue, setInputValue] = useState("");
+
+  const [page, setPage] = useState(1);
 
   const stockInModal = useBoolean();
 
   const stockOutModal = useBoolean();
 
-  const { data: stockHistory } = useGetAllStockHistoryQuery();
+  const rowsPerPage = 20;
 
-  console.log("stockHistory: ", stockHistory);
-
-  // eslint-disable-next-line no-unused-vars
-  const filteredHistory = stockHistory?.data?.filter((entry) => {
-    const entryDate = new Date(entry.date);
-    const now = new Date();
-
-    // Time filter
-    if (timeFilter === "daily") {
-      return entryDate.toDateString() === now.toDateString();
-    } else if (timeFilter === "weekly") {
-      const weekAgo = new Date(now.setDate(now.getDate() - 7));
-      return entryDate >= weekAgo;
-    } else if (timeFilter === "monthly") {
-      return (
-        entryDate.getMonth() === now.getMonth() &&
-        entryDate.getFullYear() === now.getFullYear()
-      );
-    } else if (timeFilter === "yearly") {
-      return entryDate.getFullYear() === now.getFullYear();
-    }
-
-    // Type filter
-    if (typeFilter !== "all") {
-      return entry.type === typeFilter;
-    }
-
-    return true;
+  const { data: stockHistory, isLoading } = useGetAllStockHistoryQuery({
+    search,
+    fromDate: filterDates.from || "",
+    toDate: filterDates.to || "",
   });
+
+  // Debounced setter for search value
+  const debouncedSetSearch = useMemo(
+    () =>
+      debounce((value) => {
+        setSearch(value.trim());
+      }, 500),
+    []
+  );
+
+  // Handle input changes
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setInputValue(value);
+    debouncedSetSearch(value);
+  };
+
+  // Cleanup debounce on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      debouncedSetSearch.cancel();
+    };
+  }, [debouncedSetSearch]);
+
+  // Automatically reset dates if search is active
+  useEffect(() => {
+    if (search.trim() !== "") {
+      setFilterDates({ from: null, to: null });
+    }
+  }, [search]);
+
+  useEffect(() => {
+    setFilterDates((prev) => ({
+      ...prev,
+      to: null,
+    }));
+    setSearch("");
+  }, [filterDates.from]);
+
+  const handleDateRangeChange = (range) => {
+    setFilterDates(range);
+  };
+
+  const filtered = stockHistory?.data || [];
+
+  const totalPages = Math.ceil(filtered?.length / rowsPerPage) || 1;
+  const paginated = filtered?.slice(
+    (page - 1) * rowsPerPage,
+    page * rowsPerPage
+  );
 
   return (
     <>
@@ -77,138 +152,67 @@ export default function StockPage() {
         }
       />
 
-      {/* Filters */}
-      <div className="flex gap-4 mb-6">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" className="w-[200px]">
-              <Filter className="mr-2 h-4 w-4" />
-              {timeFilter === "all"
-                ? "All Time"
-                : `${timeFilter.charAt(0).toUpperCase() + timeFilter.slice(1)}`}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-[200px] p-0">
-            <Button
-              variant="ghost"
-              className="w-full justify-start rounded-none"
-              onClick={() => setTimeFilter("all")}
-            >
-              All Time
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start rounded-none"
-              onClick={() => setTimeFilter("daily")}
-            >
-              Daily
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start rounded-none"
-              onClick={() => setTimeFilter("weekly")}
-            >
-              Weekly
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start rounded-none"
-              onClick={() => setTimeFilter("monthly")}
-            >
-              Monthly
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start rounded-none"
-              onClick={() => setTimeFilter("yearly")}
-            >
-              Yearly
-            </Button>
-          </PopoverContent>
-        </Popover>
-
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" className="w-[200px]">
-              <Filter className="mr-2 h-4 w-4" />
-              {typeFilter === "all"
-                ? "All Types"
-                : `${
-                    typeFilter.charAt(0).toUpperCase() + typeFilter.slice(1)
-                  } Stock`}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-[200px] p-0">
-            <Button
-              variant="ghost"
-              className="w-full justify-start rounded-none"
-              onClick={() => setTypeFilter("all")}
-            >
-              All Types
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start rounded-none"
-              onClick={() => setTypeFilter("add")}
-            >
-              Add Stock
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start rounded-none"
-              onClick={() => setTypeFilter("deduct")}
-            >
-              Deduct Stock
-            </Button>
-          </PopoverContent>
-        </Popover>
-      </div>
-
       {/* Stock History Table */}
-      <div className="bg-card rounded-lg border overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b">
-                <th className="text-left p-4">Date & Time</th>
-                <th className="text-left p-4">Product</th>
-                <th className="text-left p-4">Type</th>
-                <th className="text-right p-4">Quantity</th>
-                <th className="text-left p-4">Issued By</th>
-              </tr>
-            </thead>
-            <tbody>
-              {stockHistory?.data.map((entry) => {
-                // const product = products.find((p) => p.id === entry.productId);
+      {isLoading ? (
+        <CircularLoading />
+      ) : (
+        <>
+          {/* TOP FILTER BAR */}
+          <div className="grid grid-cols-12 gap-4 mb-6 px-1 items-center">
+            {/* Search Input */}
+            <div className="col-span-12 md:col-span-6">
+              <Input
+                type="search"
+                placeholder="Search by product"
+                value={inputValue}
+                onChange={handleSearchChange}
+                className="w-full"
+              />
+            </div>
 
-                // console.log("entry :", entry);
+            <div className="col-span-12 md:col-span-4 flex items-center gap-2">
+              <CustomDateRangePicker
+                fromDate={filterDates.from}
+                toDate={filterDates.to}
+                onChange={handleDateRangeChange}
+              />
+            </div>
 
-                return (
-                  <tr key={entry?.id} className="border-b">
-                    <td className="p-4">
-                      {format(new Date(entry?.createdAt), "PPp")}
-                    </td>
-                    <td className="p-4">{entry?.productId?.name}</td>
-                    <td className="p-4">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          entry?.status === "in"
-                            ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                            : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
-                        }`}
-                      >
-                        {entry?.status === "in" ? "Added" : "Deducted"}
-                      </span>
-                    </td>
-                    <td className="p-4 text-right">{entry.quantity}</td>
-                    <td className="p-4">{entry?.issuedBy?.name || "Admin"}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            {/* Clear Filters Button */}
+            <div className="col-span-12 md:col-span-2">
+              <Button
+                variant="destructive"
+                disabled={
+                  search.trim() === "" &&
+                  (!filterDates.from || filterDates.from === "") &&
+                  (!filterDates.to || filterDates.to === "")
+                }
+                onClick={() => {
+                  setPage(1);
+                  setSearch("");
+                  setFilterDates({ from: null, to: null });
+                }}
+                className="w-full"
+              >
+                Clear Filters
+              </Button>
+            </div>
+          </div>
+
+          {/* TABLE */}
+          <CustomTableRoot>
+            <CustomTableHeader columns={columns} />
+
+            <CustomTableBody data={paginated} columns={columns} />
+          </CustomTableRoot>
+
+          <CustomTablePagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
+        </>
+      )}
 
       {/* Add Stock Dialog */}
       <AddStockDialog stockInModal={stockInModal} />
