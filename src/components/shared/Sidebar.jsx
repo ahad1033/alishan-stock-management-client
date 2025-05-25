@@ -118,7 +118,7 @@ export function Sidebar() {
       )} */}
 
       {/* Mobile Menu Button */}
-      <div className="fixed top-4 left-4 z-50 lg:hidden">
+      <div className="fixed top-4 left-4 z-50 md:hidden">
         <Button
           variant="outline"
           size="icon"
@@ -140,7 +140,7 @@ export function Sidebar() {
           "bg-black/10 dark:bg-white/5 backdrop-blur-lg",
           "border-r border-neutral-200/10 dark:border-neutral-800/20",
           isCollapsed ? "w-28" : "w-64",
-          "lg:translate-x-0",
+          "md:translate-x-0",
           isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
@@ -159,7 +159,7 @@ export function Sidebar() {
           <Button
             variant="collapse"
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="absolute -right-5 top-12 rounded-full hidden lg:block"
+            className="absolute -right-5 top-12 rounded-full hidden md:block"
           >
             {isCollapsed ? (
               <ChevronRight

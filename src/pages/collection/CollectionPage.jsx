@@ -78,8 +78,8 @@ export default function CollectionPage() {
   return (
     <>
       <CustomHeader
-        title="Users"
-        subtitle="Manage system users and their roles"
+        title="Collections"
+        subtitle="Manage your customers due amount and histories"
         actions={
           <Button className="custom-button" onClick={collectionDialog.onTrue}>
             <Plus className="mr-2 h-4 w-4" />
@@ -93,7 +93,11 @@ export default function CollectionPage() {
       ) : (
         <>
           {/* USER TABLE */}
-          <CustomTableSearch value={search} onChange={setSearch} />
+          <CustomTableSearch
+            value={search}
+            onChange={setSearch}
+            placeholder="Search by customer name..."
+          />
 
           <CustomTableRoot>
             <CustomTableHeader columns={columns} />
@@ -101,8 +105,6 @@ export default function CollectionPage() {
             <CustomTableBody
               data={paginated}
               columns={columns}
-              // onEdit={(row) => handleEdit(row)}
-              // onDelete={(row) => handleDelete(row)}
             />
           </CustomTableRoot>
 
