@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { TableBody, TableRow, TableCell } from "@/components/ui/table";
 
-export function CustomTableBody({
+export default function CustomTableBody({
   data,
   columns,
   //

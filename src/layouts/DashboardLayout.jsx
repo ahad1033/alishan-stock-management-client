@@ -18,7 +18,7 @@ export default function DashboardLayout() {
         {/* Main content */}
         <main
           className={`pt-16 transition-all duration-300 ${
-            isCollapsed ? "lg:pl-20" : "lg:pl-64"
+            isCollapsed ? "lg:pl-28" : "lg:pl-64"
           }`}
         >
           <div className="p-4 sm:p-6 max-w-7xl mx-auto">

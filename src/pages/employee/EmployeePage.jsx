@@ -7,11 +7,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { useBoolean } from "@/hooks";
 
 import {
-  CustomTableBody,
   CustomTableRoot,
   CustomTableSearch,
   CustomTableHeader,
   CustomTablePagination,
+  CustomTableBody,
 } from "@/components/table";
 import { Button } from "@/components/ui/button";
 

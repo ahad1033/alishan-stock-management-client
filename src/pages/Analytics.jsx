@@ -15,14 +15,6 @@ import { useGetAllCustomerQuery } from "@/redux/features/customer/customerApi";
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import CircularLoading from "@/components/shared/CircularLoading";
 
-// const mockProductData = [
-//   { name: "Electronics", value: 35 },
-//   { name: "Clothing", value: 25 },
-//   { name: "Food", value: 20 },
-//   { name: "Books", value: 15 },
-//   { name: "Other", value: 5 },
-// ];
-
 const mockCustomerData = [
   { name: "Week 1", value: 120 },
   { name: "Week 2", value: 180 },
@@ -64,8 +56,6 @@ export default function Analytics() {
   }, [mount]);
 
   if (!mount.value) return null;
-
-  console.log("mount: ", mount);
 
   return (
     <>

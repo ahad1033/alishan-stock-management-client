@@ -95,8 +95,6 @@ export default function ProductsPage() {
 
       const result = await deleteProduct(selectedProduct?.id).unwrap();
 
-      console.log("DELETE RESULT: ", result);
-
       if (result?.success) {
         toast.success(result.message || "Product deleted successfully");
       }

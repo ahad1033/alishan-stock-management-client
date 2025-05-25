@@ -139,7 +139,7 @@ export function Sidebar() {
           "fixed top-0 left-0 z-40 h-screen transition-all duration-300 ease-in-out",
           "bg-black/10 dark:bg-white/5 backdrop-blur-lg",
           "border-r border-neutral-200/10 dark:border-neutral-800/20",
-          isCollapsed ? "w-20" : "w-64",
+          isCollapsed ? "w-28" : "w-64",
           "lg:translate-x-0",
           isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
@@ -148,7 +148,6 @@ export function Sidebar() {
           {/* Logo */}
           <div className={cn("p-6", isCollapsed && "p-6")}>
             <div className="flex items-center gap-2">
-              {/* <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#B38A2D] to-[#E1BE5D]" /> */}
               <img src="/logo.png" className="w-12" />
               {!isCollapsed && (
                 <h3 className="text-xl font-bold text-[#B38A2D]">Alishan</h3>
