@@ -1,7 +1,9 @@
-import { X } from "lucide-react";
 import { debounce } from "lodash";
 import toast from "react-hot-toast";
+import { Loader2, X } from "lucide-react";
 import { useState, useCallback } from "react";
+
+import { useThemeContext } from "../theme/ThemeProvider";
 
 import {
   Dialog,
@@ -19,6 +21,10 @@ import { useGetAllInvoiceQuery } from "@/redux/features/invoice/invoiceApi";
 import { useGetAllProductQuery } from "@/redux/features/product/productApi";
 
 export default function DeductStockDialog({ isDeductStockOpen }) {
+  const { primaryColor } = useThemeContext();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [invoiceNumber, setInvoiceNumber] = useState("");
 
   const [submittedInvoiceNumber, setSubmittedInvoiceNumber] = useState("");
@@ -51,6 +57,8 @@ export default function DeductStockDialog({ isDeductStockOpen }) {
     isLoading: isInvoiceLoading,
     isError: isInvoiceError,
     error: invoiceError,
+    refetch: refetchInvoice,
+    isFetching: isInvoiceFetching,
   } = useGetAllInvoiceQuery(
     { invoiceNumber: submittedInvoiceNumber },
     {
@@ -66,12 +74,15 @@ export default function DeductStockDialog({ isDeductStockOpen }) {
     isLoading: isProductLoading,
     isError: isProductError,
     error: productError,
+    refetch: refetchProduct,
   } = useGetAllProductQuery(undefined, {
     skip: !invoice || !invoice?.products?.length,
   });
 
   // Confirm deduct action
   const handleConfirmDeduction = async () => {
+    setIsSubmitting(true);
+
     try {
       const res = await deductStock({
         invoiceNumber: submittedInvoiceNumber,
@@ -80,9 +91,12 @@ export default function DeductStockDialog({ isDeductStockOpen }) {
       console.log("result", res);
 
       toast.success("Stock deducted successfully.");
+
       closeDialog();
     } catch (err) {
       toast.error(err?.data?.message || "Failed to deduct stock.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -91,6 +105,23 @@ export default function DeductStockDialog({ isDeductStockOpen }) {
     setSubmittedInvoiceNumber("");
     setIsConfirmedView(false);
     isDeductStockOpen.onFalse();
+
+    // Clear cached data by tricking skip and using refetch
+    setTimeout(() => {
+      refetchInvoice();
+      refetchProduct();
+    }, 0);
+  };
+
+  const handleCancel = () => {
+    setInvoiceNumber("");
+    setIsConfirmedView(false);
+    setSubmittedInvoiceNumber("");
+
+    setTimeout(() => {
+      refetchInvoice();
+      refetchProduct();
+    }, 0);
   };
 
   // Error UI (robust feedback)
@@ -115,7 +146,12 @@ export default function DeductStockDialog({ isDeductStockOpen }) {
   return (
     <Dialog
       open={isDeductStockOpen.value}
-      onOpenChange={isDeductStockOpen.onToggle}
+      // onOpenChange={isDeductStockOpen.onToggle}
+      onOpenChange={(open) => {
+        if (!open) {
+          closeDialog();
+        }
+      }}
     >
       <DialogContent>
         <DialogHeader>
@@ -141,7 +177,7 @@ export default function DeductStockDialog({ isDeductStockOpen }) {
             </div>
             {renderErrors()}
             <Button
-              disabled={isInvoiceLoading}
+              disabled={isInvoiceLoading || isProductLoading}
               className="w-full bg-[#B38A2D] hover:bg-[#E1BE5D]"
               onClick={() => {
                 handleSubmit();
@@ -155,148 +191,67 @@ export default function DeductStockDialog({ isDeductStockOpen }) {
           <div className="space-y-4 py-4">
             <h4 className="text-lg font-semibold">Invoice Products</h4>
             <div className="border rounded-md">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-muted text-left">
-                    <th className="p-2">Product</th>
-                    <th className="p-2">Quantity</th>
-                    <th className="p-2">Price</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {invoice?.products?.map((prod, index) => {
-                    const productInfo = productData?.data?.find(
-                      (p) => p._id === prod.productId
-                    );
-                    return (
-                      <tr key={index} className="border-t">
-                        <td className="p-2">
-                          {productInfo?.name || "Unknown"}
-                        </td>
-                        <td className="p-2">{prod.quantity}</td>
-                        <td className="p-2">
-                          {/* ৳  */}
+              {isInvoiceFetching || isInvoiceLoading ? (
+                <div className="flex justify-center items-center my-3">
+                  <Loader2
+                    className="w-12 h-12 animate-spin"
+                    style={{ color: primaryColor }}
+                  />
+                </div>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-muted text-center">
+                      <th className="p-2">Product</th>
+
+                      <th className="p-2">Quantity</th>
+
+                      {/* <th className="p-2">Price</th> */}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {invoice?.products?.map((prod, index) => {
+                      const productInfo = productData?.data?.find(
+                        (p) => p._id === prod.productId
+                      );
+
+                      return (
+                        <tr key={index} className="border-t text-center">
+                          <td className="p-2">
+                            {productInfo?.name || "Unknown"}
+                          </td>
+
+                          <td className="p-2">{prod.quantity}</td>
+
+                          {/* <td className="p-2">
                           {prod.price} Tk
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                        </td> */}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
             </div>
-            <Button
-              disabled={isProductLoading}
-              onClick={handleConfirmDeduction}
-              className="w-full bg-red-600 hover:bg-red-700 text-white"
-            >
-              {isProductLoading
-                ? "Loading Products..."
-                : "Confirm Stock Deduction"}
-            </Button>
+
+            <div className="grid grid-cols-2 gap-3 mt-5">
+              <Button onClick={handleCancel}>Cancel</Button>
+
+              <Button
+                disabled={isProductLoading || isSubmitting}
+                onClick={handleConfirmDeduction}
+                className=" bg-red-600 hover:bg-red-700 text-white"
+              >
+                {isProductLoading
+                  ? "Loading Products..."
+                  : isSubmitting
+                  ? "Submitting..."
+                  : "Confirm Stock Deduction"}
+              </Button>
+            </div>
           </div>
         )}
       </DialogContent>
     </Dialog>
   );
 }
-
-// import { useState } from "react";
-// import { X } from "lucide-react";
-// import toast from "react-hot-toast";
-
-// import {
-//   Dialog,
-//   DialogTitle,
-//   DialogHeader,
-//   DialogContent,
-//   DialogClose,
-// } from "@/components/ui/dialog";
-// import { Label } from "../ui/label";
-// import { Input } from "../ui/input";
-// import { Button } from "../ui/button";
-
-// import { useGetAllInvoiceQuery } from "@/redux/features/invoice/invoiceApi";
-// import { useGetAllProductQuery } from "@/redux/features/product/productApi";
-// import { useDeductStockMutation } from "@/redux/features/stock/stockApi";
-
-// export default function DeductStockDialog({ isDeductStockOpen }) {
-//   const [invoiceNumber, setInvoiceNumber] = useState("");
-
-//   const [debouncedInvoice, setDebouncedInvoice] = useState("");
-
-//   const [selectedProducts, setSelectedProducts] = useState([]);
-
-//   console.log("selectedProducts: ", selectedProducts);
-
-//   const { data: invoiceData, isSuccess } = useGetAllInvoiceQuery(
-//     {
-//       invoiceNumber: debouncedInvoice,
-//     },
-//     { skip: !invoiceNumber && isDeductStockOpen.value }
-//   );
-
-//   const { data: productData } = useGetAllProductQuery({
-//     skip: invoiceData?.data?.length > 1 || invoiceData?.data?.length === 0,
-//   });
-
-//   const [deductStock] = useDeductStockMutation()
-
-//   console.log("productData: ", productData);
-
-//   console.log("invoiceData: ", invoiceData);
-
-//   const handleDeductStock = () => {
-//     if (!invoiceNumber) {
-//       toast.error("Please enter invoice number!");
-//       return;
-//     }
-
-//     setDebouncedInvoice(invoiceNumber);
-//     if (invoiceNumber && isSuccess && invoiceData?.data.length === 1) {
-//       setSelectedProducts(invoiceData?.data);
-//     }
-
-//     toast.success("Stock deducted successfully");
-
-//     isDeductStockOpen.onFalse();
-
-//     setInvoiceNumber("");
-//   };
-//   return (
-//     <Dialog
-//       open={isDeductStockOpen.value}
-//       onOpenChange={isDeductStockOpen.onToggle}
-//     >
-//       <DialogContent>
-//         <DialogHeader>
-//           <DialogTitle>Deduct Stock</DialogTitle>
-//           <DialogClose
-//             className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
-//             onClick={isDeductStockOpen.onFalse}
-//           >
-//             <X className="h-4 w-4" />
-//             <span className="sr-only">Close</span>
-//           </DialogClose>
-//         </DialogHeader>
-
-//         <div className="space-y-4 py-4">
-//           <div className="space-y-2 mb-5">
-//             <Label className="mb-2">Invoice Number</Label>
-//             <Input
-//               value={invoiceNumber}
-//               onChange={(e) => setInvoiceNumber(e.target.value)}
-//               placeholder="Enter invoice number"
-//             />
-//           </div>
-
-//           <Button
-//             className="w-full bg-[#B38A2D] hover:bg-[#E1BE5D]"
-//             onClick={handleDeductStock}
-//           >
-//             Submit
-//           </Button>
-//         </div>
-//       </DialogContent>
-//     </Dialog>
-//   );
-// }

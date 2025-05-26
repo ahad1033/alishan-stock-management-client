@@ -2,8 +2,11 @@ import { Toaster } from "react-hot-toast";
 import { RouterProvider } from "react-router";
 
 import { router } from "./routes";
+import { useThemeContext } from "./components/theme/ThemeProvider";
 
 function App() {
+  const { primaryColor } = useThemeContext();
+
   return (
     <>
       <RouterProvider router={router} />
@@ -19,7 +22,8 @@ function App() {
           },
           success: {
             iconTheme: {
-              primary: "#B38A2D",
+              // primary: "#B38A2D",
+              primary: primaryColor,
               secondary: "#fff",
             },
           },

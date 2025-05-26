@@ -1,8 +1,11 @@
 import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 import { useThemeContext } from "@/components/theme/ThemeProvider";
 import { Users, Banknote, BanknoteX, BanknoteArrowDown } from "lucide-react";
 
 import { useBoolean } from "@/hooks";
+import { useCurrentUser } from "@/redux/features/auth/authSlice";
 
 import { StatCard } from "../components/analytics/StatCard";
 import { ChartCard } from "@/components/analytics/ChartCard";
@@ -25,7 +28,15 @@ const mockCustomerData = [
 export default function Analytics() {
   const { primaryColor } = useThemeContext();
 
+  const navigate = useNavigate();
+
   const mount = useBoolean();
+
+  // CURRENT USER
+  const currentUser = useSelector(useCurrentUser);
+
+  // USER ROLE
+  const userRole = currentUser?.user?.role;
 
   // BALANCE DATA
   const { data: balanceData, isLoading: balanceLoadingState } =
@@ -56,6 +67,9 @@ export default function Analytics() {
   }, [mount]);
 
   if (!mount.value) return null;
+
+  if (userRole !== "super_admin" || userRole !== "admin")
+    navigate("/products", { replace: true });
 
   return (
     <>

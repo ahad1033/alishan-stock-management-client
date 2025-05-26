@@ -7,16 +7,16 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 import { StockPage } from "@/pages/stock";
 import { UserForm, UsersPage } from "@/pages/user";
+import { CollectionPage } from "@/pages/collection";
+import { InvoiceForm, InvoicePage } from "@/pages/invoice";
 import { ExpenseForm, ExpensePage } from "@/pages/expense";
 import { ProductForm, ProductsPage } from "@/pages/product";
 import { CustomerForm, CustomersPage } from "@/pages/customer";
-import { InvoiceForm, InvoicePage } from "@/pages/invoice";
 import { EmployeeDetails, EmployeeForm, EmployeePage } from "@/pages/employee";
 
 import Unauthorized from "@/pages/Unauthorized";
 import RoleBasedRoute from "@/components/auth/RoleBasedRoute";
 import InvoiceDetails from "@/pages/invoice/InvoiceDetails";
-import { CollectionPage } from "@/pages/collection";
 
 export const router = createBrowserRouter([
   {
@@ -287,6 +287,10 @@ export const router = createBrowserRouter([
   },
   {
     path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/change-password",
     element: <Login />,
   },
 ]);

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 
+import { useBoolean } from "@/hooks";
+
 import {
   CustomTableBody,
   CustomTableRoot,
@@ -10,11 +12,11 @@ import {
 } from "@/components/table";
 import { Button } from "@/components/ui/button";
 
+import { useGetAllCollectionHistoryQuery } from "@/redux/features/collection/collectionApi";
+
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import CircularLoading from "@/components/shared/CircularLoading";
-import { useBoolean } from "@/hooks";
 import CollectionDialog from "@/components/collection/CollectionDialog";
-import { useGetAllCollectionHistoryQuery } from "@/redux/features/collection/collectionApi";
 
 const columns = [
   {
@@ -102,10 +104,7 @@ export default function CollectionPage() {
           <CustomTableRoot>
             <CustomTableHeader columns={columns} />
 
-            <CustomTableBody
-              data={paginated}
-              columns={columns}
-            />
+            <CustomTableBody data={paginated} columns={columns} />
           </CustomTableRoot>
 
           <CustomTablePagination

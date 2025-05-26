@@ -1,6 +1,6 @@
-import { baseApi } from '../../api/base-api';
+import { baseApi } from "../../api/base-api";
 
-import { API_ENDPOINTS } from '../../../utils/api-endpoints';
+import { API_ENDPOINTS } from "../../../utils/api-endpoints";
 
 // ----------------------------------------------------------------------
 
@@ -9,11 +9,18 @@ const authApi = baseApi.injectEndpoints({
     login: builder.mutation({
       query: (credentials) => ({
         url: API_ENDPOINTS.LOGIN,
-        method: 'POST',
+        method: "POST",
+        body: credentials,
+      }),
+    }),
+    changePassword: builder.mutation({
+      query: (credentials) => ({
+        url: API_ENDPOINTS.CHANGE_PASSWORD,
+        method: "POST",
         body: credentials,
       }),
     }),
   }),
 });
 
-export const { useLoginMutation } = authApi;
+export const { useLoginMutation, useChangePasswordMutation } = authApi;
