@@ -82,6 +82,10 @@ export default function CustomersPage() {
     confirm.onTrue();
   };
 
+  const handleDetails = (customer) => {
+    navigate(`/customer-details/${customer?.id}`);
+  };
+
   const confirmDelete = async () => {
     try {
       if (selectedCustomer?.totalDue > 0) {
@@ -143,6 +147,7 @@ export default function CustomersPage() {
               columns={columns}
               onEdit={(row) => handleEdit(row)}
               onDelete={(row) => handleDelete(row)}
+              onDetails={(row) => handleDetails(row)}
             />
           </CustomTableRoot>
 

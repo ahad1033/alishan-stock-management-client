@@ -16,8 +16,9 @@ import {
 export default function RHFSelect({
   name,
   label,
-  placeholder = "Select an option",
   options = [],
+  disabled = false,
+  placeholder = "Select an option",
 }) {
   const {
     control,
@@ -32,7 +33,14 @@ export default function RHFSelect({
         <FormItem className="w-full">
           {label && <FormLabel>{label}</FormLabel>}
           <FormControl>
-            <Select onValueChange={field.onChange} value={field.value}>
+            <Select
+              value={field.value}
+              // onValueChange={field.onChange}
+              onValueChange={(val) => {
+                if (!disabled) field.onChange(val);
+              }}
+              disabled={disabled}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>

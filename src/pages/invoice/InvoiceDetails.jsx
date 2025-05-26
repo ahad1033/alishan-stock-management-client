@@ -104,11 +104,16 @@ const InvoiceDetails = () => {
                 <div>
                   <DetailRow label="Name" value={`: ${customerId?.name}`} />
 
-                  <DetailRow label="Phone" value={`: ${customerId?.phone}`} />
+                  <DetailRow
+                    label="Phone"
+                    value={customerId?.phone ? `: ${customerId?.phone}` : "N/A"}
+                  />
 
                   <DetailRow
                     label="Address"
-                    value={`: ${customerId?.address}`}
+                    value={
+                      customerId?.address ? `: ${customerId?.address}` : "N/A"
+                    }
                   />
                 </div>
                 <div>

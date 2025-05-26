@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { toast } from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -58,8 +58,6 @@ export default function ExpenseForm() {
   // EMPLOYEES
   const { data: employeeData, isSuccess } = useGetAllEmployeeQuery();
 
-  console.log("employeeData: ", employeeData);
-
   const [createExpense] = useCreateExpenseMutation();
 
   const [updateExpense] = useUpdateExpenseMutation();
@@ -93,7 +91,21 @@ export default function ExpenseForm() {
   } = methods;
 
   const watchCategory = watch("category");
-  console.log("watchCategory: ", watchCategory);
+
+  const watchEmployeeId = watch("employeeId");
+
+  const selectedEmployee = useMemo(() => {
+    if (!watchEmployeeId || !isSuccess) return null;
+    return (
+      employeeData?.data?.find((emp) => emp._id === watchEmployeeId) || null
+    );
+  }, [watchEmployeeId, employeeData, isSuccess]);
+
+  useEffect(() => {
+    if (watchCategory === "salary" && selectedEmployee?.monthlySalary) {
+      methods.setValue("amount", selectedEmployee.monthlySalary);
+    }
+  }, [watchCategory, selectedEmployee, methods]);
 
   const onSubmit = async (data) => {
     const cleanData = cleanPayload(data);
@@ -142,6 +154,7 @@ export default function ExpenseForm() {
               label="Category *"
               placeholder="Select expense category"
               options={EXPENSE_OPTIONS}
+              disabled
             />
 
             {watchCategory === "salary" && (
@@ -164,6 +177,7 @@ export default function ExpenseForm() {
               label="Amount *"
               type="number"
               placeholder="Enter expense amount"
+              disabled={watchCategory === "salary"}
             />
 
             <div className="flex justify-end gap-4">
@@ -175,7 +189,11 @@ export default function ExpenseForm() {
                 Cancel
               </Button>
 
-              <Button type="submit" className="custom-button">
+              <Button
+                type="submit"
+                className="custom-button"
+                disabled={isSubmitting}
+              >
                 {isSubmitting
                   ? "Submitting..."
                   : isEdit

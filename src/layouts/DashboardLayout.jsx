@@ -52,8 +52,8 @@ export default function DashboardLayout() {
         <Topbar />
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-4 pt-24 w-full">
-          <div className="max-w-7xl mx-auto">
+        <main className="flex-1 overflow-y-auto px-4 md:px-10 pt-24 w-full">
+          <div className="max-w-7xl mx-auto mb-5">
             <Outlet />
           </div>
         </main>
