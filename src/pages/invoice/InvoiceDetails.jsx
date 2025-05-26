@@ -47,6 +47,7 @@ const InvoiceDetails = () => {
 
   const {
     customerId,
+    issuedBy,
     createdAt,
     products = [],
     invoiceNumber,
@@ -111,6 +112,8 @@ const InvoiceDetails = () => {
                   />
                 </div>
                 <div>
+                  <DetailRow label="Invoice No" value={invoiceNumber} />
+
                   <DetailRow
                     label="Invoice Date"
                     value={new Date(createdAt).toLocaleDateString("en-US", {
@@ -119,7 +122,8 @@ const InvoiceDetails = () => {
                       year: "numeric",
                     })}
                   />
-                  <DetailRow label="Invoice No" value={invoiceNumber} />
+
+                  <DetailRow label="Issued By" value={issuedBy?.name} />
                 </div>
               </div>
 

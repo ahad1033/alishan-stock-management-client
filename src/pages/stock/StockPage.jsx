@@ -129,6 +129,7 @@ export default function StockPage() {
   const filtered = stockHistory?.data || [];
 
   const totalPages = Math.ceil(filtered?.length / rowsPerPage) || 1;
+  
   const paginated = filtered?.slice(
     (page - 1) * rowsPerPage,
     page * rowsPerPage

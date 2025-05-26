@@ -98,8 +98,10 @@ export default function EmployeeDetails() {
               {employee?.name}
             </CardTitle>
             <CardDescription className="text-base">
-              {employee?.position.charAt(0).toUpperCase() +
-                employee?.position?.slice(1)}
+              {employee?.position &&
+                employee.position
+                  .replace(/_/g, " ")
+                  .replace(/^./, (c) => c.toUpperCase())}
             </CardDescription>
 
             <SelectSeparator />
@@ -170,29 +172,34 @@ export default function EmployeeDetails() {
               )}
 
               {employee?.position && (
-                <DetailRow label="Position" value={employee.position} />
+                <DetailRow
+                  label="Position"
+                  value={employee.position
+                    .replace(/_/g, " ")
+                    .replace(/^./, (c) => c.toUpperCase())}
+                />
               )}
 
               {employee?.salaryHistory ? (
                 <>
-                  {/* EMPLOYEE SALARY TABLE */}
-
                   <h2 className="mt-5" style={{ color: primaryColor }}>
                     Salary history:
                   </h2>
-                  {/* <CustomTableSearch value={search} onChange={setSearch} /> */}
 
+                  {/* EMPLOYEES SALARY TABLE */}
                   <CustomTableRoot>
                     <CustomTableHeader columns={columns} />
 
                     <CustomTableBody data={paginated} columns={columns} />
                   </CustomTableRoot>
 
-                  <CustomTablePagination
-                    currentPage={page}
-                    totalPages={totalPages}
-                    onPageChange={setPage}
-                  />
+                  {employee?.salaryHistory.length > 0 && (
+                    <CustomTablePagination
+                      currentPage={page}
+                      totalPages={totalPages}
+                      onPageChange={setPage}
+                    />
+                  )}
                 </>
               ) : (
                 <Alert className="text-yellow-500">
@@ -221,11 +228,13 @@ export default function EmployeeDetails() {
 // DETAILS ROW
 function DetailRow({ label, value }) {
   return (
-    <div className="flex">
+    <div className="flex flex-col sm:flex-row sm:items-start gap-y-1 sm:gap-x-2">
       <div className="min-w-[170px] font-medium text-muted-foreground">
         {label}:
       </div>
-      <div className="text-primary">{value || "—"}</div>
+      <div className="text-primary break-words sm:break-normal">
+        {value || "—"}
+      </div>
     </div>
   );
 }

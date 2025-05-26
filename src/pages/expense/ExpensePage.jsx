@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { debounce } from "lodash";
 import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   CustomTableBody,
   CustomTableRoot,
-  CustomTableSearch,
   CustomTableHeader,
   CustomTablePagination,
 } from "@/components/table";
@@ -14,10 +14,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import CircularLoading from "@/components/shared/CircularLoading";
+import CustomDateRangePicker from "@/components/date-picker/CustomDateRangePicker";
 
 import { useGetAllExpenseQuery } from "@/redux/features/expense/expenseApi";
 
@@ -47,17 +49,68 @@ const columns = [
 export default function ExpensePage() {
   const navigate = useNavigate();
 
+  const [filterDates, setFilterDates] = useState({ from: null, to: null });
+
   const [search, setSearch] = useState("");
+
+  const [inputValue, setInputValue] = useState("");
 
   const [page, setPage] = useState(1);
 
   const rowsPerPage = 20;
 
-  const { data: expenseHistory, isLoading } = useGetAllExpenseQuery();
+  const { data: expenseHistory, isLoading } = useGetAllExpenseQuery({
+    search,
+    fromDate: filterDates.from || "",
+    toDate: filterDates.to || "",
+    // category
+  });
 
-  const filtered = expenseHistory?.data?.filter((d) =>
-    d.date.toLowerCase().includes(search.toLowerCase())
+  // Debounced setter for search value
+  const debouncedSetSearch = useMemo(
+    () =>
+      debounce((value) => {
+        setSearch(value.trim());
+      }, 500),
+    []
   );
+
+  // Handle input changes
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setInputValue(value);
+    debouncedSetSearch(value);
+  };
+
+  // Cleanup debounce on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      debouncedSetSearch.cancel();
+    };
+  }, [debouncedSetSearch]);
+
+  // Automatically reset dates if search is active
+  useEffect(() => {
+    if (search.trim() !== "") {
+      setFilterDates({ from: null, to: null });
+    }
+  }, [search]);
+
+  useEffect(() => {
+    setFilterDates((prev) => ({
+      ...prev,
+      to: null,
+    }));
+    setSearch("");
+    setInputValue("");
+  }, [filterDates.from]);
+
+  const handleDateRangeChange = (range) => {
+    setFilterDates(range);
+  };
+
+  const filtered = expenseHistory?.data || [];
+
   const totalPages = Math.ceil(filtered?.length / rowsPerPage) || 1;
 
   const paginated = filtered?.slice(
@@ -110,9 +163,50 @@ export default function ExpensePage() {
         <CircularLoading />
       ) : (
         <>
-          {/* EXPENSE TABLE */}
-          <CustomTableSearch value={search} onChange={setSearch} />
+          {/* TOP FILTER BAR */}
+          <div className="grid grid-cols-12 gap-4 mb-6 px-1 items-center">
+            {/* Search Input */}
+            <div className="col-span-12 md:col-span-6">
+              <Input
+                type="search"
+                placeholder="Search by description & amount..."
+                value={inputValue}
+                onChange={handleSearchChange}
+                className="w-full"
+              />
+            </div>
 
+            <div className="col-span-12 md:col-span-4 flex items-center gap-2">
+              <CustomDateRangePicker
+                fromDate={filterDates.from}
+                toDate={filterDates.to}
+                onChange={handleDateRangeChange}
+              />
+            </div>
+
+            {/* Clear Filters Button */}
+            <div className="col-span-12 md:col-span-2">
+              <Button
+                variant="destructive"
+                disabled={
+                  search.trim() === "" &&
+                  inputValue.trim() === "" &&
+                  (!filterDates.from || filterDates.from === "") &&
+                  (!filterDates.to || filterDates.to === "")
+                }
+                onClick={() => {
+                  setPage(1);
+                  setSearch("");
+                  setInputValue(""), setFilterDates({ from: null, to: null });
+                }}
+                className="w-full"
+              >
+                Clear Filters
+              </Button>
+            </div>
+          </div>
+
+          {/* EXPENSE TABLE */}
           <CustomTableRoot>
             <CustomTableHeader columns={columns} />
 

@@ -8,11 +8,10 @@ const stockApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllStockHistory: builder.query({
       query: (args = {}) => {
-        const { search, fromDate, toDate, invoiceNumber } = args;
+        const { search, fromDate, toDate } = args;
 
         const params = {};
         if (search?.trim()) params.search = search.trim();
-        if (invoiceNumber?.trim()) params.invoiceNumber = invoiceNumber.trim();
         if (fromDate && toDate) {
           params.fromDate = fromDate;
           params.toDate = toDate;

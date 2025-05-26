@@ -7,10 +7,24 @@ import { API_ENDPOINTS } from "@/utils/api-endpoints";
 const expenseApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllExpense: builder.query({
-      query: () => ({
-        url: API_ENDPOINTS.GET_ALL_EXPENSE,
-        method: "GET",
-      }),
+      query: (args = {}) => {
+        const { search, fromDate, toDate, category } = args;
+
+        const params = {};
+        if (search?.trim()) params.search = search.trim();
+        if (category?.trim()) params.search = search.trim();
+        if (fromDate && toDate) {
+          params.fromDate = fromDate;
+          params.toDate = toDate;
+        }
+
+        return {
+          url: API_ENDPOINTS.GET_ALL_EXPENSE,
+          method: "GET",
+          params,
+        };
+      },
+
       providesTags: ["EXPENSES"],
     }),
     createExpense: builder.mutation({
