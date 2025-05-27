@@ -16,9 +16,9 @@ import { Button } from "@/components/ui/button";
 import { useGetAllStockHistoryQuery } from "@/redux/features/stock/stockApi";
 
 import CustomHeader from "@/components/page-heading/CustomHeader";
-import AddStockDialog from "@/components/invoices/AddStockDialog";
+import AddStockDialog from "@/components/dialog/AddStockDialog";
 import CircularLoading from "@/components/shared/CircularLoading";
-import DeductStockDialog from "@/components/invoices/DeductStockDialog";
+import DeductStockDialog from "@/components/dialog/DeductStockDialog";
 import CustomDateRangePicker from "@/components/date-picker/CustomDateRangePicker";
 
 const columns = [

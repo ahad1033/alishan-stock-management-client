@@ -215,7 +215,7 @@ export default function EmployeeDetails() {
           {isAuthorized && (
             <CardFooter className="d-flex justify-end">
               <Link to={`/edit-employee/${id}`}>
-                <Button>Edit Details</Button>
+                <Button>Edit Employee</Button>
               </Link>
             </CardFooter>
           )}

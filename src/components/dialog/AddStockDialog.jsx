@@ -115,7 +115,12 @@ export default function AddStockDialog({ stockInModal }) {
               placeholder="Enter product quantity"
             />
 
-            <Button type="submit" variant="success" className="w-full">
+            <Button
+              type="submit"
+              variant="success"
+              className="w-full"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? "Submitting..." : "Add Stock"}
             </Button>
           </form>

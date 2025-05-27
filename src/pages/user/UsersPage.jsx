@@ -3,6 +3,8 @@ import { Link } from "react-router";
 import { Plus } from "lucide-react";
 // import { toast } from "react-hot-toast";
 
+import { useBoolean } from "@/hooks";
+
 import {
   CustomTableBody,
   CustomTableHeader,
@@ -16,6 +18,7 @@ import { useGetAllUserQuery } from "@/redux/features/user/userApi";
 
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import CircularLoading from "@/components/shared/CircularLoading";
+import ResetUserDialog from "@/components/dialog/ResetUserDialog";
 
 const columns = [
   { key: "name", label: "Name" },
@@ -42,14 +45,17 @@ const columns = [
 ];
 
 export default function UsersPage() {
+  const confirmReset = useBoolean();
+
+  const [selectedUser, setSelectedUser] = useState(null);
+
   const [search, setSearch] = useState("");
 
   const [page, setPage] = useState(1);
 
   const rowsPerPage = 20;
 
-  // eslint-disable-next-line no-unused-vars
-  const { data: userData, isLoading, isError, error } = useGetAllUserQuery();
+  const { data: userData, isLoading } = useGetAllUserQuery();
 
   const filtered = userData?.data?.filter((d) =>
     d.name.toLowerCase().includes(search.toLowerCase())
@@ -69,6 +75,11 @@ export default function UsersPage() {
   // const handleDelete = (user) => {
   //   toast.success(`User deleted: ${user?.name}`);
   // };
+
+  const handleResetPassword = (user) => {
+    setSelectedUser(user);
+    confirmReset.onTrue();
+  };
 
   return (
     <>
@@ -100,6 +111,16 @@ export default function UsersPage() {
               columns={columns}
               // onEdit={(row) => handleEdit(row)}
               // onDelete={(row) => handleDelete(row)}
+              actions={(row) => (
+                <Button
+                  size="sm"
+                  className="rounded-full"
+                  variant="destructive"
+                  onClick={() => handleResetPassword(row)}
+                >
+                  Reset
+                </Button>
+              )}
             />
           </CustomTableRoot>
 
@@ -110,6 +131,9 @@ export default function UsersPage() {
           />
         </>
       )}
+
+      {/* RESET USERS DIALOG */}
+      <ResetUserDialog openDialog={confirmReset} userData={selectedUser} />
     </>
   );
 }

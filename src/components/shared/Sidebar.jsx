@@ -44,12 +44,6 @@ const navItems = [
     role: ["super_admin", "admin", "accountant"],
   },
   {
-    label: "Users",
-    icon: <Users className="h-5 w-5" />,
-    path: "/users",
-    role: ["super_admin", "admin"],
-  },
-  {
     label: "Invoices",
     icon: <FileText className="h-5 w-5" />,
     path: "/invoices",
@@ -72,6 +66,12 @@ const navItems = [
     icon: <Receipt className="h-5 w-5" />,
     path: "/expenses",
     role: ["super_admin", "admin", "accountant"],
+  },
+  {
+    label: "Users",
+    icon: <Users className="h-5 w-5" />,
+    path: "/users",
+    role: ["super_admin", "admin"],
   },
   {
     label: "Employees",
