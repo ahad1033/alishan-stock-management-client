@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router";
@@ -62,6 +62,38 @@ export default function ProductForm() {
 
   const { data: currentProduct, isLoading: currentProductLoading } =
     useGetProductByIdQuery(id, { skip: !id });
+
+  const ProductSchema = useMemo(() => {
+    return Yup.object().shape({
+      name: Yup.string()
+        .trim()
+        .required("Product name is required")
+        .min(3, "Product name must be at least 3 characters"),
+
+      description: Yup.string().trim(),
+
+      sku: Yup.string()
+        .trim()
+        .required("SKU is required")
+        .matches(
+          /^[A-Za-z0-9_-]+$/,
+          "SKU can only contain letters, numbers, dashes, and underscores"
+        ),
+
+      price: Yup.number()
+        .typeError("Price must be a number")
+        .required("Price is required")
+        .positive("Price must be a positive number"),
+      ...(isEdit
+        ? {}
+        : {
+            stock: Yup.number()
+              .typeError("Stock must be a number")
+              .required("Current stock is required")
+              .min(0, "Stock cannot be negative"),
+          }),
+    });
+  }, [isEdit]);
 
   const defaultValues = {
     name: "",
@@ -184,8 +216,12 @@ export default function ProductForm() {
                 >
                   Cancel
                 </Button>
-                
-                <Button type="submit" className="custom-button">
+
+                <Button
+                  type="submit"
+                  className="custom-button"
+                  disabled={isSubmitting}
+                >
                   {isSubmitting
                     ? "Submitting..."
                     : isEdit

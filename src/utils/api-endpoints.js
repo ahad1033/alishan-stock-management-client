@@ -1,11 +1,11 @@
 // ------------------------------------------------------------
 
 // FOR DEVELOPMENT
-export const API_BASE_URL = "http://localhost:5000/api/v1";
+// export const API_BASE_URL = "http://localhost:5000/api/v1";
 
 // FOR PRODUCTION ( RENDER - DEPLOYMENT )
-// export const API_BASE_URL =
-//   "https://alishan-stock-management-server.onrender.com/api/v1";
+export const API_BASE_URL =
+  "https://alishan-stock-management-server.onrender.com/api/v1";
 
 export const API_ENDPOINTS = {
   //  AUTH APIS
@@ -42,7 +42,7 @@ export const API_ENDPOINTS = {
   GET_ALL_EMPLOYEE: `/employees/get-all-employee`,
   GET_EMPLOYEE_BY_ID: (id) => `/employees/get-single-employee/${id}`,
   UPDATE_EMPLOYEE_BY_ID: (id) =>
-    `${API_BASE_URL}/employees/edit-employee/${id}`,
+    `${API_BASE_URL}/employees/update-employee/${id}`,
   DELETE_EMPLOYEE_BY_ID: (id) =>
     `${API_BASE_URL}/employees/delete-employee/${id}`,
 

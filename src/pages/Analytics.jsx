@@ -32,7 +32,8 @@ export default function Analytics() {
   const mount = useBoolean();
 
   // SALES SUMMARY
-  const { data: salesSummary } = useGetSalesSummaryQuery();
+  const { data: salesSummary, isLoading: salesLoadingState } =
+    useGetSalesSummaryQuery();
 
   // BALANCE DATA
   const { data: balanceData, isLoading: balanceLoadingState } =
@@ -47,7 +48,10 @@ export default function Analytics() {
     useGetRecentExpensesQuery();
 
   const loadingState =
-    balanceLoadingState && customerLoadingState && expenseLoadingState;
+    balanceLoadingState &&
+    customerLoadingState &&
+    expenseLoadingState &&
+    salesLoadingState;
 
   const mockSalesData = [];
 

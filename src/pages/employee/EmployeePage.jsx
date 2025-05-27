@@ -8,10 +8,10 @@ import { useBoolean } from "@/hooks";
 
 import {
   CustomTableRoot,
+  CustomTableBody,
   CustomTableSearch,
   CustomTableHeader,
   CustomTablePagination,
-  CustomTableBody,
 } from "@/components/table";
 import { Button } from "@/components/ui/button";
 
@@ -31,7 +31,12 @@ const columns = [
   { key: "email", label: "email" },
   { key: "phone", label: "Phone" },
   { key: "emergencyContact", label: "Emergency No." },
-  { key: "position", label: "Position" },
+  {
+    key: "position",
+    label: "Position",
+    render: (row) =>
+      row.position.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase()),
+  },
   { key: "joiningDate", label: "Joining Date" },
   {
     key: "monthlySalary",

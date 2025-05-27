@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Link } from "react-router";
 import { Plus } from "lucide-react";
 // import { toast } from "react-hot-toast";
+import { Link, useNavigate } from "react-router";
 
 import { useBoolean } from "@/hooks";
 
@@ -45,6 +45,8 @@ const columns = [
 ];
 
 export default function UsersPage() {
+  const navigate = useNavigate();
+
   const confirmReset = useBoolean();
 
   const [selectedUser, setSelectedUser] = useState(null);
@@ -67,10 +69,9 @@ export default function UsersPage() {
     page * rowsPerPage
   );
 
-  // const handleEdit = (user) => {
-  //   toast.error("Can't edit user at this moment!");
-  //   console.log(user);
-  // };
+  const handleEdit = (user) => {
+    navigate(`/edit-user/${user?.id}`);
+  };
 
   // const handleDelete = (user) => {
   //   toast.success(`User deleted: ${user?.name}`);
@@ -109,7 +110,7 @@ export default function UsersPage() {
             <CustomTableBody
               data={paginated}
               columns={columns}
-              // onEdit={(row) => handleEdit(row)}
+              onEdit={(row) => handleEdit(row)}
               // onDelete={(row) => handleDelete(row)}
               actions={(row) => (
                 <Button

@@ -28,6 +28,14 @@ const userApi = baseApi.injectEndpoints({
       }),
       providesTags: ["USERS"],
     }),
+    updateUser: builder.mutation({
+      query: ({ data, userId }) => ({
+        url: API_ENDPOINTS.UPDATE_USER_BY_ID(userId),
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["USERS"],
+    }),
     resetUser: builder.mutation({
       query: (data) => ({
         url: API_ENDPOINTS.RESET_USER,
@@ -43,5 +51,6 @@ export const {
   useGetAllUserQuery,
   useGetUserByIdQuery,
   useResetUserMutation,
+  useUpdateUserMutation,
   useCreateUserMutation,
 } = userApi;

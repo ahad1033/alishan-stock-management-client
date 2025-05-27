@@ -34,6 +34,7 @@ export default function RHFSelect({
           {label && <FormLabel>{label}</FormLabel>}
           <FormControl>
             <Select
+              key={field.value}
               value={field.value}
               // onValueChange={field.onChange}
               onValueChange={(val) => {
@@ -42,7 +43,11 @@ export default function RHFSelect({
               disabled={disabled}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder={placeholder} />
+                {/* <SelectValue placeholder={placeholder} /> */}
+                <SelectValue
+                  placeholder={placeholder}
+                  defaultValue={field.value}
+                />
               </SelectTrigger>
               <SelectContent className="w-full">
                 {options.map((option) => (

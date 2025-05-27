@@ -149,7 +149,12 @@ export default function CollectionDialog({ collectionDialog }) {
               placeholder="Enter description"
             />
 
-            <Button type="submit" variant="success" className="w-full">
+            <Button
+              type="submit"
+              variant="success"
+              className="w-full"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? "Submitting..." : "Add Collection"}
             </Button>
           </form>

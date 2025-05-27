@@ -96,6 +96,16 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "edit-user/:id",
+        element: (
+          <ProtectedRoute>
+            <RoleBasedRoute allowedRoles={["admin", "super_admin"]}>
+              <UserForm />
+            </RoleBasedRoute>
+          </ProtectedRoute>
+        ),
+      },
       //  CUSTOMER ROUTES
       {
         path: "customers",

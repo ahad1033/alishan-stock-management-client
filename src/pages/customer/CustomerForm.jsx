@@ -175,7 +175,11 @@ export default function CustomerForm() {
                   Cancel
                 </Button>
 
-                <Button type="submit" className="custom-button">
+                <Button
+                  type="submit"
+                  className="custom-button"
+                  disabled={isSubmitting}
+                >
                   {isSubmitting
                     ? "Submitting..."
                     : isEdit

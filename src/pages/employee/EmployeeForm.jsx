@@ -22,6 +22,8 @@ import {
   useCreateEmployeeMutation,
 } from "@/redux/features/employee/employeeApi";
 
+const DATE_REGEX = /^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-([0-9]{4})$/;
+
 const EmployeeSchema = Yup.object().shape({
   name: Yup.string()
     .trim()
@@ -71,9 +73,29 @@ const EmployeeSchema = Yup.object().shape({
     .trim()
     .required("NID/Birthregistration number is required"),
 
-  joiningDate: Yup.string().trim().required("Joining date is required"),
+  // joiningDate: Yup.string().trim().required("Joining date is required"),
 
-  dateOfBirth: Yup.string().trim().required("Date of birth is required"),
+  // dateOfBirth: Yup.string().trim().required("Date of birth is required"),
+
+  joiningDate: Yup.string()
+    .trim()
+    .required("Joining date is required")
+    .matches(DATE_REGEX, "Date must be in DD-MM-YYYY format")
+    .test("max-year", "Year cannot be greater than 2025", (value) => {
+      if (!value) return false;
+      const year = parseInt(value.split("-")[2], 10);
+      return year <= 2025;
+    }),
+
+  dateOfBirth: Yup.string()
+    .trim()
+    .required("Date of birth is required")
+    .matches(DATE_REGEX, "Date must be in DD-MM-YYYY format")
+    .test("max-year", "Year cannot be greater than 2025", (value) => {
+      if (!value) return false;
+      const year = parseInt(value.split("-")[2], 10);
+      return year <= 2025;
+    }),
 });
 
 export default function EmployeeForm() {
@@ -141,7 +163,7 @@ export default function EmployeeForm() {
 
     const action = isEdit ? updateEmployee : createEmployee;
 
-    const payload = isEdit ? { data: cleanData, productId: id } : cleanData;
+    const payload = isEdit ? { data: cleanData, employeeId: id } : cleanData;
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -158,7 +180,7 @@ export default function EmployeeForm() {
 
         if (!isEdit) reset();
 
-        // navigate("/employees");
+        navigate("/employees");
       }
     } catch (error) {
       toast.error(error?.data?.message || "Something went wrong!");
@@ -185,7 +207,6 @@ export default function EmployeeForm() {
               />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* TODO - DEFAULT VALUE IS NOT SETTING WHILE EDIT MODE */}
                 <RHFSelect
                   name="gender"
                   label="Gender *"
@@ -213,7 +234,6 @@ export default function EmployeeForm() {
                   placeholder="Enter employee's emergency phone"
                 />
 
-                {/* TODO - DEFAULT VALUE IS NOT SETTING WHILE EDIT MODE */}
                 <RHFSelect
                   name="position"
                   label="Position *"
@@ -221,9 +241,16 @@ export default function EmployeeForm() {
                   options={EMPLOYEES_POSITION_OPTIONS}
                 />
 
-                <RHFDatePicker
+                {/* <RHFDatePicker
                   name="joiningDate"
                   label="Joining date (DD-MM-YYYY) *"
+                  restrictFuture={true}
+                /> */}
+
+                <RHFInput
+                  name="joiningDate"
+                  label="Joining date (DD-MM-YYYY) *"
+                  placeholder="Enter joining date (DD-MM-YYYY)"
                 />
 
                 <RHFInput
@@ -234,9 +261,16 @@ export default function EmployeeForm() {
                   disabled={isEdit}
                 />
 
-                <RHFDatePicker
+                {/* <RHFDatePicker
                   name="dateOfBirth"
                   label="Date of birth (DD-MM-YYYY) *"
+                  restrictFuture={true}
+                /> */}
+
+                <RHFInput
+                  name="dateOfBirth"
+                  label="Date of birth (DD-MM-YYYY) *"
+                  placeholder="Enter dte of birth (DD-MM-YYYY)"
                 />
               </div>
 
@@ -267,7 +301,11 @@ export default function EmployeeForm() {
                   Cancel
                 </Button>
 
-                <Button type="submit" className="custom-button">
+                <Button
+                  type="submit"
+                  className="custom-button"
+                  disabled={isSubmitting}
+                >
                   {isSubmitting
                     ? "Submitting..."
                     : isEdit

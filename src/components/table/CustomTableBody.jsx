@@ -58,7 +58,10 @@ export default function CustomTableBody({
           {/* Action Buttons Column */}
           {hasActions && (
             <TableCell className="text-right w-[140px]">
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-3">
+                {/* CUSTOM ACTIONS */}
+                {actions && actions(row)}
+
                 {onEdit && (
                   <Button
                     size="sm"
@@ -89,9 +92,6 @@ export default function CustomTableBody({
                     <Eye className="w-4 h-4" />
                   </Button>
                 )}
-
-                {/* CUSTOM ACTIONS */}
-                {actions && actions(row)}
               </div>
             </TableCell>
           )}

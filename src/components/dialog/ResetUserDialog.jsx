@@ -27,8 +27,6 @@ const ResetUserSchema = Yup.object().shape({
 export default function ResetUserDialog({ openDialog, userData }) {
   const { primaryColor } = useThemeContext();
 
-  console.log("userData: ", userData);
-
   const [resetUser, { isLoading }] = useResetUserMutation();
 
   const defaultValues = {
@@ -50,18 +48,12 @@ export default function ResetUserDialog({ openDialog, userData }) {
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      console.log("FORM DATA: ", data);
-
       const payload = {
         ...data,
         userId: userData.id,
       };
 
-      console.log("payload: ", payload);
-
       const result = await resetUser(payload).unwrap();
-
-      console.log("result: ", result);
 
       if (result.success) {
         toast.success(result.message || "User resetted successfully");
@@ -77,7 +69,9 @@ export default function ResetUserDialog({ openDialog, userData }) {
     <Dialog open={openDialog.value} onOpenChange={openDialog.onToggle}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-xl" style={{ color: primaryColor }}>Reset user</DialogTitle>
+          <DialogTitle className="text-xl" style={{ color: primaryColor }}>
+            Reset user
+          </DialogTitle>
           {userData && (
             <DialogHeader className="text-red-500 text-sm">{`Reset ${userData?.name}'s password`}</DialogHeader>
           )}
