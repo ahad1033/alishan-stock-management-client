@@ -33,7 +33,7 @@ const expenseApi = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["EXPENSES", "BALANCES"],
+      invalidatesTags: ["EXPENSES", "BALANCES", "RECENT_EXPENSES"],
     }),
     getExpenseById: builder.query({
       query: (id) => ({
@@ -48,14 +48,14 @@ const expenseApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ["EXPENSES", "BALANCES"],
+      invalidatesTags: ["EXPENSES", "BALANCES", "RECENT_EXPENSES"],
     }),
     deleteExpense: builder.mutation({
       query: (productId) => ({
         url: API_ENDPOINTS.DELETE_EXPENSE_BY_ID(productId),
         method: "DELETE",
       }),
-      invalidatesTags: ["EXPENSES", "BALANCES"],
+      invalidatesTags: ["EXPENSES", "BALANCES", "EXPENSES"],
     }),
   }),
 });

@@ -1,11 +1,11 @@
 // ------------------------------------------------------------
 
 // FOR DEVELOPMENT
-// export const API_BASE_URL = "http://localhost:5000/api/v1";
+export const API_BASE_URL = "http://localhost:5000/api/v1";
 
 // FOR PRODUCTION ( RENDER - DEPLOYMENT )
-export const API_BASE_URL =
-  "https://alishan-stock-management-server.onrender.com/api/v1";
+// export const API_BASE_URL =
+//   "https://alishan-stock-management-server.onrender.com/api/v1";
 
 export const API_ENDPOINTS = {
   //  AUTH APIS
@@ -14,6 +14,7 @@ export const API_ENDPOINTS = {
   REFRESH_TOKEN: `${API_BASE_URL}/auth/refresh-token`,
 
   // USERS APIS
+  RESET_USER: `/users/reset-user`,
   CREATE_USER: `/users/create-user`,
   GET_ALL_USER: `/users/get-all-user`,
   GET_USER_BY_ID: (id) => `/users/get-single-user/${id}`,
@@ -36,7 +37,7 @@ export const API_ENDPOINTS = {
   DELETE_CUSTOMER_BY_ID: (id) =>
     `${API_BASE_URL}/customers/delete-customer/${id}`,
 
-  // EMPLOYEE APIS
+  // EMPLOYEES APIS
   CREATE_EMPLOYEE: `/employees/create-employee`,
   GET_ALL_EMPLOYEE: `/employees/get-all-employee`,
   GET_EMPLOYEE_BY_ID: (id) => `/employees/get-single-employee/${id}`,
@@ -45,7 +46,7 @@ export const API_ENDPOINTS = {
   DELETE_EMPLOYEE_BY_ID: (id) =>
     `${API_BASE_URL}/employees/delete-employee/${id}`,
 
-  // INVOICE APIS
+  // INVOICES APIS
   CREATE_INVOICE: `/invoices/create-invoice`,
   GET_ALL_INVOICE: `/invoices/get-all-invoice`,
   GET_INVOICE_BY_ID: (id) => `/invoices/get-single-invoice/${id}`,
@@ -57,19 +58,23 @@ export const API_ENDPOINTS = {
   DEDUCT_STOCK: `/stocks/deduct-stock`,
   GET_ALL_STOCK_HISTORY: `/stocks/stock-history`,
 
-  // EXPENSE APIS
+  // EXPENSES APIS
   CREATE_EXPENSE: `/expenses/add-expense`,
   GET_ALL_EXPENSE: `/expenses/get-all-expense`,
   GET_EXPENSE_BY_ID: (id) => `/expenses/get-single-expense/${id}`,
   UPDATE_EXPENSE_BY_ID: (id) => `${API_BASE_URL}/expenses/edit-expense/${id}`,
   DELETE_EXPENSE_BY_ID: (id) => `${API_BASE_URL}/expenses/delete-expense/${id}`,
 
-  // BALANCE APIS
+  // BALANCES APIS
   GET_BALANCE: `/balances/get-balance`,
 
-  // COLLECTION APIS
+  // COLLECTIONS APIS
   CREATE_COLLECTION: `/collections/create-collection`,
   GET_ALL_COLLECTION: `/collections/get-collection-history`,
+
+  // ANALYTICS APIS
+  GET_SALES_SUMMARY: `/analytics/sales-summary`,
+  GET_RECENT_EXPENSES: `/analytics/recent-expenses`,
 
   //
   //

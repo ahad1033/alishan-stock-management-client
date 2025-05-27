@@ -6,11 +6,15 @@ import { useBoolean } from "@/hooks";
 
 import { StatCard } from "../components/analytics/StatCard";
 import { ChartCard } from "@/components/analytics/ChartCard";
+import { SalesSummaryChart } from "@/components/analytics/SalesSummaryChart";
 
 import { useGetBalanceQuery } from "@/redux/features/balance/balanceApi";
-import { useGetAllExpenseQuery } from "@/redux/features/expense/expenseApi";
 import { RecentExpenseCard } from "@/components/analytics/RecentExpenseCard";
 import { useGetAllCustomerQuery } from "@/redux/features/customer/customerApi";
+import {
+  useGetSalesSummaryQuery,
+  useGetRecentExpensesQuery,
+} from "@/redux/features/analytics/analyticsApi";
 
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import CircularLoading from "@/components/shared/CircularLoading";
@@ -27,6 +31,9 @@ export default function Analytics() {
 
   const mount = useBoolean();
 
+  // SALES SUMMARY
+  const { data: salesSummary } = useGetSalesSummaryQuery();
+
   // BALANCE DATA
   const { data: balanceData, isLoading: balanceLoadingState } =
     useGetBalanceQuery();
@@ -37,7 +44,7 @@ export default function Analytics() {
 
   // EXPENSE DATA
   const { data: expenseHistory, isLoading: expenseLoadingState } =
-    useGetAllExpenseQuery();
+    useGetRecentExpensesQuery();
 
   const loadingState =
     balanceLoadingState && customerLoadingState && expenseLoadingState;
@@ -131,13 +138,14 @@ export default function Analytics() {
           {/* Charts Row */}
           {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6"> */}
           <div className="grid grid-cols-1 mb-6">
-            <ChartCard
+            <SalesSummaryChart
               title="Daily sales"
               description="Last 15 days sell"
-              data={mockSalesData}
+              data={salesSummary ? salesSummary?.data : []}
               type="line"
               className="lg:col-span-2"
             />
+
             {/* <ChartCard
               title="Product Categories"
               description="Distribution by product type"

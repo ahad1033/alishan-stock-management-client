@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
-import { formatDistance, subDays } from "date-fns";
+import { formatDistance } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function RecentExpenseCard({
@@ -23,8 +24,8 @@ export function RecentExpenseCard({
       <CardContent>
         <ScrollArea className="h-[300px] pr-4">
           <div className="space-y-6 px-2">
-            {activities?.data?.slice(0, 10).map((activity) => (
-              <div key={activity.id} className="relative pl-6">
+            {activities?.data?.slice(0, 10).map((activity, index) => (
+              <div key={index + 1} className="relative pl-6">
                 {/* Timeline connector */}
                 <div className="absolute top-0 left-0 w-px h-full bg-neutral-200 dark:bg-neutral-800" />
 
@@ -51,7 +52,7 @@ export function RecentExpenseCard({
                         }
                       )} */}
                       {formatDistance(
-                        subDays(new Date(activity.createdAt), 3),
+                        new Date(activity.createdAt),
                         new Date(),
                         { addSuffix: true }
                       )}
@@ -62,23 +63,12 @@ export function RecentExpenseCard({
                     {activity?.description}
                   </span>
 
-                  <p className="text-sm text-yellow-600 mb-2">
+                  <p className="text-sm text-red-600 mb-2">
                     {`${activity.amount} Tk`}
                   </p>
 
                   {activity.issuedBy && (
-                    <span
-                      // className={cn(
-                      //   "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
-                      //   activity.status === "completed" &&
-                      //     ,
-                      //   activity.status === "pending" &&
-                      //     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
-                      //   activity.status === "failed" &&
-                      //     "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
-                      // )}
-                      className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 p-2 rounded-full text-sm"
-                    >
+                    <span className="bg-green-200 text-green-800 dark:bg-green-900/30 dark:text-green-400 py-2 px-3 rounded-full text-xs">
                       {activity?.issuedBy.name}
                     </span>
                   )}

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "react-hot-toast";
@@ -21,8 +20,8 @@ import CustomHeader from "@/components/page-heading/CustomHeader";
 import CircularLoading from "@/components/shared/CircularLoading";
 
 import {
-  useDeleteProductMutation,
   useGetAllProductQuery,
+  useDeleteProductMutation,
 } from "@/redux/features/product/productApi";
 import { useCurrentUser } from "@/redux/features/auth/authSlice";
 
@@ -36,7 +35,8 @@ const columns = [
     label: "Price",
     render: (row) => `${row.price?.toFixed(0) ?? "N/A"} Tk`,
   },
-  { key: "stock", label: "Stock" },
+  { key: "reserved", label: "Reserved", align: "center" },
+  { key: "stock", label: "Stock", align: "center" },
 ];
 
 export default function ProductsPage() {
@@ -60,12 +60,7 @@ export default function ProductsPage() {
 
   const isAuthorized = canManageProduct(userRole);
 
-  const {
-    data: productData,
-    isLoading,
-    isError,
-    error,
-  } = useGetAllProductQuery();
+  const { data: productData, isLoading } = useGetAllProductQuery();
 
   const [deleteProduct, { isLoading: deleteLoading }] =
     useDeleteProductMutation();
@@ -101,7 +96,6 @@ export default function ProductsPage() {
 
       await new Promise((resolve) => setTimeout(resolve, 300));
 
-      // setConfirmOpen(false);
       confirm.onFalse();
 
       setSelectedProduct(null);

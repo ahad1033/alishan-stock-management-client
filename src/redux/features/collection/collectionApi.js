@@ -19,7 +19,7 @@ const collectionApi = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["CUSTOMERS", "BALANCES", "COLLECTIONS"],
+      invalidatesTags: ["CUSTOMERS", "BALANCES", "COLLECTIONS", "ANALYTICS"],
     }),
   }),
 });

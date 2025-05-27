@@ -38,8 +38,8 @@ export default function CustomTableBody({
 
   return (
     <TableBody>
-      {data?.map((row) => (
-        <TableRow key={row.id}>
+      {data?.map((row, index) => (
+        <TableRow key={index + 1}>
           {columns.map((column) => (
             <TableCell
               key={`${row.id}-${column.key}`}

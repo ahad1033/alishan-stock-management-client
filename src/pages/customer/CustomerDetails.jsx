@@ -113,7 +113,7 @@ export default function CustomerDetails() {
     <>
       <CustomHeader
         title="Customer Details"
-        subtitle={`Details of ${customerData?.data?.name}`}
+        subtitle={customerData ? `Details of ${customerData?.data?.name}` : ""}
       />
 
       {invoiceData?.length > 0 && (
@@ -197,7 +197,10 @@ export default function CustomerDetails() {
 
               {invoiceData ? (
                 <>
-                  <h2 className="mt-5" style={{ color: primaryColor }}>
+                  <h2
+                    className="mt-5 font-bold"
+                    style={{ color: primaryColor }}
+                  >
                     Invoices:
                   </h2>
 
@@ -234,7 +237,7 @@ export default function CustomerDetails() {
           {isAuthorized && (
             <CardFooter className="d-flex justify-end">
               <Link to={`/edit-employee/${id}`}>
-                <Button>Edit Details</Button>
+                <Button>Edit Customer</Button>
               </Link>
             </CardFooter>
           )}
