@@ -128,7 +128,9 @@ const InvoiceDetails = () => {
                     })}
                   />
 
-                  <DetailRow label="Issued By" value={issuedBy?.name} />
+                  {issuedBy?.name && (
+                    <DetailRow label="Issued By" value={issuedBy?.name} />
+                  )}
                 </div>
               </div>
 

@@ -1,10 +1,10 @@
 import {
-  Document,
+  View,
   Page,
   Text,
-  View,
-  StyleSheet,
   Image,
+  Document,
+  StyleSheet,
 } from "@react-pdf/renderer";
 
 // Styles
@@ -22,9 +22,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   logo: {
-    width: 70,
-    height: 70,
-    marginBottom: 2,
+    width: 100,
+    // height: 70,
+    // marginBottom: 2,
   },
   watermark: {
     position: "absolute",
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   sectionLabel: {
-    width: 60, // or 70 depending on how long your label text is
+    width: 60,
     fontWeight: "bold",
   },
   sectionValue: {

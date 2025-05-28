@@ -1,20 +1,19 @@
 import { useEffect } from "react";
-import { useThemeContext } from "@/components/theme/ThemeProvider";
-import { Users, Banknote, BanknoteX, BanknoteArrowDown } from "lucide-react";
+import { Banknote, BanknoteX, BanknoteArrowDown } from "lucide-react";
 
 import { useBoolean } from "@/hooks";
+import { useThemeContext } from "@/components/theme/ThemeProvider";
 
 import { StatCard } from "../components/analytics/StatCard";
 import { ChartCard } from "@/components/analytics/ChartCard";
 import { SalesSummaryChart } from "@/components/analytics/SalesSummaryChart";
 
-import { useGetBalanceQuery } from "@/redux/features/balance/balanceApi";
-import { RecentExpenseCard } from "@/components/analytics/RecentExpenseCard";
-import { useGetAllCustomerQuery } from "@/redux/features/customer/customerApi";
 import {
   useGetSalesSummaryQuery,
   useGetRecentExpensesQuery,
 } from "@/redux/features/analytics/analyticsApi";
+import { useGetBalanceQuery } from "@/redux/features/balance/balanceApi";
+import { RecentExpenseCard } from "@/components/analytics/RecentExpenseCard";
 
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import CircularLoading from "@/components/shared/CircularLoading";
@@ -40,8 +39,8 @@ export default function Analytics() {
     useGetBalanceQuery();
 
   // CUSTOMER DATA
-  const { data: customerData, isLoading: customerLoadingState } =
-    useGetAllCustomerQuery();
+  // const { data: customerData, isLoading: customerLoadingState } =
+  //   useGetAllCustomerQuery();
 
   // EXPENSE DATA
   const { data: expenseHistory, isLoading: expenseLoadingState } =
@@ -49,7 +48,7 @@ export default function Analytics() {
 
   const loadingState =
     balanceLoadingState &&
-    customerLoadingState &&
+    // customerLoadingState &&
     expenseLoadingState &&
     salesLoadingState;
 
@@ -110,6 +109,16 @@ export default function Analytics() {
             />
 
             <StatCard
+              title="Current balance"
+              value={
+                balanceData?.data
+                  ? `${balanceData?.data[0]?.currentBalance} Tk`
+                  : "0 Tk"
+              }
+              icon={<Banknote className="h-5 w-5" style={{ color: "green" }} />}
+            />
+
+            {/* <StatCard
               title={
                 customerData?.data && customerData?.data?.length > 1
                   ? "Total customers"
@@ -120,7 +129,7 @@ export default function Analytics() {
                 <Users className="h-5 w-5" style={{ color: primaryColor }} />
               }
               // trend={{ value: 15, positive: true }}
-            />
+            /> */}
 
             <StatCard
               title="Total Due"

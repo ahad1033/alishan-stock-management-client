@@ -108,6 +108,39 @@ export default function InvoiceForm() {
     }
   }, [selectedCustomerId, customerOptions, setValue]);
 
+  // const addItem = () => {
+  //   if (!selectedProduct || !quantity) {
+  //     toast.error("Please select a product and quantity");
+  //     return;
+  //   }
+
+  //   const product = productData?.data?.find((p) => p._id === selectedProduct);
+  //   console.log("product: ", product);
+
+  //   if (!product) return;
+
+  //   const quantityWithoutReserved = parseInt(product.stock - product.reserved);
+
+  //   if (parseInt(quantity) > quantityWithoutReserved) {
+  //     toast.error(`Quantity exceeds available stock`);
+  //     return;
+  //   }
+
+  //   const newItem = {
+  //     id: Date.now(),
+  //     productId: product.id,
+  //     name: product.name,
+  //     sku: product.sku,
+  //     price: product.price,
+  //     quantity: parseInt(quantity),
+  //     total: product.price * parseInt(quantity),
+  //   };
+
+  //   setItems([...items, newItem]);
+  //   setSelectedProduct("");
+  //   setQuantity("");
+  // };
+
   const addItem = () => {
     if (!selectedProduct || !quantity) {
       toast.error("Please select a product and quantity");
@@ -117,22 +150,54 @@ export default function InvoiceForm() {
     const product = productData?.data?.find((p) => p._id === selectedProduct);
     if (!product) return;
 
-    if (parseInt(quantity) > product.stock) {
-      toast.error(`Quantity exceeds available stock`);
+    const requestedQty = parseInt(quantity);
+    const quantityWithoutReserved = parseInt(product.stock - product.reserved);
+
+    // Find if this product already exists in the items list
+    const existingItem = items.find((item) => item.productId === product._id);
+    const alreadyAddedQty = existingItem ? existingItem.quantity : 0;
+
+    // Total quantity after adding this time
+    const totalRequested = alreadyAddedQty + requestedQty;
+
+    if (totalRequested > quantityWithoutReserved) {
+      const availableToAdd = quantityWithoutReserved - alreadyAddedQty;
+
+      toast.error(
+        availableToAdd <= 0
+          ? `You’ve already added the maximum available quantity for "${product.name}".`
+          : `Only ${availableToAdd} more item(s) available for "${product.name}".`
+      );
       return;
     }
 
-    const newItem = {
-      id: Date.now(),
-      productId: product.id,
-      name: product.name,
-      sku: product.sku,
-      price: product.price,
-      quantity: parseInt(quantity),
-      total: product.price * parseInt(quantity),
-    };
+    if (existingItem) {
+      // Update quantity and total for existing product
+      const updatedItems = items.map((item) =>
+        item.productId === product._id
+          ? {
+              ...item,
+              quantity: item.quantity + requestedQty,
+              total: (item.quantity + requestedQty) * product.price,
+            }
+          : item
+      );
+      setItems(updatedItems);
+    } else {
+      // Add as a new item
+      const newItem = {
+        id: Date.now(),
+        productId: product._id,
+        name: product.name,
+        sku: product.sku,
+        price: product.price,
+        quantity: requestedQty,
+        total: product.price * requestedQty,
+      };
+      setItems([...items, newItem]);
+    }
 
-    setItems([...items, newItem]);
+    // Reset input fields
     setSelectedProduct("");
     setQuantity("");
   };
@@ -168,8 +233,6 @@ export default function InvoiceForm() {
         price: item.price,
       })),
     };
-
-    console.log("Submitting payload:", payload);
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -379,6 +442,7 @@ export default function InvoiceForm() {
                 <Button
                   type="button"
                   variant="outline"
+                  disabled={isSubmitting}
                   onClick={() => navigate("/invoices")}
                 >
                   Cancel
@@ -387,7 +451,9 @@ export default function InvoiceForm() {
                 <Button
                   type="submit"
                   className="custom-button"
-                  disabled={!selectedCustomerId || !items?.length}
+                  disabled={
+                    !selectedCustomerId || !items?.length || isSubmitting
+                  }
                 >
                   {isSubmitting ? "Submitting..." : "Create Invoice"}
                 </Button>

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { toast } from "react-hot-toast";
-import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
-import { User, Settings, Bell, LogOut, Home, UserCircle } from "lucide-react";
+import { useNavigate } from "react-router";
+import { User, Settings, LogOut, Home, UserCircle } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -55,14 +55,14 @@ export function Topbar() {
         </div>
 
         <div className="flex items-center gap-4 ml-auto">
-          <Button
+          {/* <Button
             variant="ghost"
             size="icon"
             className="rounded-full"
             onClick={() => toast.success("Notifications viewed")}
           >
             <Bell className="h-5 w-5" />
-          </Button>
+          </Button> */}
 
           <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
             <DialogTrigger asChild>
