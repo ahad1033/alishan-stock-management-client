@@ -22,7 +22,7 @@ import { ThemeSettings } from "../settings/ThemeSettings";
 
 import { logout } from "@/redux/features/auth/authSlice";
 
-export function Topbar() {
+export function Topbar({ userData }) {
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
@@ -30,6 +30,21 @@ export function Topbar() {
   const { isCollapsed } = useSidebar();
 
   const [settingsOpen, setSettingsOpen] = useState(false);
+
+  const userRole = userData?.role;
+
+  const handleNavigate = (navigateTo) => {
+    if (navigateTo === "home") {
+      if (userRole === "accountant" || userRole === "stock_manager") {
+        navigate("/products", { replace: true });
+        return;
+      } else {
+        navigate("/", { replace: true });
+      }
+    } else {
+      navigate("/profile", { replace: true });
+    }
+  };
 
   const handleLogout = () => {
     dispatch(logout());
@@ -90,17 +105,26 @@ export function Topbar() {
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
-                <Home className="mr-2 h-4 w-4" />
-                <span>Home</span>
+                <Button variant="link" onClick={() => handleNavigate("home")}>
+                  <Home className="mr-2 h-4 w-4" />
+                  <span>Home</span>
+                </Button>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <UserCircle className="mr-2 h-4 w-4" />
-                <span>Profile</span>
+                <Button
+                  variant="link"
+                  onClick={() => handleNavigate("profile")}
+                >
+                  <UserCircle className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </Button>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout}>
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
+              <DropdownMenuItem>
+                <Button variant="link" onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </Button>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

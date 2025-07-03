@@ -17,6 +17,7 @@ import { CustomerDetails, CustomerForm, CustomersPage } from "@/pages/customer";
 import Unauthorized from "@/pages/Unauthorized";
 import RoleBasedRoute from "@/components/auth/RoleBasedRoute";
 import InvoiceDetails from "@/pages/invoice/InvoiceDetails";
+import ProfilePage from "@/pages/profile/ProfilePage";
 
 export const router = createBrowserRouter([
   {
@@ -91,7 +92,7 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <RoleBasedRoute allowedRoles={["admin", "super_admin"]}>
-              <UserForm />
+              <UserForm mode="create" />
             </RoleBasedRoute>
           </ProtectedRoute>
         ),
@@ -101,7 +102,7 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <RoleBasedRoute allowedRoles={["admin", "super_admin"]}>
-              <UserForm />
+              <UserForm mode="edit" />
             </RoleBasedRoute>
           </ProtectedRoute>
         ),
@@ -297,6 +298,24 @@ export const router = createBrowserRouter([
               allowedRoles={["admin", "super_admin", "accountant"]}
             >
               <CollectionPage />
+            </RoleBasedRoute>
+          </ProtectedRoute>
+        ),
+      },
+      // PROFILE ROUTES
+      {
+        path: "profile",
+        element: (
+          <ProtectedRoute>
+            <RoleBasedRoute
+              allowedRoles={[
+                "admin",
+                "super_admin",
+                "accountant",
+                "stock_manager",
+              ]}
+            >
+              <ProfilePage />
             </RoleBasedRoute>
           </ProtectedRoute>
         ),

@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { useThemeContext } from "../theme/ThemeProvider";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -13,16 +12,15 @@ import {
   Receipt,
   FileText,
   BarChart3,
+  HandCoins,
   ShoppingBag,
   ChevronLeft,
+  UserRoundCog,
   ChevronRight,
   PackageSearch,
   UserRoundCheck,
-  HandCoins,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-import { useCurrentUser } from "@/redux/features/auth/authSlice";
 
 const navItems = [
   {
@@ -79,9 +77,15 @@ const navItems = [
     path: "/employees",
     role: ["super_admin", "admin", "accountant"],
   },
+  {
+    label: "Profile",
+    icon: <UserRoundCog className="h-5 w-5" />,
+    path: "/profile",
+    role: ["super_admin", "admin", "accountant", "stock_manager"],
+  },
 ];
 
-export function Sidebar() {
+export function Sidebar({ userData }) {
   const { primaryColor } = useThemeContext();
 
   const { isCollapsed, setIsCollapsed } = useSidebar();
@@ -92,19 +96,18 @@ export function Sidebar() {
 
   const [mounted, setMounted] = useState(false);
 
-  // CURRENT USER
-  const currentUser = useSelector(useCurrentUser);
-
   // USER ROLE
-  const userRole = currentUser?.user?.role;
+  const userRole = userData?.role;
 
   const accessibleNavItems = navItems.filter((item) =>
     item?.role?.includes(userRole)
   );
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    if (userRole) {
+      setMounted(true);
+    }
+  }, [userRole]);
 
   if (!mounted) return null;
 
@@ -214,23 +217,22 @@ export function Sidebar() {
           </nav>
 
           {/* Footer */}
-          <div className="p-4 border-t border-neutral-200/10 dark:border-neutral-800/20">
+          <div className="py-4 border-t border-neutral-200/10 dark:border-neutral-800/20">
             <div
               className={cn(
                 "flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground",
                 isCollapsed && "justify-center"
               )}
             >
-              {/* <div className="w-8 h-8 rounded-full bg-neutral-200 dark:bg-neutral-800 flex-shrink-0" /> */}
               <div className="h-12 w-12 flex justify-center items-center p-2 rounded-full bg-neutral-300 dark:bg-neutral-800 flex-shrink-0">
                 <img src="/icon.png" className="w-12" />
               </div>
-              {!isCollapsed && currentUser !== null && (
+              {!isCollapsed && userData !== null && (
                 <div>
                   <p className="font-medium text-foreground">
-                    {currentUser?.user?.name}
+                    {userData?.name}
                   </p>
-                  <p className="text-xs">{currentUser?.user?.email}</p>
+                  <p className="text-xs">{userData?.email}</p>
                 </div>
               )}
             </div>

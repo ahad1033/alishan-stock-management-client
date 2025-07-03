@@ -4,14 +4,19 @@ import { Outlet } from "react-router-dom";
 import { useSidebar } from "@/contexts/SidebarContext";
 import { Sidebar } from "@/components/shared/Sidebar";
 import { Topbar } from "@/components/shared/Topbar";
+import { useSelector } from "react-redux";
+import { useCurrentUser } from "@/redux/features/auth/authSlice";
 
 const MOBILE_BREAKPOINT = 768;
 
 export default function DashboardLayout() {
   const { isCollapsed, isMobileMenuOpen } = useSidebar();
+
   const [isMobile, setIsMobile] = useState(
     window.innerWidth < MOBILE_BREAKPOINT
   );
+
+  const currentUser = useSelector(useCurrentUser)?.user;
 
   // Handle resize to detect mobile or desktop
   useEffect(() => {
@@ -37,7 +42,7 @@ export default function DashboardLayout() {
             : sidebarWidth
         )}
       >
-        <Sidebar />
+        <Sidebar userData={currentUser} />
       </div>
 
       {/* Main Content */}
@@ -49,7 +54,7 @@ export default function DashboardLayout() {
         )}
       >
         {/* Topbar */}
-        <Topbar />
+        <Topbar userData={currentUser} />
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto px-4 md:px-10 pt-24 w-full">

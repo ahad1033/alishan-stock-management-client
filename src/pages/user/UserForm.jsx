@@ -1,17 +1,18 @@
 import * as Yup from "yup";
 import toast from "react-hot-toast";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-
 import { RHFInput, RHFSelect } from "@/components/form";
 import { GENDER_OPTIONS, USER_ROLE_OPTIONS } from "@/constants";
 
 import CardWrapper from "@/components/shared/CardWrapper";
 import CustomHeader from "@/components/page-heading/CustomHeader";
+import CircularLoading from "@/components/shared/CircularLoading";
 
 import {
   useCreateUserMutation,
@@ -19,27 +20,27 @@ import {
   useUpdateUserMutation,
 } from "@/redux/features/user/userApi";
 
-import { useEffect, useMemo } from "react";
-import CircularLoading from "@/components/shared/CircularLoading";
-
-export default function UserForm() {
+export default function UserForm({ mode = "create", userData = null }) {
   const navigate = useNavigate();
+
+  console.log("userData: ", userData?.data?.id);
 
   const { id } = useParams();
 
-  const isEdit = Boolean(id);
+  const isEdit = mode === "edit";
+  const isProfile = mode === "profile";
+  const isCreate = mode === "create";
 
-  // CREATE USER
   const [createUser] = useCreateUserMutation();
-
-  // UPDATE USER
   const [updateUser] = useUpdateUserMutation();
 
-  // CURRENT USER
-  const { data: currentUser, isLoading } = useGetUserByIdQuery(id, {
-    skip: !id,
+  // Fetch current user only in edit mode
+  const { data: fetchedData, isLoading } = useGetUserByIdQuery(id, {
+    skip: !id || !isEdit,
     forceRefetch: true,
   });
+
+  const currentUser = isCreate ? null : isProfile ? userData : fetchedData;
 
   const UserSchema = useMemo(() => {
     return Yup.object().shape({
@@ -62,15 +63,11 @@ export default function UserForm() {
       gender: Yup.string()
         .required("Please select gender")
         .notOneOf([""], "Please select gender"),
-      ...(isEdit
-        ? {}
-        : {
-            password: Yup.string()
-              .trim()
-              .required("Initial password is required"),
-          }),
+      ...(isCreate && {
+        password: Yup.string().trim().required("Initial password is required"),
+      }),
     });
-  }, [isEdit]);
+  }, [isCreate]);
 
   const defaultValues = {
     name: "",
@@ -94,52 +91,53 @@ export default function UserForm() {
   } = methods;
 
   useEffect(() => {
-    if (isEdit && currentUser?.data) {
+    if ((isEdit || isProfile) && currentUser?.data) {
       reset({
-        name: currentUser?.data?.name,
-        address: currentUser?.data?.address,
-        email: currentUser?.data?.email,
-        phone: currentUser?.data?.phone,
-        role: currentUser?.data?.role,
-        gender: currentUser?.data?.gender,
+        name: currentUser.data.name || "",
+        address: currentUser.data.address || "",
+        email: currentUser.data.email || "",
+        phone: currentUser.data.phone || "",
+        role: currentUser.data.role || "",
+        gender: currentUser.data.gender || "",
       });
     }
-  }, [currentUser?.data, isEdit, reset]);
+  }, [currentUser?.data, reset, isEdit, isProfile]);
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (formData) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
+      await new Promise((resolve) => setTimeout(resolve, 300));
       let result;
 
-      if (isEdit) {
-        delete data.password;
-        console.log("UPDATE DATA", data);
-
-        result = await updateUser({ data, userId: id }).unwrap();
+      if (isEdit || isProfile) {
+        delete formData.password;
+        result = await updateUser({
+          data: formData,
+          userId: isProfile ? userData?.data?.id : id,
+        }).unwrap();
       } else {
-        result = await createUser(data).unwrap();
+        result = await createUser(formData).unwrap();
       }
-
-      console.log("result: ", result);
 
       if (result.success) {
-        toast.success(result?.message || "User added successfully");
+        toast.success(result?.message || "User saved successfully");
         reset();
-        navigate("/users");
+
+        if (!isProfile) navigate("/users");
       }
     } catch (error) {
-      console.log(error);
-      toast.error("Something went wrong!");
+      console.error(error);
+      toast.error(error?.data?.message || "Something went wrong!");
     }
   };
 
   return (
     <>
-      <CustomHeader
-        title="User"
-        subtitle={isEdit ? "Edit existing user" : "Create a new user"}
-      />
+      {!isProfile && (
+        <CustomHeader
+          title="User"
+          subtitle={isEdit ? "Edit existing user" : "Create a new user"}
+        />
+      )}
 
       <CardWrapper>
         {isEdit && isLoading ? (
@@ -149,31 +147,32 @@ export default function UserForm() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <RHFInput
                 name="name"
-                label="Users full name *"
+                label="User's Full Name *"
                 type="text"
-                placeholder="Enter users full name"
+                placeholder="Enter full name"
               />
 
               <RHFInput
                 name="address"
                 label="Address (optional)"
                 type="text"
-                placeholder="Enter full address"
+                placeholder="Enter address"
               />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <RHFInput
                   name="email"
                   label="Email *"
-                  placeholder="Enter users email address"
-                  disabled={isEdit}
+                  type="email"
+                  placeholder="Enter email"
+                  disabled={isEdit || isProfile}
                 />
 
                 <RHFInput
                   name="phone"
                   label="Phone *"
                   type="tel"
-                  placeholder="Enter users phone"
+                  placeholder="Enter phone number"
                 />
 
                 <RHFSelect
@@ -181,6 +180,7 @@ export default function UserForm() {
                   label="Role *"
                   placeholder="Select role"
                   options={USER_ROLE_OPTIONS}
+                  disabled={isProfile}
                 />
 
                 <RHFSelect
@@ -191,7 +191,7 @@ export default function UserForm() {
                 />
               </div>
 
-              {!isEdit && (
+              {isCreate && (
                 <RHFInput
                   name="password"
                   label="Password *"
@@ -201,13 +201,15 @@ export default function UserForm() {
               )}
 
               <div className="flex justify-end gap-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => navigate("/users")}
-                >
-                  Cancel
-                </Button>
+                {!isProfile && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => navigate("/users")}
+                  >
+                    Cancel
+                  </Button>
+                )}
 
                 <Button
                   type="submit"
@@ -216,7 +218,7 @@ export default function UserForm() {
                 >
                   {isSubmitting
                     ? "Submitting..."
-                    : isEdit
+                    : isEdit || isProfile
                     ? "Update"
                     : "Create User"}
                 </Button>
