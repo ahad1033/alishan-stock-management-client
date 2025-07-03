@@ -208,6 +208,18 @@ h1 {
   background-color: var(--secondary-color);
 }
 
+.custom-button-outline {
+  font-weight: bold;
+  color: var(--primary-color);
+  background-color: transparent;
+  border: 1px solid var(--primary-color);
+}
+
+.custom-button-outline:hover {
+  color: var(--background);
+  background-color: var(--primary-color);
+}
+
 /* Glass effect base styling */
 .glass-effect {
   background: rgba(255, 255, 255, 0.05);
