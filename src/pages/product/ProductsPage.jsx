@@ -28,6 +28,11 @@ import { useCurrentUser } from "@/redux/features/auth/authSlice";
 import { canManageProduct } from "@/utils/role-utils";
 
 const columns = [
+  {
+    key: "image",
+    label: "Image",
+    render: (row) => <img src={row.image} className="w-12 rounded-md" />,
+  },
   { key: "name", label: "Product Name" },
   { key: "sku", label: "SKU" },
   {

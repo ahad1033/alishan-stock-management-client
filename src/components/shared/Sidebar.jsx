@@ -86,12 +86,14 @@ const navItems = [
 ];
 
 export function Sidebar({ userData }) {
+  const navigate = useNavigate();
+
+  const location = useLocation();
+
   const { primaryColor } = useThemeContext();
 
   const { isCollapsed, setIsCollapsed } = useSidebar();
 
-  const navigate = useNavigate();
-  const location = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const [mounted, setMounted] = useState(false);

@@ -15,21 +15,21 @@ import CustomHeader from "@/components/page-heading/CustomHeader";
 import CircularLoading from "@/components/shared/CircularLoading";
 
 import {
-  useCreateUserMutation,
   useGetUserByIdQuery,
+  useCreateUserMutation,
   useUpdateUserMutation,
 } from "@/redux/features/user/userApi";
 
 export default function UserForm({ mode = "create", userData = null }) {
+  const { id } = useParams();
+
   const navigate = useNavigate();
 
   const [imagePreview, setImagePreview] = useState("");
+
   const [selectedImageFile, setSelectedImageFile] = useState(null);
 
-  console.log("userData: ", userData?.data?.id);
-
-  const { id } = useParams();
-
+  // FORM MODE
   const isEdit = mode === "edit";
   const isProfile = mode === "profile";
   const isCreate = mode === "create";
