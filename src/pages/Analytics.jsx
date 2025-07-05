@@ -5,25 +5,19 @@ import { useBoolean } from "@/hooks";
 import { useThemeContext } from "@/components/theme/ThemeProvider";
 
 import { StatCard } from "../components/analytics/StatCard";
-import { ChartCard } from "@/components/analytics/ChartCard";
 import { SalesSummaryChart } from "@/components/analytics/SalesSummaryChart";
 
 import {
   useGetSalesSummaryQuery,
   useGetRecentExpensesQuery,
+  useGetMonthlySalesSummaryQuery,
 } from "@/redux/features/analytics/analyticsApi";
 import { useGetBalanceQuery } from "@/redux/features/balance/balanceApi";
 import { RecentExpenseCard } from "@/components/analytics/RecentExpenseCard";
 
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import CircularLoading from "@/components/shared/CircularLoading";
-
-const mockCustomerData = [
-  { name: "Week 1", value: 120 },
-  { name: "Week 2", value: 180 },
-  { name: "Week 3", value: 220 },
-  { name: "Week 4", value: 260 },
-];
+import { MonthlySellSummary } from "@/components/analytics/MonthlySellSummary";
 
 export default function Analytics() {
   const { primaryColor } = useThemeContext();
@@ -33,14 +27,13 @@ export default function Analytics() {
   // SALES SUMMARY
   const { data: salesSummary, isLoading: salesLoadingState } =
     useGetSalesSummaryQuery();
+  // SALES SUMMARY
+  const { data: monthlySalesSummary, isLoading: monthlySalesLoadingState } =
+    useGetMonthlySalesSummaryQuery();
 
   // BALANCE DATA
   const { data: balanceData, isLoading: balanceLoadingState } =
     useGetBalanceQuery();
-
-  // CUSTOMER DATA
-  // const { data: customerData, isLoading: customerLoadingState } =
-  //   useGetAllCustomerQuery();
 
   // EXPENSE DATA
   const { data: expenseHistory, isLoading: expenseLoadingState } =
@@ -48,8 +41,8 @@ export default function Analytics() {
 
   const loadingState =
     balanceLoadingState &&
-    // customerLoadingState &&
     expenseLoadingState &&
+    monthlySalesLoadingState &&
     salesLoadingState;
 
   const mockSalesData = [];
@@ -174,10 +167,11 @@ export default function Analytics() {
               primaryColor={primaryColor}
               className="lg:col-span-2"
             />
-            <ChartCard
-              title="New Customers"
-              description="Customer acquisition by week"
-              data={mockCustomerData}
+
+            <MonthlySellSummary
+              title="Monthly Sell"
+              description="Last 4 monts sell summary"
+              data={monthlySalesSummary ? monthlySalesSummary?.data : []}
               type="bar"
             />
           </div>

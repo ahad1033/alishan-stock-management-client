@@ -12,6 +12,13 @@ const analyticsApi = baseApi.injectEndpoints({
       }),
       providesTags: ["ANALYTICS"],
     }),
+    getMonthlySalesSummary: builder.query({
+      query: () => ({
+        url: API_ENDPOINTS.GET_MONTHLY_SALES_SUMMARY,
+        method: "GET",
+      }),
+      providesTags: ["ANALYTICS"],
+    }),
     getRecentExpenses: builder.query({
       query: () => ({
         url: API_ENDPOINTS.GET_RECENT_EXPENSES,
@@ -22,5 +29,8 @@ const analyticsApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetSalesSummaryQuery, useGetRecentExpensesQuery } =
-  analyticsApi;
+export const {
+  useGetSalesSummaryQuery,
+  useGetRecentExpensesQuery,
+  useGetMonthlySalesSummaryQuery,
+} = analyticsApi;

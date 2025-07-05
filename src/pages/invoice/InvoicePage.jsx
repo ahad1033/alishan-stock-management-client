@@ -160,7 +160,6 @@ export default function InvoicePage() {
             </div>
 
             <div className="col-span-12 md:col-span-4 flex items-center gap-2">
-              {/* TODO: NEED TO FIX DATE PICKER PROPERLY  */}
               <CustomDateRangePicker
                 fromDate={filterDates.from}
                 toDate={filterDates.to}

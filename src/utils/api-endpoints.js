@@ -74,6 +74,7 @@ export const API_ENDPOINTS = {
 
   // ANALYTICS APIS
   GET_SALES_SUMMARY: `/analytics/sales-summary`,
+  GET_MONTHLY_SALES_SUMMARY: `/analytics/monthly-sales-summary`,
   GET_RECENT_EXPENSES: `/analytics/recent-expenses`,
 
   //
