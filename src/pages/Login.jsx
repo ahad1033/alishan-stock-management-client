@@ -20,7 +20,7 @@ export default function Login() {
       {/* Left side - Image (hidden on mobile) */}
       <div className="hidden lg:flex lg:w-[40%] relative overflow-hidden">
         <img
-          src="https://images.pexels.com/photos/7567443/pexels-photo-7567443.jpeg"
+          src="/login.webp"
           alt="Dashboard Preview"
           className="object-cover w-full h-full"
         />

@@ -16,8 +16,8 @@ import { Button } from "@/components/ui/button";
 
 import { useGetAllUserQuery } from "@/redux/features/user/userApi";
 
+import TableSkeleton from "@/components/skeleton/table-skeleton";
 import CustomHeader from "@/components/page-heading/CustomHeader";
-import CircularLoading from "@/components/shared/CircularLoading";
 import ResetUserDialog from "@/components/dialog/ResetUserDialog";
 
 const columns = [
@@ -98,7 +98,7 @@ export default function UsersPage() {
       />
 
       {isLoading ? (
-        <CircularLoading />
+        <TableSkeleton numRows={5} columns={columns} />
       ) : (
         <>
           {/* USER TABLE */}

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router-dom";
 
 import { useBoolean } from "@/hooks";
 
@@ -16,8 +16,9 @@ import {
 import { Button } from "@/components/ui/button";
 
 import ConfirmDialog from "@/components/shared/ConfirmDialog";
+import TableSkeleton from "@/components/skeleton/table-skeleton";
 import CustomHeader from "@/components/page-heading/CustomHeader";
-import CircularLoading from "@/components/shared/CircularLoading";
+import ProductImageWithSkeleton from "@/components/skeleton/product-loading-skeleton";
 
 import {
   useGetAllProductQuery,
@@ -31,7 +32,9 @@ const columns = [
   {
     key: "image",
     label: "Image",
-    render: (row) => <img src={row.image} className="w-12 rounded-md" />,
+    render: (row) => (
+      <ProductImageWithSkeleton src={row.image} alt={row.name} />
+    ),
   },
   { key: "name", label: "Product Name" },
   { key: "sku", label: "SKU" },
@@ -127,7 +130,7 @@ export default function ProductsPage() {
       />
 
       {isLoading ? (
-        <CircularLoading />
+        <TableSkeleton numRows={3} columns={columns} />
       ) : (
         <>
           {/* PRODUCT TABLE */}

@@ -14,8 +14,8 @@ import { Button } from "@/components/ui/button";
 
 import { useGetAllCollectionHistoryQuery } from "@/redux/features/collection/collectionApi";
 
+import TableSkeleton from "@/components/skeleton/table-skeleton";
 import CustomHeader from "@/components/page-heading/CustomHeader";
-import CircularLoading from "@/components/shared/CircularLoading";
 import CollectionDialog from "@/components/collection/CollectionDialog";
 
 const columns = [
@@ -91,7 +91,7 @@ export default function CollectionPage() {
       />
 
       {isLoading ? (
-        <CircularLoading />
+        <TableSkeleton numRows={3} columns={columns} />
       ) : (
         <>
           {/* USER TABLE */}

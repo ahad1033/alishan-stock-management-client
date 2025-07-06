@@ -4,8 +4,8 @@ import { toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 
 import ConfirmDialog from "@/components/shared/ConfirmDialog";
+import TableSkeleton from "@/components/skeleton/table-skeleton";
 import CustomHeader from "@/components/page-heading/CustomHeader";
-import CircularLoading from "@/components/shared/CircularLoading";
 
 import {
   CustomTableBody,
@@ -25,7 +25,6 @@ import {
 const columns = [
   { key: "name", label: "Customer Name" },
   { key: "shopName", label: "Shop Name" },
-  // { key: "address", label: "Address" },
   { key: "email", label: "Email" },
   { key: "phone", label: "Phone" },
   {
@@ -133,7 +132,7 @@ export default function CustomersPage() {
       />
 
       {isLoading ? (
-        <CircularLoading />
+        <TableSkeleton numRows={3} columns={columns} />
       ) : (
         <>
           {/* CUSTOMER TABLE */}

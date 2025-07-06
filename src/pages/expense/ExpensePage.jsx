@@ -17,8 +17,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+import TableSkeleton from "@/components/skeleton/table-skeleton";
 import CustomHeader from "@/components/page-heading/CustomHeader";
-import CircularLoading from "@/components/shared/CircularLoading";
 import CustomDateRangePicker from "@/components/date-picker/CustomDateRangePicker";
 
 import { useGetAllExpenseQuery } from "@/redux/features/expense/expenseApi";
@@ -160,7 +160,7 @@ export default function ExpensePage() {
       />
 
       {isLoading ? (
-        <CircularLoading />
+        <TableSkeleton numRows={rowsPerPage} columns={columns} />
       ) : (
         <>
           {/* TOP FILTER BAR */}

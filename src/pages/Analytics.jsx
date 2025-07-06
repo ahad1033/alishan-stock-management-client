@@ -6,6 +6,7 @@ import { useThemeContext } from "@/components/theme/ThemeProvider";
 
 import { StatCard } from "../components/analytics/StatCard";
 import { SalesSummaryChart } from "@/components/analytics/SalesSummaryChart";
+import { MonthlySellSummary } from "@/components/analytics/MonthlySellSummary";
 
 import {
   useGetSalesSummaryQuery,
@@ -16,8 +17,7 @@ import { useGetBalanceQuery } from "@/redux/features/balance/balanceApi";
 import { RecentExpenseCard } from "@/components/analytics/RecentExpenseCard";
 
 import CustomHeader from "@/components/page-heading/CustomHeader";
-import CircularLoading from "@/components/shared/CircularLoading";
-import { MonthlySellSummary } from "@/components/analytics/MonthlySellSummary";
+import AnalyticsSkeleton from "@/components/skeleton/analytics-skeleton";
 
 export default function Analytics() {
   const { primaryColor } = useThemeContext();
@@ -69,7 +69,7 @@ export default function Analytics() {
       />
 
       {loadingState ? (
-        <CircularLoading />
+        <AnalyticsSkeleton />
       ) : (
         <>
           {/* Stats Row */}

@@ -20,6 +20,7 @@ import AddStockDialog from "@/components/dialog/AddStockDialog";
 import CircularLoading from "@/components/shared/CircularLoading";
 import DeductStockDialog from "@/components/dialog/DeductStockDialog";
 import CustomDateRangePicker from "@/components/date-picker/CustomDateRangePicker";
+import TableSkeleton from "@/components/skeleton/table-skeleton";
 
 const columns = [
   {
@@ -129,7 +130,7 @@ export default function StockPage() {
   const filtered = stockHistory?.data || [];
 
   const totalPages = Math.ceil(filtered?.length / rowsPerPage) || 1;
-  
+
   const paginated = filtered?.slice(
     (page - 1) * rowsPerPage,
     page * rowsPerPage
@@ -156,7 +157,7 @@ export default function StockPage() {
 
       {/* Stock History Table */}
       {isLoading ? (
-        <CircularLoading />
+        <TableSkeleton columns={columns} numRows={rowsPerPage} />
       ) : (
         <>
           {/* TOP FILTER BAR */}

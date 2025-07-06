@@ -16,8 +16,8 @@ import {
 import { Button } from "@/components/ui/button";
 
 import ConfirmDialog from "@/components/shared/ConfirmDialog";
+import TableSkeleton from "@/components/skeleton/table-skeleton";
 import CustomHeader from "@/components/page-heading/CustomHeader";
-import CircularLoading from "@/components/shared/CircularLoading";
 
 import {
   useGetAllEmployeeQuery,
@@ -132,7 +132,7 @@ export default function EmployeePage() {
       />
 
       {isLoading ? (
-        <CircularLoading />
+        <TableSkeleton numRows={5} columns={columns} />
       ) : (
         <>
           {/* EMPLOYEE TABLE */}

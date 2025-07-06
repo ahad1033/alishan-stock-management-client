@@ -16,6 +16,7 @@ import { useCurrentUser } from "@/redux/features/auth/authSlice";
 import { useGetUserByIdQuery } from "@/redux/features/user/userApi";
 
 import CircularLoading from "@/components/shared/CircularLoading";
+import ProfileSkeleton from "@/components/skeleton/profile-skeleton";
 
 // ------ HELPER FUUNCTION ------
 const formatRole = (role) => {
@@ -52,7 +53,7 @@ export default function ProfilePage() {
   ];
 
   if (isLoading) {
-    return <CircularLoading />;
+    return <ProfileSkeleton />;
   }
 
   return (
