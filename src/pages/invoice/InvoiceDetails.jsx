@@ -1,7 +1,7 @@
-import { useMemo } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import { useLocation, useParams } from "react-router";
-import { CircleDashed, Download, Eye, X } from "lucide-react";
-import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
+import { CircleDashed, Download, Eye, Loader2, X } from "lucide-react";
+// import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 
 import { useBoolean } from "@/hooks";
 import { useThemeContext } from "@/components/theme/ThemeProvider";
@@ -20,9 +20,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { useGetInvoiceByIdQuery } from "@/redux/features/invoice/invoiceApi";
 
-import InvoicePDF from "./InvoicePDF";
+// import InvoicePDF from "./InvoicePDF";
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import CircularLoading from "@/components/shared/CircularLoading";
+
+const PDFDownloadLink = lazy(() =>
+  import("@react-pdf/renderer").then((mod) => ({
+    default: mod.PDFDownloadLink,
+  }))
+);
+
+const InvoicePDFModal = lazy(() =>
+  import("@/components/invoice/InvoicePdfModal")
+);
+
+const InvoicePDF = lazy(() => import("./InvoicePDF"));
 
 const InvoiceDetails = () => {
   const { id } = useParams();
@@ -72,22 +84,33 @@ const InvoiceDetails = () => {
               <Eye className="h-4 w-4" />
             </Button>
 
-            <PDFDownloadLink
-              document={<InvoicePDF invoiceData={invoiceData} />}
-              fileName={`invoice-${invoiceData.invoiceNo}.pdf`}
-            >
-              {({ loading }) =>
-                loading ? (
-                  <Button variant="outline" disabled>
-                    <CircleDashed className="w-4 h-4" />
-                  </Button>
-                ) : (
-                  <Button variant="outline">
-                    <Download className="h-4 w-4" />
-                  </Button>
-                )
+            <Suspense
+              fallback={
+                <div className="w-full mx-auto">
+                  <Loader2
+                    className="w-12 h-12 animate-spin"
+                    style={{ color: primaryColor }}
+                  />
+                </div>
               }
-            </PDFDownloadLink>
+            >
+              <PDFDownloadLink
+                document={<InvoicePDF invoiceData={invoiceData} />}
+                fileName={`invoice-${invoiceData.invoiceNo}.pdf`}
+              >
+                {({ loading }) =>
+                  loading ? (
+                    <Button variant="outline" disabled>
+                      <CircleDashed className="w-4 h-4" />
+                    </Button>
+                  ) : (
+                    <Button variant="outline">
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  )
+                }
+              </PDFDownloadLink>
+            </Suspense>
           </div>
 
           {/* SINGLE CARD with all invoice details */}
@@ -194,25 +217,12 @@ const InvoiceDetails = () => {
 
       {/* PDF Viewer Modal */}
       {showPdf.value && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-70 flex flex-col items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl h-[80vh] flex flex-col">
-            <div className="flex justify-between items-center border-b p-3">
-              <h3 className="text-lg font-semibold">Invoice PDF Preview</h3>
-              <button
-                onClick={showPdf.onFalse}
-                className="text-gray-600 hover:text-gray-900"
-                aria-label="Close PDF viewer"
-              >
-                <X size={24} />
-              </button>
-            </div>
-            <div className="flex-1 overflow-auto">
-              <PDFViewer width="100%" height="100%">
-                <InvoicePDF invoiceData={invoiceData} />
-              </PDFViewer>
-            </div>
-          </div>
-        </div>
+        <Suspense fallback={<div>Loading...</div>}>
+          <InvoicePDFModal
+            invoiceData={invoiceData}
+            onClose={showPdf.onFalse}
+          />
+        </Suspense>
       )}
     </div>
   );

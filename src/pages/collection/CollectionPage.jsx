@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { Plus } from "lucide-react";
 
 import { useBoolean } from "@/hooks";
@@ -16,7 +16,10 @@ import { useGetAllCollectionHistoryQuery } from "@/redux/features/collection/col
 
 import TableSkeleton from "@/components/skeleton/table-skeleton";
 import CustomHeader from "@/components/page-heading/CustomHeader";
-import CollectionDialog from "@/components/collection/CollectionDialog";
+
+const CollectionDialog = lazy(() =>
+  import("@/components/collection/CollectionDialog")
+);
 
 const columns = [
   {
@@ -116,7 +119,11 @@ export default function CollectionPage() {
       )}
 
       {/* COLLECTION DIALOG */}
-      <CollectionDialog collectionDialog={collectionDialog} />
+      {collectionDialog.value && (
+        <Suspense fallback={null}>
+          <CollectionDialog collectionDialog={collectionDialog} />
+        </Suspense>
+      )}
     </>
   );
 }

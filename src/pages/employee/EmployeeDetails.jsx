@@ -202,12 +202,14 @@ export default function EmployeeDetails() {
                   )}
                 </>
               ) : (
-                <Alert className="text-yellow-500">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription className="text-yellow-500">
-                    There is no salary history yet for this employee!
-                  </AlertDescription>
-                </Alert>
+                !employee.salaryHistory && (
+                  <Alert className="text-yellow-500">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription className="text-yellow-500">
+                      There is no salary history yet for this employee!
+                    </AlertDescription>
+                  </Alert>
+                )
               )}
             </div>
           </CardContent>

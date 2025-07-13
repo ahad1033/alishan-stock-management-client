@@ -1,18 +1,17 @@
-import { useState } from "react";
+import { lazy, useState } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 
-import ConfirmDialog from "@/components/shared/ConfirmDialog";
 import TableSkeleton from "@/components/skeleton/table-skeleton";
 import CustomHeader from "@/components/page-heading/CustomHeader";
 
 import {
   CustomTableBody,
-  CustomTableHeader,
-  CustomTablePagination,
   CustomTableRoot,
   CustomTableSearch,
+  CustomTableHeader,
+  CustomTablePagination,
 } from "@/components/table";
 import { Button } from "@/components/ui/button";
 
@@ -21,6 +20,9 @@ import {
   useDeleteCustomerMutation,
   useGetAllCustomerQuery,
 } from "@/redux/features/customer/customerApi";
+
+// LAZY IMPORT
+const ConfirmDialog = lazy(() => import("@/components/shared/ConfirmDialog"));
 
 const columns = [
   { key: "name", label: "Customer Name" },
@@ -159,15 +161,17 @@ export default function CustomersPage() {
       )}
 
       {/* CONFIRM DELETE DIALOG */}
-      <ConfirmDialog
-        open={confirm.value}
-        onOpenChange={confirm.onToggle}
-        title="Delete Customer"
-        description={`Are you sure you want to delete "${selectedCustomer?.name}"?`}
-        onCancel={() => confirm.onFalse()}
-        onConfirm={confirmDelete}
-        isLoading={deleteLoading}
-      />
+      {confirm.value && (
+        <ConfirmDialog
+          open={confirm.value}
+          onOpenChange={confirm.onToggle}
+          title="Delete Customer"
+          description={`Are you sure you want to delete "${selectedCustomer?.name}"?`}
+          onCancel={() => confirm.onFalse()}
+          onConfirm={confirmDelete}
+          isLoading={deleteLoading}
+        />
+      )}
     </>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { Plus } from "lucide-react";
 // import { toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router";
@@ -18,7 +18,12 @@ import { useGetAllUserQuery } from "@/redux/features/user/userApi";
 
 import TableSkeleton from "@/components/skeleton/table-skeleton";
 import CustomHeader from "@/components/page-heading/CustomHeader";
-import ResetUserDialog from "@/components/dialog/ResetUserDialog";
+import CircularLoading from "@/components/shared/CircularLoading";
+
+// LAZY IMPORT
+const ResetUserDialog = lazy(() =>
+  import("@/components/dialog/ResetUserDialog")
+);
 
 const columns = [
   { key: "name", label: "Name" },
@@ -134,7 +139,11 @@ export default function UsersPage() {
       )}
 
       {/* RESET USERS DIALOG */}
-      <ResetUserDialog openDialog={confirmReset} userData={selectedUser} />
+      {confirmReset.value && (
+        <Suspense fallback={<CircularLoading />}>
+          <ResetUserDialog openDialog={confirmReset} userData={selectedUser} />
+        </Suspense>
+      )}
     </>
   );
 }

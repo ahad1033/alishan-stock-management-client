@@ -14,7 +14,7 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export function SalesSummaryChart({
+export default function SalesSummaryChart({
   type,
   data,
   title,

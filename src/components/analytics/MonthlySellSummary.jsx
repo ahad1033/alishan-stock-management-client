@@ -12,7 +12,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-export function MonthlySellSummary({
+export default function MonthlySellSummary({
   type,
   data,
   title,

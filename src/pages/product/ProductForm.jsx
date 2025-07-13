@@ -210,7 +210,13 @@ export default function ProductForm() {
               <div className="flex flex-col items-center gap-2">
                 <div className="relative w-36 h-36 rounded-full overflow-hidden border-2 border-muted shadow-sm">
                   <img
-                    src={imagePreview || "/avatar-placeholder.png"}
+                    src={
+                      selectedImageFile
+                        ? imagePreview
+                        : isEdit && currentProduct?.data?.image
+                        ? currentProduct.data.image
+                        : "/product-img-placeholder.jpg"
+                    }
                     alt="Profile"
                     className="w-full h-full object-cover"
                   />

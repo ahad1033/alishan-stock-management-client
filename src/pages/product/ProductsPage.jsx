@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { lazy, useState } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useSelector } from "react-redux";
@@ -15,7 +15,6 @@ import {
 } from "@/components/table";
 import { Button } from "@/components/ui/button";
 
-import ConfirmDialog from "@/components/shared/ConfirmDialog";
 import TableSkeleton from "@/components/skeleton/table-skeleton";
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import ProductImageWithSkeleton from "@/components/skeleton/product-loading-skeleton";
@@ -27,6 +26,8 @@ import {
 import { useCurrentUser } from "@/redux/features/auth/authSlice";
 
 import { canManageProduct } from "@/utils/role-utils";
+
+const ConfirmDialog = lazy(() => import("@/components/shared/ConfirmDialog"));
 
 const columns = [
   {
@@ -156,15 +157,17 @@ export default function ProductsPage() {
       )}
 
       {/* CONFIRM DELETE DIALOG */}
-      <ConfirmDialog
-        open={confirm.value}
-        onOpenChange={confirm.onToggle}
-        title="Delete Product"
-        description={`Are you sure you want to delete "${selectedProduct?.name}"?`}
-        onCancel={() => confirm.onFalse()}
-        onConfirm={confirmDelete}
-        isLoading={deleteLoading}
-      />
+      {confirm.value && (
+        <ConfirmDialog
+          open={confirm.value}
+          onOpenChange={confirm.onToggle}
+          title="Delete Product"
+          description={`Are you sure you want to delete "${selectedProduct?.name}"?`}
+          onCancel={() => confirm.onFalse()}
+          onConfirm={confirmDelete}
+          isLoading={deleteLoading}
+        />
+      )}
     </>
   );
 }

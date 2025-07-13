@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/card";
 import { SelectSeparator } from "@/components/ui/select";
 
-import { UserForm } from "../user";
 import { useThemeContext } from "@/components/theme/ThemeProvider";
 
 import { useCurrentUser } from "@/redux/features/auth/authSlice";
@@ -17,6 +16,7 @@ import { useGetUserByIdQuery } from "@/redux/features/user/userApi";
 
 import CircularLoading from "@/components/shared/CircularLoading";
 import ProfileSkeleton from "@/components/skeleton/profile-skeleton";
+import UserForm from "../user/UserForm";
 
 // ------ HELPER FUUNCTION ------
 const formatRole = (role) => {

@@ -1,12 +1,10 @@
-import { useEffect } from "react";
-import { Banknote, BanknoteX, BanknoteArrowDown } from "lucide-react";
+import { lazy, Suspense, useEffect } from "react";
+import { Banknote, BanknoteX, BanknoteArrowDown, Loader2 } from "lucide-react";
 
 import { useBoolean } from "@/hooks";
 import { useThemeContext } from "@/components/theme/ThemeProvider";
 
 import { StatCard } from "../components/analytics/StatCard";
-import { SalesSummaryChart } from "@/components/analytics/SalesSummaryChart";
-import { MonthlySellSummary } from "@/components/analytics/MonthlySellSummary";
 
 import {
   useGetSalesSummaryQuery,
@@ -14,10 +12,20 @@ import {
   useGetMonthlySalesSummaryQuery,
 } from "@/redux/features/analytics/analyticsApi";
 import { useGetBalanceQuery } from "@/redux/features/balance/balanceApi";
-import { RecentExpenseCard } from "@/components/analytics/RecentExpenseCard";
 
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import AnalyticsSkeleton from "@/components/skeleton/analytics-skeleton";
+
+// LAZY IMPORTS
+const SalesSummaryChart = lazy(() =>
+  import("@/components/analytics/SalesSummaryChart")
+);
+const RecentExpenseCard = lazy(() =>
+  import("@/components/analytics/RecentExpenseCard")
+);
+const MonthlySellSummary = lazy(() =>
+  import("@/components/analytics/MonthlySellSummary")
+);
 
 export default function Analytics() {
   const { primaryColor } = useThemeContext();
@@ -144,13 +152,24 @@ export default function Analytics() {
           {/* Charts Row */}
           {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6"> */}
           <div className="grid grid-cols-1 mb-6">
-            <SalesSummaryChart
-              title="Daily sales"
-              description="Last 15 days sell"
-              data={salesSummary ? salesSummary?.data : []}
-              type="line"
-              className="lg:col-span-2"
-            />
+            <Suspense
+              fallback={
+                <div className="w-full mx-auto">
+                  <Loader2
+                    className="w-12 h-12 animate-spin"
+                    style={{ color: primaryColor }}
+                  />
+                </div>
+              }
+            >
+              <SalesSummaryChart
+                title="Daily sales"
+                description="Last 15 days sell"
+                data={salesSummary ? salesSummary?.data : []}
+                type="line"
+                className="lg:col-span-2"
+              />
+            </Suspense>
 
             {/* <ChartCard
               title="Product Categories"
@@ -162,18 +181,40 @@ export default function Analytics() {
 
           {/* Activity + Stats Row */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <RecentExpenseCard
-              activities={expenseHistory}
-              primaryColor={primaryColor}
-              className="lg:col-span-2"
-            />
+            <Suspense
+              fallback={
+                <div className="w-full mx-auto">
+                  <Loader2
+                    className="w-12 h-12 animate-spin"
+                    style={{ color: primaryColor }}
+                  />
+                </div>
+              }
+            >
+              <RecentExpenseCard
+                activities={expenseHistory}
+                primaryColor={primaryColor}
+                className="lg:col-span-2"
+              />
+            </Suspense>
 
-            <MonthlySellSummary
-              title="Monthly Sell"
-              description="Last 4 monts sell summary"
-              data={monthlySalesSummary ? monthlySalesSummary?.data : []}
-              type="bar"
-            />
+            <Suspense
+              fallback={
+                <div className="w-full mx-auto">
+                  <Loader2
+                    className="w-12 h-12 animate-spin"
+                    style={{ color: primaryColor }}
+                  />
+                </div>
+              }
+            >
+              <MonthlySellSummary
+                title="Monthly Sell"
+                description="Last 4 monts sell summary"
+                data={monthlySalesSummary ? monthlySalesSummary?.data : []}
+                type="bar"
+              />
+            </Suspense>
           </div>
         </>
       )}

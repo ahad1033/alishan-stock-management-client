@@ -1,6 +1,6 @@
 import { debounce } from "lodash";
 import { Plus, Minus } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 
 import { useBoolean } from "@/hooks";
 
@@ -15,12 +15,16 @@ import { Button } from "@/components/ui/button";
 
 import { useGetAllStockHistoryQuery } from "@/redux/features/stock/stockApi";
 
-import CustomHeader from "@/components/page-heading/CustomHeader";
-import AddStockDialog from "@/components/dialog/AddStockDialog";
-import CircularLoading from "@/components/shared/CircularLoading";
-import DeductStockDialog from "@/components/dialog/DeductStockDialog";
-import CustomDateRangePicker from "@/components/date-picker/CustomDateRangePicker";
 import TableSkeleton from "@/components/skeleton/table-skeleton";
+import CustomHeader from "@/components/page-heading/CustomHeader";
+import CircularLoading from "@/components/shared/CircularLoading";
+import CustomDateRangePicker from "@/components/date-picker/CustomDateRangePicker";
+
+// LAZY IMPORTS
+const AddStockDialog = lazy(() => import("@/components/dialog/AddStockDialog"));
+const DeductStockDialog = lazy(() =>
+  import("@/components/dialog/DeductStockDialog")
+);
 
 const columns = [
   {
@@ -219,10 +223,19 @@ export default function StockPage() {
       )}
 
       {/* Add Stock Dialog */}
-      <AddStockDialog stockInModal={stockInModal} />
+      {stockInModal.value && (
+        <Suspense fallback={<CircularLoading />}>
+          <AddStockDialog stockInModal={stockInModal} />
+        </Suspense>
+      )}
 
       {/* Deduct Stock Dialog */}
-      <DeductStockDialog isDeductStockOpen={stockOutModal} />
+
+      {stockOutModal.value && (
+        <Suspense fallback={<CircularLoading />}>
+          <DeductStockDialog isDeductStockOpen={stockOutModal} />
+        </Suspense>
+      )}
     </>
   );
 }

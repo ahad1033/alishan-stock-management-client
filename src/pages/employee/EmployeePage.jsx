@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useSelector } from "react-redux";
@@ -15,7 +15,6 @@ import {
 } from "@/components/table";
 import { Button } from "@/components/ui/button";
 
-import ConfirmDialog from "@/components/shared/ConfirmDialog";
 import TableSkeleton from "@/components/skeleton/table-skeleton";
 import CustomHeader from "@/components/page-heading/CustomHeader";
 
@@ -25,6 +24,10 @@ import {
 } from "@/redux/features/employee/employeeApi";
 import { canManageEmployee } from "@/utils/role-utils";
 import { useCurrentUser } from "@/redux/features/auth/authSlice";
+import CircularLoading from "@/components/shared/CircularLoading";
+
+// LAZY IMPORT
+const ConfirmDialog = lazy(() => import("@/components/shared/ConfirmDialog"));
 
 const columns = [
   { key: "name", label: "Name" },
@@ -159,15 +162,19 @@ export default function EmployeePage() {
       )}
 
       {/* CONFIRM DELETE DIALOG */}
-      <ConfirmDialog
-        open={confirm.value}
-        onOpenChange={confirm.onToggle}
-        title="Delete Employee"
-        description={`Are you sure you want to delete "${selectedEmployee?.name}"?`}
-        onCancel={() => confirm.onFalse()}
-        onConfirm={confirmDelete}
-        isLoading={deleteLoading}
-      />
+      {confirm.value && (
+        <Suspense fallback={<CircularLoading />}>
+          <ConfirmDialog
+            open={confirm.value}
+            onOpenChange={confirm.onToggle}
+            title="Delete Employee"
+            description={`Are you sure you want to delete "${selectedEmployee?.name}"?`}
+            onCancel={() => confirm.onFalse()}
+            onConfirm={confirmDelete}
+            isLoading={deleteLoading}
+          />
+        </Suspense>
+      )}
     </>
   );
 }

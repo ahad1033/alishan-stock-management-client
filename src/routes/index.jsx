@@ -1,31 +1,62 @@
+import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router";
 
 import Login from "@/pages/Login";
-import Analytics from "@/pages/Analytics";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
-
-import { StockPage } from "@/pages/stock";
-import { UserForm, UsersPage } from "@/pages/user";
-import { CollectionPage } from "@/pages/collection";
-import { InvoiceForm, InvoicePage } from "@/pages/invoice";
-import { ExpenseForm, ExpensePage } from "@/pages/expense";
-import { ProductForm, ProductsPage } from "@/pages/product";
-import { EmployeeDetails, EmployeeForm, EmployeePage } from "@/pages/employee";
-import { CustomerDetails, CustomerForm, CustomersPage } from "@/pages/customer";
-
-import Unauthorized from "@/pages/Unauthorized";
 import RoleBasedRoute from "@/components/auth/RoleBasedRoute";
-import InvoiceDetails from "@/pages/invoice/InvoiceDetails";
-import ProfilePage from "@/pages/profile/ProfilePage";
+
+// ANALYTICS PAGES
+const Analytics = lazy(() => import("@/pages/Analytics"));
+
+// PRODUCT PAGES
+const ProductForm = lazy(() => import("@/pages/product/ProductForm"));
+const ProductsPage = lazy(() => import("@/pages/product/ProductsPage"));
+
+// CUSTOMER PAGES
+const CustomerForm = lazy(() => import("@/pages/customer/CustomerForm"));
+const CustomersPage = lazy(() => import("@/pages/customer/CustomersPage"));
+const CustomerDetails = lazy(() => import("@/pages/customer/CustomerDetails"));
+
+// INVOICE PAGES
+const InvoiceForm = lazy(() => import("@/pages/invoice/InvoiceForm"));
+const InvoicePage = lazy(() => import("@/pages/invoice/InvoicePage"));
+const InvoiceDetails = lazy(() => import("@/pages/invoice/InvoiceDetails"));
+
+// STOCK PAGE
+const StockPage = lazy(() => import("@/pages/stock/StockPage"));
+
+// COLLECTION PAGE
+const CollectionPage = lazy(() => import("@/pages/collection/CollectionPage"));
+
+// EMPLOYEE PAGES
+const EmployeePage = lazy(() => import("@/pages/employee/EmployeePage"));
+const EmployeeForm = lazy(() => import("@/pages/employee/EmployeeForm"));
+const EmployeeDetails = lazy(() => import("@/pages/employee/EmployeeDetails"));
+
+// EXPENSE PAGES
+const ExpenseForm = lazy(() => import("@/pages/expense/ExpenseForm"));
+const ExpensePage = lazy(() => import("@/pages/expense/ExpensePage"));
+
+// USER PAGES
+const UserForm = lazy(() => import("@/pages/user/UserForm"));
+const UsersPage = lazy(() => import("@/pages/user/UsersPage"));
+
+// UNAUTHORIZED PAGE
+const Unauthorized = lazy(() => import("@/pages/Unauthorized"));
+
+// PROFILE PAGE
+const ProfilePage = lazy(() => import("@/pages/profile/ProfilePage"));
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <ProtectedRoute>
-        <DashboardLayout />
-      </ProtectedRoute>
+      <Suspense>
+        <ProtectedRoute>
+          <DashboardLayout />
+        </ProtectedRoute>
+      </Suspense>
     ),
     children: [
       {
@@ -320,6 +351,7 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      // UNAUTHORIZED ROUTE
       {
         path: "unauthorized",
         element: <Unauthorized />,
