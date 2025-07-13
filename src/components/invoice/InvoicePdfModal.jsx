@@ -30,9 +30,9 @@ export default function InvoicePDFModal({ onClose, invoiceData }) {
         <div className="flex-1 overflow-auto">
           <Suspense
             fallback={
-              <div className="w-full mx-auto">
+              <div className="w-full flex justify-center items-center py-8">
                 <Loader2
-                  className="w-12 h-12 animate-spin"
+                  className="w-8 h-8 animate-spin"
                   style={{ color: primaryColor }}
                 />
               </div>
