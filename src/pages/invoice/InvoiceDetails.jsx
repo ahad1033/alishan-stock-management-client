@@ -76,7 +76,9 @@ const InvoiceDetails = () => {
       />
 
       {isLoading ? (
-        <CircularLoading />
+        <div className="w-full mx-auto px-10">
+          <CircularLoading />
+        </div>
       ) : (
         <>
           <div className="flex gap-3 justify-end">
