@@ -15,6 +15,14 @@ import { useGetBalanceQuery } from "@/redux/features/balance/balanceApi";
 
 import CustomHeader from "@/components/page-heading/CustomHeader";
 import AnalyticsSkeleton from "@/components/skeleton/analytics-skeleton";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // LAZY IMPORTS
 const SalesSummaryChart = lazy(() =>
@@ -31,6 +39,8 @@ export default function Analytics() {
   const { primaryColor } = useThemeContext();
 
   const mount = useBoolean();
+
+  const skeletonColorClass = "bg-gray-200 dark:bg-gray-400/20";
 
   // SALES SUMMARY
   const { data: salesSummary, isLoading: salesLoadingState } =
@@ -154,11 +164,21 @@ export default function Analytics() {
           <div className="grid grid-cols-1 mb-6">
             <Suspense
               fallback={
-                <div className="w-full mx-auto">
-                  <Loader2
-                    className="w-12 h-12 animate-spin"
-                    style={{ color: primaryColor }}
-                  />
+                <div className="grid grid-cols-1 mb-6">
+                  <Card className="shadow-sm">
+                    <CardHeader>
+                      <CardTitle>
+                        <Skeleton className="h-6 w-48 bg-gray-200 dark:bg-gray-400/20" />
+                      </CardTitle>
+                      <CardDescription>
+                        <Skeleton className="h-4 w-64 bg-gray-200 dark:bg-gray-400/20" />
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {/* Placeholder for the chart area */}
+                      <Skeleton className="h-64 w-full bg-gray-200 dark:bg-gray-400/20" />
+                    </CardContent>
+                  </Card>
                 </div>
               }
             >
@@ -183,12 +203,46 @@ export default function Analytics() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <Suspense
               fallback={
-                <div className="w-full mx-auto">
-                  <Loader2
-                    className="w-12 h-12 animate-spin"
-                    style={{ color: primaryColor }}
-                  />
-                </div>
+                <Card className="lg:col-span-2 shadow-sm">
+                  <CardHeader>
+                    <CardTitle>
+                      <Skeleton className={`h-6 w-48 ${skeletonColorClass}`} />
+                    </CardTitle>
+                    <CardDescription>
+                      <Skeleton className={`h-4 w-64 ${skeletonColorClass}`} />
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {/* List of recent expenses */}
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center justify-between py-2 border-b last:border-b-0"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <Skeleton
+                            className={`h-8 w-8 rounded-full ${skeletonColorClass}`}
+                          />{" "}
+                          {/* Icon/Avatar */}
+                          <div>
+                            <Skeleton
+                              className={`h-4 w-32 mb-1 ${skeletonColorClass}`}
+                            />{" "}
+                            {/* Item name */}
+                            <Skeleton
+                              className={`h-3 w-24 ${skeletonColorClass}`}
+                            />{" "}
+                            {/* Category/Description */}
+                          </div>
+                        </div>
+                        <Skeleton
+                          className={`h-4 w-20 ${skeletonColorClass}`}
+                        />{" "}
+                        {/* Amount */}
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
               }
             >
               <RecentExpenseCard
@@ -200,12 +254,20 @@ export default function Analytics() {
 
             <Suspense
               fallback={
-                <div className="w-full mx-auto">
-                  <Loader2
-                    className="w-12 h-12 animate-spin"
-                    style={{ color: primaryColor }}
-                  />
-                </div>
+                <Card className="shadow-sm">
+                  <CardHeader>
+                    <CardTitle>
+                      <Skeleton className={`h-6 w-48 ${skeletonColorClass}`} />
+                    </CardTitle>
+                    <CardDescription>
+                      <Skeleton className={`h-4 w-64 ${skeletonColorClass}`} />
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {/* Placeholder for the bar chart area */}
+                    <Skeleton className={`h-64 w-full ${skeletonColorClass}`} />
+                  </CardContent>
+                </Card>
               }
             >
               <MonthlySellSummary

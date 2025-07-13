@@ -86,9 +86,9 @@ const InvoiceDetails = () => {
 
             <Suspense
               fallback={
-                <div className="w-full mx-auto">
+                <div className="flex gap-3 justify-end">
                   <Loader2
-                    className="w-12 h-12 animate-spin"
+                    className="w-6 h-6 animate-spin"
                     style={{ color: primaryColor }}
                   />
                 </div>
@@ -217,7 +217,7 @@ const InvoiceDetails = () => {
 
       {/* PDF Viewer Modal */}
       {showPdf.value && (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={null}>
           <InvoicePDFModal
             invoiceData={invoiceData}
             onClose={showPdf.onFalse}
